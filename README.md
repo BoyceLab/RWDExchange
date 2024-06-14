@@ -67,8 +67,6 @@ run_app()
 
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
-## Acknowledgments
-
 # Reference:
 - Gray CM, Grimson F, Layton D, Pocock S, Kim J. A Framework for Methodological Choice and Evidence Assessment for Studies Using External Comparators from Real-World Data. Drug Saf. 2020 Jul;43(7):623-633. doi: 10.1007/s40264-020-00944-1. PMID: 32440847; PMCID: PMC7305259.
 - Pocock SJ. The combination of randomized and historical controls in clinical trials. J Chronic Dis. 1976 Mar;29(3):175-88. doi: 10.1016/0021-9681(76)90044-8. PMID: 770493.
