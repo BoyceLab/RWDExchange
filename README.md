@@ -63,68 +63,17 @@ run_app()
    - Navigate to the "Download Report" tab.
    - Click "Generate CSV Report" to download a comprehensive report of your assessments.
 
-## Development
-
-### Directory Structure
-
-Your project directory should have the following structure:
-
-```
-RWDExchangeGITHUB
-├── inst
-│   └── app
-│       └── app.R
-├── man (optional, for documentation)
-├── R
-│   └── run_app.R
-├── rsconnect (optional, for deployment configurations)
-├── .gitignore
-├── .Rbuildignore
-├── LICENSE
-├── NAMESPACE
-├── README.md
-├── DESCRIPTION
-```
-
-### Example `run_app.R` File
-
-```r
-run_app <- function() {
-  shiny::shinyAppDir(system.file("app", package = "RWDExchange"))
-}
-```
-
-### Example `DESCRIPTION` File
-
-```plaintext
-Package: RWDExchange
-Title: A Shiny App for Evaluating Real-World Data Exchangeability
-Version: 0.1.0
-Authors@R: person("Your Name", "Last", email = "your-email@example.com", role = c("aut", "cre"))
-Description: A shiny application for evaluating the exchangeability potential of real-world data.
-Depends: R (>= 3.5.0)
-License: MIT
-Encoding: UTF-8
-LazyData: true
-```
-
-### Example `NAMESPACE` File
-
-```plaintext
-export(run_app)
-```
-
 ## License
 
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
 ## Acknowledgments
 
-- Reference:
+# Reference:
 - Gray CM, Grimson F, Layton D, Pocock S, Kim J. A Framework for Methodological Choice and Evidence Assessment for Studies Using External Comparators from Real-World Data. Drug Saf. 2020 Jul;43(7):623-633. doi: 10.1007/s40264-020-00944-1. PMID: 32440847; PMCID: PMC7305259.
 - Pocock SJ. The combination of randomized and historical controls in clinical trials. J Chronic Dis. 1976 Mar;29(3):175-88. doi: 10.1016/0021-9681(76)90044-8. PMID: 770493.
 - US Food and Drug Administration, "Considerations for the Design and Conduct of Externally Controlled Trials for Drug and Biological Products." February 2023. [Link](https://www.fda.gov/regulatory-information/search-fda-guidance-documents/considerations-design-and-conduct-externally-controlled-trials-drug-and-biological-products).
-- Additional reference: Relevant academic paper or resource.
+
 
 ## Contact
 
