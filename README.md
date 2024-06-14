@@ -1,6 +1,6 @@
 # RWDExchange
 
-RWDExchange is a Shiny application designed to evaluate the exchangeability potential of your real-world data (RWD) for use as external comparators in clinical studies.
+RWDExchange is a Shiny application designed to evaluate the exchangeability potential of your real-world data (RWD) including electronic health records and patient registries for use as external comparators in clinical trials.
 
 ## Features
 
