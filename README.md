@@ -18,6 +18,7 @@ Make sure you have R and RStudio installed. You also need to install the require
 ```r
 install.packages(c("shiny", "devtools"))
 ```
+Download and install Rtools from [here](https://cran.r-project.org/bin/windows/Rtools/).
 
 ### Installation
 
