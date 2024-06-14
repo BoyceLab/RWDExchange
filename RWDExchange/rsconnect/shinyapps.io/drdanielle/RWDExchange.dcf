@@ -1,0 +1,12 @@
+name: RWDExchange
+title: RWDExchange
+username: drdanielle
+account: drdanielle
+server: shinyapps.io
+hostUrl: https://api.shinyapps.io/v1
+appId: 12155081
+bundleId: 8742268
+url: https://drdanielle.shinyapps.io/RWDExchange/
+version: 1
+asMultiple: FALSE
+asStatic: FALSE
