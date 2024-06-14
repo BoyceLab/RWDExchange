@@ -8,6 +8,10 @@ RWDExchange is a Shiny application designed to evaluate the exchangeability pote
 - **Pocock's Criteria**: Assess the criteria for using historical controls.
 - **FDA Guidance**: Follow the FDA guidelines for externally controlled trials.
 - **Download Report**: Generate a comprehensive report of your assessments.
+- **How To**: Instructions on how to use the RWDExchange app.
+
+**OMOP Data Scan**
+<p style="color:red;">The OMOP Data Scan feature is coming soon and will allow for scanning OMOP-formatted data. Stay tuned for updates!</p>
 
 ## Installation and Usage
 
