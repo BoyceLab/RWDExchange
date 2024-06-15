@@ -39,7 +39,7 @@ library(RWDExchange)
 run_app()
 ```
 
-## Usage Guide
+## User Guide
 
 ### Step-by-Step Instructions
 
