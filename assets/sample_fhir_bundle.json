@@ -1,0 +1,2850 @@
+{
+  "resourceType": "Bundle",
+  "id": "demo-bundle-001",
+  "type": "collection",
+  "timestamp": "2024-04-15T10:00:00Z",
+  "entry": [
+    {
+      "fullUrl": "Patient/demo-patient-001",
+      "resource": {
+        "resourceType": "Patient",
+        "id": "demo-patient-001",
+        "active": true,
+        "identifier": [
+          {
+            "use": "usual",
+            "type": {
+              "coding": [
+                {
+                  "system": "http://terminology.hl7.org/CodeSystem/v2-0203",
+                  "code": "MR"
+                }
+              ],
+              "text": "MRN"
+            },
+            "system": "http://hospital.example.org",
+            "value": "MRN-DEMO-001"
+          }
+        ],
+        "name": [
+          {
+            "use": "official",
+            "given": [
+              "Jane",
+              "Marie"
+            ],
+            "family": "Demo"
+          }
+        ],
+        "telecom": [
+          {
+            "system": "phone",
+            "value": "555-0100",
+            "use": "home"
+          }
+        ],
+        "gender": "female",
+        "birthDate": "1965-03-15",
+        "address": [
+          {
+            "use": "home",
+            "line": [
+              "1 Demo Street"
+            ],
+            "city": "Anytown",
+            "state": "MA",
+            "postalCode": "02000",
+            "country": "US"
+          }
+        ],
+        "maritalStatus": {
+          "coding": [
+            {
+              "system": "http://terminology.hl7.org/CodeSystem/v3-MaritalStatus",
+              "code": "M",
+              "display": "Married"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "fullUrl": "Encounter/demo-enc-001",
+      "resource": {
+        "resourceType": "Encounter",
+        "id": "demo-enc-001",
+        "status": "finished",
+        "class": {
+          "system": "http://terminology.hl7.org/CodeSystem/v3-ActCode",
+          "code": "AMB",
+          "display": "ambulatory"
+        },
+        "type": [
+          {
+            "coding": [
+              {
+                "system": "http://snomed.info/sct",
+                "code": "11429006",
+                "display": "Consultation"
+              }
+            ],
+            "text": "Consultation"
+          }
+        ],
+        "subject": {
+          "reference": "Patient/demo-patient-001"
+        },
+        "period": {
+          "start": "2023-04-12T09:00:00Z",
+          "end": "2023-04-12T10:30:00Z"
+        },
+        "reasonCode": [
+          {
+            "text": "Initial neurology consultation - referred for muscle weakness evaluation"
+          }
+        ],
+        "serviceProvider": {
+          "display": "Demo Health System Neurology Department"
+        }
+      }
+    },
+    {
+      "fullUrl": "Encounter/demo-enc-002",
+      "resource": {
+        "resourceType": "Encounter",
+        "id": "demo-enc-002",
+        "status": "finished",
+        "class": {
+          "system": "http://terminology.hl7.org/CodeSystem/v3-ActCode",
+          "code": "AMB",
+          "display": "ambulatory"
+        },
+        "type": [
+          {
+            "coding": [
+              {
+                "system": "http://snomed.info/sct",
+                "code": "390906007",
+                "display": "Follow-up encounter"
+              }
+            ],
+            "text": "Follow-up encounter"
+          }
+        ],
+        "subject": {
+          "reference": "Patient/demo-patient-001"
+        },
+        "period": {
+          "start": "2023-08-20T09:00:00Z",
+          "end": "2023-08-20T10:30:00Z"
+        },
+        "reasonCode": [
+          {
+            "text": "Multidisciplinary ALS clinic - first MDC visit post-diagnosis"
+          }
+        ],
+        "serviceProvider": {
+          "display": "Demo Health System Neurology Department"
+        }
+      }
+    },
+    {
+      "fullUrl": "Encounter/demo-enc-003",
+      "resource": {
+        "resourceType": "Encounter",
+        "id": "demo-enc-003",
+        "status": "finished",
+        "class": {
+          "system": "http://terminology.hl7.org/CodeSystem/v3-ActCode",
+          "code": "IMP",
+          "display": "inpatient encounter"
+        },
+        "type": [
+          {
+            "coding": [
+              {
+                "system": "http://snomed.info/sct",
+                "code": "32485007",
+                "display": "Hospital admission"
+              }
+            ],
+            "text": "Hospital admission"
+          }
+        ],
+        "subject": {
+          "reference": "Patient/demo-patient-001"
+        },
+        "period": {
+          "start": "2024-01-10T09:00:00Z",
+          "end": "2024-01-13T10:30:00Z"
+        },
+        "reasonCode": [
+          {
+            "text": "Inpatient stay for PEG tube placement"
+          }
+        ],
+        "serviceProvider": {
+          "display": "Demo Health System Neurology Department"
+        }
+      }
+    },
+    {
+      "fullUrl": "Encounter/demo-enc-004",
+      "resource": {
+        "resourceType": "Encounter",
+        "id": "demo-enc-004",
+        "status": "finished",
+        "class": {
+          "system": "http://terminology.hl7.org/CodeSystem/v3-ActCode",
+          "code": "AMB",
+          "display": "ambulatory"
+        },
+        "type": [
+          {
+            "coding": [
+              {
+                "system": "http://snomed.info/sct",
+                "code": "390906007",
+                "display": "Follow-up encounter"
+              }
+            ],
+            "text": "Follow-up encounter"
+          }
+        ],
+        "subject": {
+          "reference": "Patient/demo-patient-001"
+        },
+        "period": {
+          "start": "2024-04-15T09:00:00Z",
+          "end": "2024-04-15T10:30:00Z"
+        },
+        "reasonCode": [
+          {
+            "text": "MDC follow-up visit"
+          }
+        ],
+        "serviceProvider": {
+          "display": "Demo Health System Neurology Department"
+        }
+      }
+    },
+    {
+      "fullUrl": "Condition/demo-cond-als",
+      "resource": {
+        "resourceType": "Condition",
+        "id": "demo-cond-als",
+        "clinicalStatus": {
+          "coding": [
+            {
+              "system": "http://terminology.hl7.org/CodeSystem/condition-clinical",
+              "code": "active",
+              "display": "Active"
+            }
+          ]
+        },
+        "verificationStatus": {
+          "coding": [
+            {
+              "system": "http://terminology.hl7.org/CodeSystem/condition-ver-status",
+              "code": "confirmed",
+              "display": "Confirmed"
+            }
+          ]
+        },
+        "category": [
+          {
+            "coding": [
+              {
+                "system": "http://terminology.hl7.org/CodeSystem/condition-category",
+                "code": "problem-list-item",
+                "display": "Problem List Item"
+              }
+            ]
+          }
+        ],
+        "severity": {
+          "coding": [
+            {
+              "system": "http://snomed.info/sct",
+              "code": "24484000",
+              "display": "Severe"
+            }
+          ]
+        },
+        "code": {
+          "coding": [
+            {
+              "system": "http://snomed.info/sct",
+              "code": "86044005",
+              "display": "Amyotrophic lateral sclerosis"
+            },
+            {
+              "system": "http://hl7.org/fhir/sid/icd-10-cm",
+              "code": "G12.21",
+              "display": "Amyotrophic lateral sclerosis"
+            }
+          ],
+          "text": "Amyotrophic lateral sclerosis"
+        },
+        "subject": {
+          "reference": "Patient/demo-patient-001"
+        },
+        "onsetDateTime": "2023-05-15",
+        "recordedDate": "2023-05-15"
+      }
+    },
+    {
+      "fullUrl": "Condition/demo-cond-dys",
+      "resource": {
+        "resourceType": "Condition",
+        "id": "demo-cond-dys",
+        "clinicalStatus": {
+          "coding": [
+            {
+              "system": "http://terminology.hl7.org/CodeSystem/condition-clinical",
+              "code": "active",
+              "display": "Active"
+            }
+          ]
+        },
+        "verificationStatus": {
+          "coding": [
+            {
+              "system": "http://terminology.hl7.org/CodeSystem/condition-ver-status",
+              "code": "confirmed",
+              "display": "Confirmed"
+            }
+          ]
+        },
+        "category": [
+          {
+            "coding": [
+              {
+                "system": "http://terminology.hl7.org/CodeSystem/condition-category",
+                "code": "problem-list-item",
+                "display": "Problem List Item"
+              }
+            ]
+          }
+        ],
+        "severity": {
+          "coding": [
+            {
+              "system": "http://snomed.info/sct",
+              "code": "6736007",
+              "display": "Moderate"
+            }
+          ]
+        },
+        "code": {
+          "coding": [
+            {
+              "system": "http://snomed.info/sct",
+              "code": "40739000",
+              "display": "Dysphagia"
+            },
+            {
+              "system": "http://hl7.org/fhir/sid/icd-10-cm",
+              "code": "R13.10",
+              "display": "Dysphagia, unspecified"
+            }
+          ],
+          "text": "Dysphagia"
+        },
+        "subject": {
+          "reference": "Patient/demo-patient-001"
+        },
+        "onsetDateTime": "2023-09-01",
+        "recordedDate": "2023-09-01"
+      }
+    },
+    {
+      "fullUrl": "Condition/demo-cond-dyspnea",
+      "resource": {
+        "resourceType": "Condition",
+        "id": "demo-cond-dyspnea",
+        "clinicalStatus": {
+          "coding": [
+            {
+              "system": "http://terminology.hl7.org/CodeSystem/condition-clinical",
+              "code": "active",
+              "display": "Active"
+            }
+          ]
+        },
+        "verificationStatus": {
+          "coding": [
+            {
+              "system": "http://terminology.hl7.org/CodeSystem/condition-ver-status",
+              "code": "confirmed",
+              "display": "Confirmed"
+            }
+          ]
+        },
+        "category": [
+          {
+            "coding": [
+              {
+                "system": "http://terminology.hl7.org/CodeSystem/condition-category",
+                "code": "problem-list-item",
+                "display": "Problem List Item"
+              }
+            ]
+          }
+        ],
+        "severity": {
+          "coding": [
+            {
+              "system": "http://snomed.info/sct",
+              "code": "6736007",
+              "display": "Moderate"
+            }
+          ]
+        },
+        "code": {
+          "coding": [
+            {
+              "system": "http://snomed.info/sct",
+              "code": "267036007",
+              "display": "Dyspnea"
+            },
+            {
+              "system": "http://hl7.org/fhir/sid/icd-10-cm",
+              "code": "R06.00",
+              "display": "Dyspnea, unspecified"
+            }
+          ],
+          "text": "Dyspnea"
+        },
+        "subject": {
+          "reference": "Patient/demo-patient-001"
+        },
+        "onsetDateTime": "2023-11-15",
+        "recordedDate": "2023-11-15"
+      }
+    },
+    {
+      "fullUrl": "Condition/demo-cond-spe",
+      "resource": {
+        "resourceType": "Condition",
+        "id": "demo-cond-spe",
+        "clinicalStatus": {
+          "coding": [
+            {
+              "system": "http://terminology.hl7.org/CodeSystem/condition-clinical",
+              "code": "active",
+              "display": "Active"
+            }
+          ]
+        },
+        "verificationStatus": {
+          "coding": [
+            {
+              "system": "http://terminology.hl7.org/CodeSystem/condition-ver-status",
+              "code": "confirmed",
+              "display": "Confirmed"
+            }
+          ]
+        },
+        "category": [
+          {
+            "coding": [
+              {
+                "system": "http://terminology.hl7.org/CodeSystem/condition-category",
+                "code": "problem-list-item",
+                "display": "Problem List Item"
+              }
+            ]
+          }
+        ],
+        "severity": {
+          "coding": [
+            {
+              "system": "http://snomed.info/sct",
+              "code": "6736007",
+              "display": "Moderate"
+            }
+          ]
+        },
+        "code": {
+          "coding": [
+            {
+              "system": "http://snomed.info/sct",
+              "code": "8011004",
+              "display": "Dysarthria"
+            },
+            {
+              "system": "http://hl7.org/fhir/sid/icd-10-cm",
+              "code": "R47.1",
+              "display": "Dysarthria and anarthria"
+            }
+          ],
+          "text": "Dysarthria"
+        },
+        "subject": {
+          "reference": "Patient/demo-patient-001"
+        },
+        "onsetDateTime": "2023-08-01",
+        "recordedDate": "2023-08-01"
+      }
+    },
+    {
+      "fullUrl": "Condition/demo-cond-fat",
+      "resource": {
+        "resourceType": "Condition",
+        "id": "demo-cond-fat",
+        "clinicalStatus": {
+          "coding": [
+            {
+              "system": "http://terminology.hl7.org/CodeSystem/condition-clinical",
+              "code": "active",
+              "display": "Active"
+            }
+          ]
+        },
+        "verificationStatus": {
+          "coding": [
+            {
+              "system": "http://terminology.hl7.org/CodeSystem/condition-ver-status",
+              "code": "confirmed",
+              "display": "Confirmed"
+            }
+          ]
+        },
+        "category": [
+          {
+            "coding": [
+              {
+                "system": "http://terminology.hl7.org/CodeSystem/condition-category",
+                "code": "problem-list-item",
+                "display": "Problem List Item"
+              }
+            ]
+          }
+        ],
+        "severity": {
+          "coding": [
+            {
+              "system": "http://snomed.info/sct",
+              "code": "6736007",
+              "display": "Moderate"
+            }
+          ]
+        },
+        "code": {
+          "coding": [
+            {
+              "system": "http://snomed.info/sct",
+              "code": "84229001",
+              "display": "Fatigue"
+            },
+            {
+              "system": "http://hl7.org/fhir/sid/icd-10-cm",
+              "code": "R53.83",
+              "display": "Other fatigue"
+            }
+          ],
+          "text": "Fatigue"
+        },
+        "subject": {
+          "reference": "Patient/demo-patient-001"
+        },
+        "onsetDateTime": "2023-06-01",
+        "recordedDate": "2023-06-01"
+      }
+    },
+    {
+      "fullUrl": "Condition/demo-cond-dep",
+      "resource": {
+        "resourceType": "Condition",
+        "id": "demo-cond-dep",
+        "clinicalStatus": {
+          "coding": [
+            {
+              "system": "http://terminology.hl7.org/CodeSystem/condition-clinical",
+              "code": "active",
+              "display": "Active"
+            }
+          ]
+        },
+        "verificationStatus": {
+          "coding": [
+            {
+              "system": "http://terminology.hl7.org/CodeSystem/condition-ver-status",
+              "code": "confirmed",
+              "display": "Confirmed"
+            }
+          ]
+        },
+        "category": [
+          {
+            "coding": [
+              {
+                "system": "http://terminology.hl7.org/CodeSystem/condition-category",
+                "code": "problem-list-item",
+                "display": "Problem List Item"
+              }
+            ]
+          }
+        ],
+        "severity": {
+          "coding": [
+            {
+              "system": "http://snomed.info/sct",
+              "code": "6736007",
+              "display": "Moderate"
+            }
+          ]
+        },
+        "code": {
+          "coding": [
+            {
+              "system": "http://snomed.info/sct",
+              "code": "35489007",
+              "display": "Depressive disorder"
+            },
+            {
+              "system": "http://hl7.org/fhir/sid/icd-10-cm",
+              "code": "F32.9",
+              "display": "Major depressive disorder, single episode, unspecified"
+            }
+          ],
+          "text": "Depressive disorder"
+        },
+        "subject": {
+          "reference": "Patient/demo-patient-001"
+        },
+        "onsetDateTime": "2023-10-01",
+        "recordedDate": "2023-10-01"
+      }
+    },
+    {
+      "fullUrl": "MedicationRequest/demo-med-rilu",
+      "resource": {
+        "resourceType": "MedicationRequest",
+        "id": "demo-med-rilu",
+        "status": "active",
+        "intent": "order",
+        "category": [
+          {
+            "coding": [
+              {
+                "system": "http://terminology.hl7.org/CodeSystem/medicationrequest-category",
+                "code": "outpatient",
+                "display": "Outpatient"
+              }
+            ]
+          }
+        ],
+        "medicationCodeableConcept": {
+          "coding": [
+            {
+              "system": "http://www.nlm.nih.gov/research/umls/rxnorm",
+              "code": "9322",
+              "display": "Riluzole"
+            }
+          ],
+          "text": "Riluzole"
+        },
+        "subject": {
+          "reference": "Patient/demo-patient-001"
+        },
+        "authoredOn": "2023-06-01",
+        "reasonCode": [
+          {
+            "text": "Disease-modifying therapy for ALS"
+          }
+        ],
+        "dosageInstruction": [
+          {
+            "text": "50 mg PO BID",
+            "timing": {
+              "code": {
+                "text": "BID"
+              }
+            },
+            "route": {
+              "coding": [
+                {
+                  "system": "http://snomed.info/sct",
+                  "code": "26643006",
+                  "display": "Oral route"
+                }
+              ]
+            },
+            "doseAndRate": [
+              {
+                "doseQuantity": {
+                  "value": 50.0,
+                  "unit": "mg"
+                }
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "fullUrl": "MedicationRequest/demo-med-edar",
+      "resource": {
+        "resourceType": "MedicationRequest",
+        "id": "demo-med-edar",
+        "status": "active",
+        "intent": "order",
+        "category": [
+          {
+            "coding": [
+              {
+                "system": "http://terminology.hl7.org/CodeSystem/medicationrequest-category",
+                "code": "outpatient",
+                "display": "Outpatient"
+              }
+            ]
+          }
+        ],
+        "medicationCodeableConcept": {
+          "coding": [
+            {
+              "system": "http://www.nlm.nih.gov/research/umls/rxnorm",
+              "code": "1924316",
+              "display": "edaravone 30 MG in 100 ML Injection"
+            }
+          ],
+          "text": "edaravone 30 MG in 100 ML Injection"
+        },
+        "subject": {
+          "reference": "Patient/demo-patient-001"
+        },
+        "authoredOn": "2023-09-01",
+        "reasonCode": [
+          {
+            "text": "Free-radical scavenger; on-cycle 14 days, off-cycle 14 days"
+          }
+        ],
+        "dosageInstruction": [
+          {
+            "text": "60 mg IV DAILY",
+            "timing": {
+              "code": {
+                "text": "DAILY"
+              }
+            },
+            "route": {
+              "coding": [
+                {
+                  "system": "http://snomed.info/sct",
+                  "code": "47625008",
+                  "display": "Intravenous route"
+                }
+              ]
+            },
+            "doseAndRate": [
+              {
+                "doseQuantity": {
+                  "value": 60.0,
+                  "unit": "mg"
+                }
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "fullUrl": "MedicationRequest/demo-med-bac",
+      "resource": {
+        "resourceType": "MedicationRequest",
+        "id": "demo-med-bac",
+        "status": "active",
+        "intent": "order",
+        "category": [
+          {
+            "coding": [
+              {
+                "system": "http://terminology.hl7.org/CodeSystem/medicationrequest-category",
+                "code": "outpatient",
+                "display": "Outpatient"
+              }
+            ]
+          }
+        ],
+        "medicationCodeableConcept": {
+          "coding": [
+            {
+              "system": "http://www.nlm.nih.gov/research/umls/rxnorm",
+              "code": "1117",
+              "display": "Baclofen"
+            }
+          ],
+          "text": "Baclofen"
+        },
+        "subject": {
+          "reference": "Patient/demo-patient-001"
+        },
+        "authoredOn": "2023-09-01",
+        "reasonCode": [
+          {
+            "text": "Spasticity"
+          }
+        ],
+        "dosageInstruction": [
+          {
+            "text": "10 mg PO TID",
+            "timing": {
+              "code": {
+                "text": "TID"
+              }
+            },
+            "route": {
+              "coding": [
+                {
+                  "system": "http://snomed.info/sct",
+                  "code": "26643006",
+                  "display": "Oral route"
+                }
+              ]
+            },
+            "doseAndRate": [
+              {
+                "doseQuantity": {
+                  "value": 10.0,
+                  "unit": "mg"
+                }
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "fullUrl": "MedicationRequest/demo-med-traz",
+      "resource": {
+        "resourceType": "MedicationRequest",
+        "id": "demo-med-traz",
+        "status": "active",
+        "intent": "order",
+        "category": [
+          {
+            "coding": [
+              {
+                "system": "http://terminology.hl7.org/CodeSystem/medicationrequest-category",
+                "code": "outpatient",
+                "display": "Outpatient"
+              }
+            ]
+          }
+        ],
+        "medicationCodeableConcept": {
+          "coding": [
+            {
+              "system": "http://www.nlm.nih.gov/research/umls/rxnorm",
+              "code": "10355",
+              "display": "Trazodone"
+            }
+          ],
+          "text": "Trazodone"
+        },
+        "subject": {
+          "reference": "Patient/demo-patient-001"
+        },
+        "authoredOn": "2023-09-01",
+        "reasonCode": [
+          {
+            "text": "Sleep / depression adjunct"
+          }
+        ],
+        "dosageInstruction": [
+          {
+            "text": "50 mg PO QHS",
+            "timing": {
+              "code": {
+                "text": "QHS"
+              }
+            },
+            "route": {
+              "coding": [
+                {
+                  "system": "http://snomed.info/sct",
+                  "code": "26643006",
+                  "display": "Oral route"
+                }
+              ]
+            },
+            "doseAndRate": [
+              {
+                "doseQuantity": {
+                  "value": 50.0,
+                  "unit": "mg"
+                }
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "fullUrl": "MedicationRequest/demo-med-tiz",
+      "resource": {
+        "resourceType": "MedicationRequest",
+        "id": "demo-med-tiz",
+        "status": "active",
+        "intent": "order",
+        "category": [
+          {
+            "coding": [
+              {
+                "system": "http://terminology.hl7.org/CodeSystem/medicationrequest-category",
+                "code": "outpatient",
+                "display": "Outpatient"
+              }
+            ]
+          }
+        ],
+        "medicationCodeableConcept": {
+          "coding": [
+            {
+              "system": "http://www.nlm.nih.gov/research/umls/rxnorm",
+              "code": "313413",
+              "display": "tizanidine 4 MG Oral Tablet"
+            }
+          ],
+          "text": "tizanidine 4 MG Oral Tablet"
+        },
+        "subject": {
+          "reference": "Patient/demo-patient-001"
+        },
+        "authoredOn": "2023-09-01",
+        "reasonCode": [
+          {
+            "text": "Spasticity / cramps"
+          }
+        ],
+        "dosageInstruction": [
+          {
+            "text": "4 mg PO TID PRN",
+            "timing": {
+              "code": {
+                "text": "TID PRN"
+              }
+            },
+            "route": {
+              "coding": [
+                {
+                  "system": "http://snomed.info/sct",
+                  "code": "26643006",
+                  "display": "Oral route"
+                }
+              ]
+            },
+            "doseAndRate": [
+              {
+                "doseQuantity": {
+                  "value": 4.0,
+                  "unit": "mg"
+                }
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "fullUrl": "MedicationRequest/demo-med-vitd",
+      "resource": {
+        "resourceType": "MedicationRequest",
+        "id": "demo-med-vitd",
+        "status": "active",
+        "intent": "order",
+        "category": [
+          {
+            "coding": [
+              {
+                "system": "http://terminology.hl7.org/CodeSystem/medicationrequest-category",
+                "code": "outpatient",
+                "display": "Outpatient"
+              }
+            ]
+          }
+        ],
+        "medicationCodeableConcept": {
+          "coding": [
+            {
+              "system": "http://www.nlm.nih.gov/research/umls/rxnorm",
+              "code": "39937",
+              "display": "Cholecalciferol"
+            }
+          ],
+          "text": "Cholecalciferol"
+        },
+        "subject": {
+          "reference": "Patient/demo-patient-001"
+        },
+        "authoredOn": "2023-09-01",
+        "reasonCode": [
+          {
+            "text": "Vitamin D maintenance"
+          }
+        ],
+        "dosageInstruction": [
+          {
+            "text": "1000 IU PO DAILY",
+            "timing": {
+              "code": {
+                "text": "DAILY"
+              }
+            },
+            "route": {
+              "coding": [
+                {
+                  "system": "http://snomed.info/sct",
+                  "code": "26643006",
+                  "display": "Oral route"
+                }
+              ]
+            },
+            "doseAndRate": [
+              {
+                "doseQuantity": {
+                  "value": 1000.0,
+                  "unit": "IU"
+                }
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "fullUrl": "MedicationRequest/demo-med-loraz",
+      "resource": {
+        "resourceType": "MedicationRequest",
+        "id": "demo-med-loraz",
+        "status": "active",
+        "intent": "order",
+        "category": [
+          {
+            "coding": [
+              {
+                "system": "http://terminology.hl7.org/CodeSystem/medicationrequest-category",
+                "code": "outpatient",
+                "display": "Outpatient"
+              }
+            ]
+          }
+        ],
+        "medicationCodeableConcept": {
+          "coding": [
+            {
+              "system": "http://www.nlm.nih.gov/research/umls/rxnorm",
+              "code": "6470",
+              "display": "Lorazepam"
+            }
+          ],
+          "text": "Lorazepam"
+        },
+        "subject": {
+          "reference": "Patient/demo-patient-001"
+        },
+        "authoredOn": "2023-09-01",
+        "reasonCode": [
+          {
+            "text": "Anxiety / dyspnea"
+          }
+        ],
+        "dosageInstruction": [
+          {
+            "text": "0.5 mg PO Q6H PRN",
+            "timing": {
+              "code": {
+                "text": "Q6H PRN"
+              }
+            },
+            "route": {
+              "coding": [
+                {
+                  "system": "http://snomed.info/sct",
+                  "code": "26643006",
+                  "display": "Oral route"
+                }
+              ]
+            },
+            "doseAndRate": [
+              {
+                "doseQuantity": {
+                  "value": 0.5,
+                  "unit": "mg"
+                }
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "fullUrl": "Procedure/demo-proc-emg",
+      "resource": {
+        "resourceType": "Procedure",
+        "id": "demo-proc-emg",
+        "status": "completed",
+        "category": {
+          "coding": [
+            {
+              "system": "http://snomed.info/sct",
+              "code": "387713003",
+              "display": "Surgical procedure"
+            }
+          ]
+        },
+        "code": {
+          "coding": [
+            {
+              "system": "http://snomed.info/sct",
+              "code": "401066007",
+              "display": "Electromyography"
+            },
+            {
+              "system": "http://www.ama-assn.org/go/cpt",
+              "code": "95860",
+              "display": "Needle electromyography; 1 extremity"
+            }
+          ],
+          "text": "Electromyography"
+        },
+        "subject": {
+          "reference": "Patient/demo-patient-001"
+        },
+        "performedDateTime": "2023-04-25",
+        "outcome": {
+          "text": "Successful"
+        },
+        "note": [
+          {
+            "text": "Findings consistent with motor neuron disease - widespread denervation in upper and lower extremities"
+          }
+        ]
+      }
+    },
+    {
+      "fullUrl": "Procedure/demo-proc-mri",
+      "resource": {
+        "resourceType": "Procedure",
+        "id": "demo-proc-mri",
+        "status": "completed",
+        "category": {
+          "coding": [
+            {
+              "system": "http://snomed.info/sct",
+              "code": "387713003",
+              "display": "Surgical procedure"
+            }
+          ]
+        },
+        "code": {
+          "coding": [
+            {
+              "system": "http://snomed.info/sct",
+              "code": "113091000",
+              "display": "Magnetic resonance imaging"
+            },
+            {
+              "system": "http://www.ama-assn.org/go/cpt",
+              "code": "70551",
+              "display": "MRI brain without contrast material"
+            }
+          ],
+          "text": "Magnetic resonance imaging"
+        },
+        "subject": {
+          "reference": "Patient/demo-patient-001"
+        },
+        "performedDateTime": "2023-05-02",
+        "outcome": {
+          "text": "Successful"
+        },
+        "note": [
+          {
+            "text": "No abnormality. Excludes structural cause for symptoms."
+          }
+        ]
+      }
+    },
+    {
+      "fullUrl": "Procedure/demo-proc-peg",
+      "resource": {
+        "resourceType": "Procedure",
+        "id": "demo-proc-peg",
+        "status": "completed",
+        "category": {
+          "coding": [
+            {
+              "system": "http://snomed.info/sct",
+              "code": "387713003",
+              "display": "Surgical procedure"
+            }
+          ]
+        },
+        "code": {
+          "coding": [
+            {
+              "system": "http://snomed.info/sct",
+              "code": "76151005",
+              "display": "Percutaneous endoscopic gastrostomy"
+            },
+            {
+              "system": "http://www.ama-assn.org/go/cpt",
+              "code": "43246",
+              "display": "EGD with directed placement of percutaneous gastrostomy tube"
+            }
+          ],
+          "text": "Percutaneous endoscopic gastrostomy"
+        },
+        "subject": {
+          "reference": "Patient/demo-patient-001"
+        },
+        "performedDateTime": "2024-01-11",
+        "outcome": {
+          "text": "Successful"
+        },
+        "note": [
+          {
+            "text": "PEG tube placed without complication. Tolerated procedure well."
+          }
+        ]
+      }
+    },
+    {
+      "fullUrl": "Procedure/demo-proc-bipap",
+      "resource": {
+        "resourceType": "Procedure",
+        "id": "demo-proc-bipap",
+        "status": "completed",
+        "category": {
+          "coding": [
+            {
+              "system": "http://snomed.info/sct",
+              "code": "387713003",
+              "display": "Surgical procedure"
+            }
+          ]
+        },
+        "code": {
+          "coding": [
+            {
+              "system": "http://snomed.info/sct",
+              "code": "371077005",
+              "display": "Non-invasive ventilation initiation"
+            },
+            {
+              "system": "http://www.ama-assn.org/go/cpt",
+              "code": "94660",
+              "display": "CPAP/BiPAP initiation and management"
+            }
+          ],
+          "text": "Non-invasive ventilation initiation"
+        },
+        "subject": {
+          "reference": "Patient/demo-patient-001"
+        },
+        "performedDateTime": "2023-12-01",
+        "outcome": {
+          "text": "Successful"
+        },
+        "note": [
+          {
+            "text": "BiPAP initiated for nocturnal hypoventilation. IPAP 14, EPAP 6."
+          }
+        ]
+      }
+    },
+    {
+      "fullUrl": "Observation/demo-obs-bp-sys",
+      "resource": {
+        "resourceType": "Observation",
+        "id": "demo-obs-bp-sys",
+        "status": "final",
+        "category": [
+          {
+            "coding": [
+              {
+                "system": "http://terminology.hl7.org/CodeSystem/observation-category",
+                "code": "vital-signs",
+                "display": "Vital Signs"
+              }
+            ]
+          }
+        ],
+        "code": {
+          "coding": [
+            {
+              "system": "http://loinc.org",
+              "code": "8480-6",
+              "display": "Systolic blood pressure"
+            }
+          ],
+          "text": "Systolic blood pressure"
+        },
+        "subject": {
+          "reference": "Patient/demo-patient-001"
+        },
+        "effectiveDateTime": "2024-04-15",
+        "valueQuantity": {
+          "value": 122,
+          "unit": "mm[Hg]",
+          "system": "http://unitsofmeasure.org",
+          "code": "mm[Hg]"
+        },
+        "referenceRange": [
+          {
+            "text": "100-130"
+          }
+        ],
+        "interpretation": [
+          {
+            "coding": [
+              {
+                "system": "http://terminology.hl7.org/CodeSystem/v3-ObservationInterpretation",
+                "code": "N",
+                "display": "Normal"
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "fullUrl": "Observation/demo-obs-bp-dia",
+      "resource": {
+        "resourceType": "Observation",
+        "id": "demo-obs-bp-dia",
+        "status": "final",
+        "category": [
+          {
+            "coding": [
+              {
+                "system": "http://terminology.hl7.org/CodeSystem/observation-category",
+                "code": "vital-signs",
+                "display": "Vital Signs"
+              }
+            ]
+          }
+        ],
+        "code": {
+          "coding": [
+            {
+              "system": "http://loinc.org",
+              "code": "8462-4",
+              "display": "Diastolic blood pressure"
+            }
+          ],
+          "text": "Diastolic blood pressure"
+        },
+        "subject": {
+          "reference": "Patient/demo-patient-001"
+        },
+        "effectiveDateTime": "2024-04-15",
+        "valueQuantity": {
+          "value": 78,
+          "unit": "mm[Hg]",
+          "system": "http://unitsofmeasure.org",
+          "code": "mm[Hg]"
+        },
+        "referenceRange": [
+          {
+            "text": "60-80"
+          }
+        ],
+        "interpretation": [
+          {
+            "coding": [
+              {
+                "system": "http://terminology.hl7.org/CodeSystem/v3-ObservationInterpretation",
+                "code": "N",
+                "display": "Normal"
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "fullUrl": "Observation/demo-obs-hr",
+      "resource": {
+        "resourceType": "Observation",
+        "id": "demo-obs-hr",
+        "status": "final",
+        "category": [
+          {
+            "coding": [
+              {
+                "system": "http://terminology.hl7.org/CodeSystem/observation-category",
+                "code": "vital-signs",
+                "display": "Vital Signs"
+              }
+            ]
+          }
+        ],
+        "code": {
+          "coding": [
+            {
+              "system": "http://loinc.org",
+              "code": "8867-4",
+              "display": "Heart rate"
+            }
+          ],
+          "text": "Heart rate"
+        },
+        "subject": {
+          "reference": "Patient/demo-patient-001"
+        },
+        "effectiveDateTime": "2024-04-15",
+        "valueQuantity": {
+          "value": 76,
+          "unit": "/min",
+          "system": "http://unitsofmeasure.org",
+          "code": "/min"
+        },
+        "referenceRange": [
+          {
+            "text": "60-100"
+          }
+        ],
+        "interpretation": [
+          {
+            "coding": [
+              {
+                "system": "http://terminology.hl7.org/CodeSystem/v3-ObservationInterpretation",
+                "code": "N",
+                "display": "Normal"
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "fullUrl": "Observation/demo-obs-rr",
+      "resource": {
+        "resourceType": "Observation",
+        "id": "demo-obs-rr",
+        "status": "final",
+        "category": [
+          {
+            "coding": [
+              {
+                "system": "http://terminology.hl7.org/CodeSystem/observation-category",
+                "code": "vital-signs",
+                "display": "Vital Signs"
+              }
+            ]
+          }
+        ],
+        "code": {
+          "coding": [
+            {
+              "system": "http://loinc.org",
+              "code": "9279-1",
+              "display": "Respiratory rate"
+            }
+          ],
+          "text": "Respiratory rate"
+        },
+        "subject": {
+          "reference": "Patient/demo-patient-001"
+        },
+        "effectiveDateTime": "2024-04-15",
+        "valueQuantity": {
+          "value": 18,
+          "unit": "/min",
+          "system": "http://unitsofmeasure.org",
+          "code": "/min"
+        },
+        "referenceRange": [
+          {
+            "text": "12-20"
+          }
+        ],
+        "interpretation": [
+          {
+            "coding": [
+              {
+                "system": "http://terminology.hl7.org/CodeSystem/v3-ObservationInterpretation",
+                "code": "N",
+                "display": "Normal"
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "fullUrl": "Observation/demo-obs-wt",
+      "resource": {
+        "resourceType": "Observation",
+        "id": "demo-obs-wt",
+        "status": "final",
+        "category": [
+          {
+            "coding": [
+              {
+                "system": "http://terminology.hl7.org/CodeSystem/observation-category",
+                "code": "vital-signs",
+                "display": "Vital Signs"
+              }
+            ]
+          }
+        ],
+        "code": {
+          "coding": [
+            {
+              "system": "http://loinc.org",
+              "code": "29463-7",
+              "display": "Body weight"
+            }
+          ],
+          "text": "Body weight"
+        },
+        "subject": {
+          "reference": "Patient/demo-patient-001"
+        },
+        "effectiveDateTime": "2024-04-15",
+        "valueQuantity": {
+          "value": 58.2,
+          "unit": "kg",
+          "system": "http://unitsofmeasure.org",
+          "code": "kg"
+        },
+        "referenceRange": [
+          {
+            "text": "previously 64 kg"
+          }
+        ],
+        "interpretation": [
+          {
+            "coding": [
+              {
+                "system": "http://terminology.hl7.org/CodeSystem/v3-ObservationInterpretation",
+                "code": "N",
+                "display": "Normal"
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "fullUrl": "Observation/demo-obs-spo2",
+      "resource": {
+        "resourceType": "Observation",
+        "id": "demo-obs-spo2",
+        "status": "final",
+        "category": [
+          {
+            "coding": [
+              {
+                "system": "http://terminology.hl7.org/CodeSystem/observation-category",
+                "code": "vital-signs",
+                "display": "Vital Signs"
+              }
+            ]
+          }
+        ],
+        "code": {
+          "coding": [
+            {
+              "system": "http://loinc.org",
+              "code": "59408-5",
+              "display": "Oxygen saturation in Arterial blood by Pulse oximetry"
+            }
+          ],
+          "text": "Oxygen saturation in Arterial blood by Pulse oximetry"
+        },
+        "subject": {
+          "reference": "Patient/demo-patient-001"
+        },
+        "effectiveDateTime": "2024-04-15",
+        "valueQuantity": {
+          "value": 96,
+          "unit": "%",
+          "system": "http://unitsofmeasure.org",
+          "code": "%"
+        },
+        "referenceRange": [
+          {
+            "text": "95-100"
+          }
+        ],
+        "interpretation": [
+          {
+            "coding": [
+              {
+                "system": "http://terminology.hl7.org/CodeSystem/v3-ObservationInterpretation",
+                "code": "N",
+                "display": "Normal"
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "fullUrl": "Observation/demo-obs-fvc",
+      "resource": {
+        "resourceType": "Observation",
+        "id": "demo-obs-fvc",
+        "status": "final",
+        "category": [
+          {
+            "coding": [
+              {
+                "system": "http://terminology.hl7.org/CodeSystem/observation-category",
+                "code": "vital-signs",
+                "display": "Vital Signs"
+              }
+            ]
+          }
+        ],
+        "code": {
+          "coding": [
+            {
+              "system": "http://loinc.org",
+              "code": "19868-9",
+              "display": "FVC -- predicted"
+            }
+          ],
+          "text": "FVC -- predicted"
+        },
+        "subject": {
+          "reference": "Patient/demo-patient-001"
+        },
+        "effectiveDateTime": "2024-04-15",
+        "valueQuantity": {
+          "value": 62,
+          "unit": "%",
+          "system": "http://unitsofmeasure.org",
+          "code": "%"
+        },
+        "referenceRange": [
+          {
+            "text": "predicted normal"
+          }
+        ],
+        "interpretation": [
+          {
+            "coding": [
+              {
+                "system": "http://terminology.hl7.org/CodeSystem/v3-ObservationInterpretation",
+                "code": "N",
+                "display": "Normal"
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "fullUrl": "Observation/demo-obs-na",
+      "resource": {
+        "resourceType": "Observation",
+        "id": "demo-obs-na",
+        "status": "final",
+        "category": [
+          {
+            "coding": [
+              {
+                "system": "http://terminology.hl7.org/CodeSystem/observation-category",
+                "code": "laboratory",
+                "display": "Laboratory"
+              }
+            ]
+          }
+        ],
+        "code": {
+          "coding": [
+            {
+              "system": "http://loinc.org",
+              "code": "2951-2",
+              "display": "Sodium [Moles/volume] in Serum or Plasma"
+            }
+          ],
+          "text": "Sodium [Moles/volume] in Serum or Plasma"
+        },
+        "subject": {
+          "reference": "Patient/demo-patient-001"
+        },
+        "effectiveDateTime": "2024-04-10",
+        "valueQuantity": {
+          "value": 139,
+          "unit": "mmol/L",
+          "system": "http://unitsofmeasure.org",
+          "code": "mmol/L"
+        },
+        "referenceRange": [
+          {
+            "text": "136-145"
+          }
+        ],
+        "interpretation": [
+          {
+            "coding": [
+              {
+                "system": "http://terminology.hl7.org/CodeSystem/v3-ObservationInterpretation",
+                "code": "N",
+                "display": "Normal"
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "fullUrl": "Observation/demo-obs-k",
+      "resource": {
+        "resourceType": "Observation",
+        "id": "demo-obs-k",
+        "status": "final",
+        "category": [
+          {
+            "coding": [
+              {
+                "system": "http://terminology.hl7.org/CodeSystem/observation-category",
+                "code": "laboratory",
+                "display": "Laboratory"
+              }
+            ]
+          }
+        ],
+        "code": {
+          "coding": [
+            {
+              "system": "http://loinc.org",
+              "code": "2823-3",
+              "display": "Potassium [Moles/volume] in Serum or Plasma"
+            }
+          ],
+          "text": "Potassium [Moles/volume] in Serum or Plasma"
+        },
+        "subject": {
+          "reference": "Patient/demo-patient-001"
+        },
+        "effectiveDateTime": "2024-04-10",
+        "valueQuantity": {
+          "value": 4.1,
+          "unit": "mmol/L",
+          "system": "http://unitsofmeasure.org",
+          "code": "mmol/L"
+        },
+        "referenceRange": [
+          {
+            "text": "3.5-5.0"
+          }
+        ],
+        "interpretation": [
+          {
+            "coding": [
+              {
+                "system": "http://terminology.hl7.org/CodeSystem/v3-ObservationInterpretation",
+                "code": "N",
+                "display": "Normal"
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "fullUrl": "Observation/demo-obs-cl",
+      "resource": {
+        "resourceType": "Observation",
+        "id": "demo-obs-cl",
+        "status": "final",
+        "category": [
+          {
+            "coding": [
+              {
+                "system": "http://terminology.hl7.org/CodeSystem/observation-category",
+                "code": "laboratory",
+                "display": "Laboratory"
+              }
+            ]
+          }
+        ],
+        "code": {
+          "coding": [
+            {
+              "system": "http://loinc.org",
+              "code": "2075-0",
+              "display": "Chloride [Moles/volume] in Serum or Plasma"
+            }
+          ],
+          "text": "Chloride [Moles/volume] in Serum or Plasma"
+        },
+        "subject": {
+          "reference": "Patient/demo-patient-001"
+        },
+        "effectiveDateTime": "2024-04-10",
+        "valueQuantity": {
+          "value": 102,
+          "unit": "mmol/L",
+          "system": "http://unitsofmeasure.org",
+          "code": "mmol/L"
+        },
+        "referenceRange": [
+          {
+            "text": "98-107"
+          }
+        ],
+        "interpretation": [
+          {
+            "coding": [
+              {
+                "system": "http://terminology.hl7.org/CodeSystem/v3-ObservationInterpretation",
+                "code": "N",
+                "display": "Normal"
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "fullUrl": "Observation/demo-obs-co2",
+      "resource": {
+        "resourceType": "Observation",
+        "id": "demo-obs-co2",
+        "status": "final",
+        "category": [
+          {
+            "coding": [
+              {
+                "system": "http://terminology.hl7.org/CodeSystem/observation-category",
+                "code": "laboratory",
+                "display": "Laboratory"
+              }
+            ]
+          }
+        ],
+        "code": {
+          "coding": [
+            {
+              "system": "http://loinc.org",
+              "code": "2028-9",
+              "display": "Carbon dioxide [Moles/volume] in Serum or Plasma"
+            }
+          ],
+          "text": "Carbon dioxide [Moles/volume] in Serum or Plasma"
+        },
+        "subject": {
+          "reference": "Patient/demo-patient-001"
+        },
+        "effectiveDateTime": "2024-04-10",
+        "valueQuantity": {
+          "value": 26,
+          "unit": "mmol/L",
+          "system": "http://unitsofmeasure.org",
+          "code": "mmol/L"
+        },
+        "referenceRange": [
+          {
+            "text": "22-29"
+          }
+        ],
+        "interpretation": [
+          {
+            "coding": [
+              {
+                "system": "http://terminology.hl7.org/CodeSystem/v3-ObservationInterpretation",
+                "code": "N",
+                "display": "Normal"
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "fullUrl": "Observation/demo-obs-bun",
+      "resource": {
+        "resourceType": "Observation",
+        "id": "demo-obs-bun",
+        "status": "final",
+        "category": [
+          {
+            "coding": [
+              {
+                "system": "http://terminology.hl7.org/CodeSystem/observation-category",
+                "code": "laboratory",
+                "display": "Laboratory"
+              }
+            ]
+          }
+        ],
+        "code": {
+          "coding": [
+            {
+              "system": "http://loinc.org",
+              "code": "3094-0",
+              "display": "Urea nitrogen [Mass/volume] in Serum or Plasma"
+            }
+          ],
+          "text": "Urea nitrogen [Mass/volume] in Serum or Plasma"
+        },
+        "subject": {
+          "reference": "Patient/demo-patient-001"
+        },
+        "effectiveDateTime": "2024-04-10",
+        "valueQuantity": {
+          "value": 14,
+          "unit": "mg/dL",
+          "system": "http://unitsofmeasure.org",
+          "code": "mg/dL"
+        },
+        "referenceRange": [
+          {
+            "text": "8-21"
+          }
+        ],
+        "interpretation": [
+          {
+            "coding": [
+              {
+                "system": "http://terminology.hl7.org/CodeSystem/v3-ObservationInterpretation",
+                "code": "N",
+                "display": "Normal"
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "fullUrl": "Observation/demo-obs-cr",
+      "resource": {
+        "resourceType": "Observation",
+        "id": "demo-obs-cr",
+        "status": "final",
+        "category": [
+          {
+            "coding": [
+              {
+                "system": "http://terminology.hl7.org/CodeSystem/observation-category",
+                "code": "laboratory",
+                "display": "Laboratory"
+              }
+            ]
+          }
+        ],
+        "code": {
+          "coding": [
+            {
+              "system": "http://loinc.org",
+              "code": "2160-0",
+              "display": "Creatinine [Mass/volume] in Serum or Plasma"
+            }
+          ],
+          "text": "Creatinine [Mass/volume] in Serum or Plasma"
+        },
+        "subject": {
+          "reference": "Patient/demo-patient-001"
+        },
+        "effectiveDateTime": "2024-04-10",
+        "valueQuantity": {
+          "value": 0.6,
+          "unit": "mg/dL",
+          "system": "http://unitsofmeasure.org",
+          "code": "mg/dL"
+        },
+        "referenceRange": [
+          {
+            "text": "0.5-1.2"
+          }
+        ],
+        "interpretation": [
+          {
+            "coding": [
+              {
+                "system": "http://terminology.hl7.org/CodeSystem/v3-ObservationInterpretation",
+                "code": "N",
+                "display": "Normal"
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "fullUrl": "Observation/demo-obs-glu",
+      "resource": {
+        "resourceType": "Observation",
+        "id": "demo-obs-glu",
+        "status": "final",
+        "category": [
+          {
+            "coding": [
+              {
+                "system": "http://terminology.hl7.org/CodeSystem/observation-category",
+                "code": "laboratory",
+                "display": "Laboratory"
+              }
+            ]
+          }
+        ],
+        "code": {
+          "coding": [
+            {
+              "system": "http://loinc.org",
+              "code": "2345-7",
+              "display": "Glucose [Mass/volume] in Serum or Plasma"
+            }
+          ],
+          "text": "Glucose [Mass/volume] in Serum or Plasma"
+        },
+        "subject": {
+          "reference": "Patient/demo-patient-001"
+        },
+        "effectiveDateTime": "2024-04-10",
+        "valueQuantity": {
+          "value": 96,
+          "unit": "mg/dL",
+          "system": "http://unitsofmeasure.org",
+          "code": "mg/dL"
+        },
+        "referenceRange": [
+          {
+            "text": "70-99"
+          }
+        ],
+        "interpretation": [
+          {
+            "coding": [
+              {
+                "system": "http://terminology.hl7.org/CodeSystem/v3-ObservationInterpretation",
+                "code": "N",
+                "display": "Normal"
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "fullUrl": "Observation/demo-obs-hgb",
+      "resource": {
+        "resourceType": "Observation",
+        "id": "demo-obs-hgb",
+        "status": "final",
+        "category": [
+          {
+            "coding": [
+              {
+                "system": "http://terminology.hl7.org/CodeSystem/observation-category",
+                "code": "laboratory",
+                "display": "Laboratory"
+              }
+            ]
+          }
+        ],
+        "code": {
+          "coding": [
+            {
+              "system": "http://loinc.org",
+              "code": "718-7",
+              "display": "Hemoglobin [Mass/volume] in Blood"
+            }
+          ],
+          "text": "Hemoglobin [Mass/volume] in Blood"
+        },
+        "subject": {
+          "reference": "Patient/demo-patient-001"
+        },
+        "effectiveDateTime": "2024-04-10",
+        "valueQuantity": {
+          "value": 12.8,
+          "unit": "g/dL",
+          "system": "http://unitsofmeasure.org",
+          "code": "g/dL"
+        },
+        "referenceRange": [
+          {
+            "text": "12.0-15.5"
+          }
+        ],
+        "interpretation": [
+          {
+            "coding": [
+              {
+                "system": "http://terminology.hl7.org/CodeSystem/v3-ObservationInterpretation",
+                "code": "N",
+                "display": "Normal"
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "fullUrl": "Observation/demo-obs-tsh",
+      "resource": {
+        "resourceType": "Observation",
+        "id": "demo-obs-tsh",
+        "status": "final",
+        "category": [
+          {
+            "coding": [
+              {
+                "system": "http://terminology.hl7.org/CodeSystem/observation-category",
+                "code": "laboratory",
+                "display": "Laboratory"
+              }
+            ]
+          }
+        ],
+        "code": {
+          "coding": [
+            {
+              "system": "http://loinc.org",
+              "code": "3016-3",
+              "display": "Thyrotropin [Units/volume] in Serum or Plasma"
+            }
+          ],
+          "text": "Thyrotropin [Units/volume] in Serum or Plasma"
+        },
+        "subject": {
+          "reference": "Patient/demo-patient-001"
+        },
+        "effectiveDateTime": "2024-04-10",
+        "valueQuantity": {
+          "value": 2.1,
+          "unit": "mIU/L",
+          "system": "http://unitsofmeasure.org",
+          "code": "mIU/L"
+        },
+        "referenceRange": [
+          {
+            "text": "0.4-4.5"
+          }
+        ],
+        "interpretation": [
+          {
+            "coding": [
+              {
+                "system": "http://terminology.hl7.org/CodeSystem/v3-ObservationInterpretation",
+                "code": "N",
+                "display": "Normal"
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "fullUrl": "Observation/demo-obs-vitd",
+      "resource": {
+        "resourceType": "Observation",
+        "id": "demo-obs-vitd",
+        "status": "final",
+        "category": [
+          {
+            "coding": [
+              {
+                "system": "http://terminology.hl7.org/CodeSystem/observation-category",
+                "code": "laboratory",
+                "display": "Laboratory"
+              }
+            ]
+          }
+        ],
+        "code": {
+          "coding": [
+            {
+              "system": "http://loinc.org",
+              "code": "1989-3",
+              "display": "Vitamin D 25-Hydroxy [Mass/volume] in Serum or Plasma"
+            }
+          ],
+          "text": "Vitamin D 25-Hydroxy [Mass/volume] in Serum or Plasma"
+        },
+        "subject": {
+          "reference": "Patient/demo-patient-001"
+        },
+        "effectiveDateTime": "2024-04-10",
+        "valueQuantity": {
+          "value": 38,
+          "unit": "ng/mL",
+          "system": "http://unitsofmeasure.org",
+          "code": "ng/mL"
+        },
+        "referenceRange": [
+          {
+            "text": "30-100"
+          }
+        ],
+        "interpretation": [
+          {
+            "coding": [
+              {
+                "system": "http://terminology.hl7.org/CodeSystem/v3-ObservationInterpretation",
+                "code": "N",
+                "display": "Normal"
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "fullUrl": "AllergyIntolerance/demo-allergy-pcn",
+      "resource": {
+        "resourceType": "AllergyIntolerance",
+        "id": "demo-allergy-pcn",
+        "clinicalStatus": {
+          "coding": [
+            {
+              "system": "http://terminology.hl7.org/CodeSystem/allergyintolerance-clinical",
+              "code": "active"
+            }
+          ]
+        },
+        "verificationStatus": {
+          "coding": [
+            {
+              "system": "http://terminology.hl7.org/CodeSystem/allergyintolerance-verification",
+              "code": "confirmed"
+            }
+          ]
+        },
+        "type": "allergy",
+        "category": [
+          "drug"
+        ],
+        "criticality": "high",
+        "code": {
+          "coding": [
+            {
+              "system": "http://www.nlm.nih.gov/research/umls/rxnorm",
+              "code": "7980",
+              "display": "Penicillin G"
+            }
+          ],
+          "text": "Penicillin G"
+        },
+        "patient": {
+          "reference": "Patient/demo-patient-001"
+        },
+        "recordedDate": "1985-06-01",
+        "reaction": [
+          {
+            "manifestation": [
+              {
+                "text": "rash, hives"
+              }
+            ],
+            "severity": "severe"
+          }
+        ]
+      }
+    },
+    {
+      "fullUrl": "AllergyIntolerance/demo-allergy-sulf",
+      "resource": {
+        "resourceType": "AllergyIntolerance",
+        "id": "demo-allergy-sulf",
+        "clinicalStatus": {
+          "coding": [
+            {
+              "system": "http://terminology.hl7.org/CodeSystem/allergyintolerance-clinical",
+              "code": "active"
+            }
+          ]
+        },
+        "verificationStatus": {
+          "coding": [
+            {
+              "system": "http://terminology.hl7.org/CodeSystem/allergyintolerance-verification",
+              "code": "confirmed"
+            }
+          ]
+        },
+        "type": "allergy",
+        "category": [
+          "drug"
+        ],
+        "criticality": "moderate",
+        "code": {
+          "coding": [
+            {
+              "system": "http://www.nlm.nih.gov/research/umls/rxnorm",
+              "code": "10180",
+              "display": "Sulfa"
+            }
+          ],
+          "text": "Sulfa"
+        },
+        "patient": {
+          "reference": "Patient/demo-patient-001"
+        },
+        "recordedDate": "1992-03-15",
+        "reaction": [
+          {
+            "manifestation": [
+              {
+                "text": "gastrointestinal upset"
+              }
+            ],
+            "severity": "moderate"
+          }
+        ]
+      }
+    },
+    {
+      "fullUrl": "AllergyIntolerance/demo-allergy-latex",
+      "resource": {
+        "resourceType": "AllergyIntolerance",
+        "id": "demo-allergy-latex",
+        "clinicalStatus": {
+          "coding": [
+            {
+              "system": "http://terminology.hl7.org/CodeSystem/allergyintolerance-clinical",
+              "code": "active"
+            }
+          ]
+        },
+        "verificationStatus": {
+          "coding": [
+            {
+              "system": "http://terminology.hl7.org/CodeSystem/allergyintolerance-verification",
+              "code": "confirmed"
+            }
+          ]
+        },
+        "type": "allergy",
+        "category": [
+          "environment"
+        ],
+        "criticality": "low",
+        "code": {
+          "coding": [
+            {
+              "system": "http://snomed.info/sct",
+              "code": "111088007",
+              "display": "Latex"
+            }
+          ],
+          "text": "Latex"
+        },
+        "patient": {
+          "reference": "Patient/demo-patient-001"
+        },
+        "recordedDate": "2010-08-01",
+        "reaction": [
+          {
+            "manifestation": [
+              {
+                "text": "contact dermatitis"
+              }
+            ],
+            "severity": "low"
+          }
+        ]
+      }
+    },
+    {
+      "fullUrl": "Immunization/demo-imm-flu23",
+      "resource": {
+        "resourceType": "Immunization",
+        "id": "demo-imm-flu23",
+        "status": "completed",
+        "vaccineCode": {
+          "coding": [
+            {
+              "system": "http://hl7.org/fhir/sid/cvx",
+              "code": "150",
+              "display": "Influenza, injectable, quadrivalent"
+            }
+          ],
+          "text": "Influenza, injectable, quadrivalent"
+        },
+        "patient": {
+          "reference": "Patient/demo-patient-001"
+        },
+        "occurrenceDateTime": "2023-10-05",
+        "primarySource": true,
+        "lotNumber": "FLU2023-A1234",
+        "site": {
+          "coding": [
+            {
+              "system": "http://terminology.hl7.org/CodeSystem/v3-ActSite",
+              "code": "LA"
+            }
+          ],
+          "text": "left deltoid"
+        },
+        "route": {
+          "coding": [
+            {
+              "system": "http://terminology.hl7.org/CodeSystem/v3-RouteOfAdministration",
+              "code": "IM"
+            }
+          ],
+          "text": "Intramuscular"
+        },
+        "doseQuantity": {
+          "value": 0.5,
+          "unit": "mL"
+        }
+      }
+    },
+    {
+      "fullUrl": "Immunization/demo-imm-cov23",
+      "resource": {
+        "resourceType": "Immunization",
+        "id": "demo-imm-cov23",
+        "status": "completed",
+        "vaccineCode": {
+          "coding": [
+            {
+              "system": "http://hl7.org/fhir/sid/cvx",
+              "code": "229",
+              "display": "SARS-COV-2 (COVID-19) vaccine, mRNA, bivalent booster"
+            }
+          ],
+          "text": "SARS-COV-2 (COVID-19) vaccine, mRNA, bivalent booster"
+        },
+        "patient": {
+          "reference": "Patient/demo-patient-001"
+        },
+        "occurrenceDateTime": "2023-09-15",
+        "primarySource": true,
+        "lotNumber": "COV2023-B7891",
+        "site": {
+          "coding": [
+            {
+              "system": "http://terminology.hl7.org/CodeSystem/v3-ActSite",
+              "code": "RA"
+            }
+          ],
+          "text": "right deltoid"
+        },
+        "route": {
+          "coding": [
+            {
+              "system": "http://terminology.hl7.org/CodeSystem/v3-RouteOfAdministration",
+              "code": "IM"
+            }
+          ],
+          "text": "Intramuscular"
+        },
+        "doseQuantity": {
+          "value": 0.5,
+          "unit": "mL"
+        }
+      }
+    },
+    {
+      "fullUrl": "Immunization/demo-imm-pneu",
+      "resource": {
+        "resourceType": "Immunization",
+        "id": "demo-imm-pneu",
+        "status": "completed",
+        "vaccineCode": {
+          "coding": [
+            {
+              "system": "http://hl7.org/fhir/sid/cvx",
+              "code": "133",
+              "display": "Pneumococcal conjugate PCV 13"
+            }
+          ],
+          "text": "Pneumococcal conjugate PCV 13"
+        },
+        "patient": {
+          "reference": "Patient/demo-patient-001"
+        },
+        "occurrenceDateTime": "2023-06-01",
+        "primarySource": true,
+        "lotNumber": "PNE2023-C4456",
+        "site": {
+          "coding": [
+            {
+              "system": "http://terminology.hl7.org/CodeSystem/v3-ActSite",
+              "code": "LA"
+            }
+          ],
+          "text": "left deltoid"
+        },
+        "route": {
+          "coding": [
+            {
+              "system": "http://terminology.hl7.org/CodeSystem/v3-RouteOfAdministration",
+              "code": "IM"
+            }
+          ],
+          "text": "Intramuscular"
+        },
+        "doseQuantity": {
+          "value": 0.5,
+          "unit": "mL"
+        }
+      }
+    },
+    {
+      "fullUrl": "Immunization/demo-imm-tdap",
+      "resource": {
+        "resourceType": "Immunization",
+        "id": "demo-imm-tdap",
+        "status": "completed",
+        "vaccineCode": {
+          "coding": [
+            {
+              "system": "http://hl7.org/fhir/sid/cvx",
+              "code": "115",
+              "display": "Tdap"
+            }
+          ],
+          "text": "Tdap"
+        },
+        "patient": {
+          "reference": "Patient/demo-patient-001"
+        },
+        "occurrenceDateTime": "2022-11-15",
+        "primarySource": true,
+        "lotNumber": "TDP2022-D2278",
+        "site": {
+          "coding": [
+            {
+              "system": "http://terminology.hl7.org/CodeSystem/v3-ActSite",
+              "code": "RA"
+            }
+          ],
+          "text": "right deltoid"
+        },
+        "route": {
+          "coding": [
+            {
+              "system": "http://terminology.hl7.org/CodeSystem/v3-RouteOfAdministration",
+              "code": "IM"
+            }
+          ],
+          "text": "Intramuscular"
+        },
+        "doseQuantity": {
+          "value": 0.5,
+          "unit": "mL"
+        }
+      }
+    },
+    {
+      "fullUrl": "CarePlan/demo-cp-mdc",
+      "resource": {
+        "resourceType": "CarePlan",
+        "id": "demo-cp-mdc",
+        "status": "active",
+        "intent": "plan",
+        "title": "Multidisciplinary ALS care plan",
+        "description": "Coordinated care across neurology, pulmonology, nutrition, PT/OT/SLP, social work, and palliative care. Visits every 3 months.",
+        "category": [
+          {
+            "text": "Multidisciplinary"
+          }
+        ],
+        "subject": {
+          "reference": "Patient/demo-patient-001"
+        },
+        "period": {
+          "start": "2023-08-20"
+        },
+        "author": {
+          "display": "Demo Health System ALS Team"
+        }
+      }
+    },
+    {
+      "fullUrl": "CarePlan/demo-cp-pal",
+      "resource": {
+        "resourceType": "CarePlan",
+        "id": "demo-cp-pal",
+        "status": "active",
+        "intent": "plan",
+        "title": "Palliative care consult",
+        "description": "Palliative care team engaged for symptom management, advance care planning, and family support.",
+        "category": [
+          {
+            "text": "Palliative"
+          }
+        ],
+        "subject": {
+          "reference": "Patient/demo-patient-001"
+        },
+        "period": {
+          "start": "2023-08-20"
+        },
+        "author": {
+          "display": "Demo Health System ALS Team"
+        }
+      }
+    },
+    {
+      "fullUrl": "CarePlan/demo-cp-comm",
+      "resource": {
+        "resourceType": "CarePlan",
+        "id": "demo-cp-comm",
+        "status": "active",
+        "intent": "plan",
+        "title": "Communication strategies",
+        "description": "Speech-language pathology to introduce alternative augmentative communication device. Voice banking initiated.",
+        "category": [
+          {
+            "text": "Speech therapy"
+          }
+        ],
+        "subject": {
+          "reference": "Patient/demo-patient-001"
+        },
+        "period": {
+          "start": "2023-08-20"
+        },
+        "author": {
+          "display": "Demo Health System ALS Team"
+        }
+      }
+    },
+    {
+      "fullUrl": "DiagnosticReport/demo-dr-emg",
+      "resource": {
+        "resourceType": "DiagnosticReport",
+        "id": "demo-dr-emg",
+        "status": "final",
+        "category": [
+          {
+            "coding": [
+              {
+                "system": "http://terminology.hl7.org/CodeSystem/v2-0074",
+                "code": "OTH"
+              }
+            ]
+          }
+        ],
+        "code": {
+          "coding": [
+            {
+              "system": "http://loinc.org",
+              "code": "11506-3",
+              "display": "Subsequent evaluation note"
+            }
+          ],
+          "text": "EMG / nerve conduction study"
+        },
+        "subject": {
+          "reference": "Patient/demo-patient-001"
+        },
+        "effectiveDateTime": "2023-04-25",
+        "issued": "2023-04-25T15:00:00Z",
+        "conclusion": "Electromyography demonstrates widespread fibrillation potentials and positive sharp waves in cervical, thoracic, and lumbar paraspinal muscles. Motor unit potentials show large amplitude, long duration, and reduced recruitment patterns. Nerve conduction studies reveal preserved sensory responses with reduced motor amplitudes. Findings consistent with motor neuron disease."
+      }
+    },
+    {
+      "fullUrl": "DiagnosticReport/demo-dr-mri",
+      "resource": {
+        "resourceType": "DiagnosticReport",
+        "id": "demo-dr-mri",
+        "status": "final",
+        "category": [
+          {
+            "coding": [
+              {
+                "system": "http://terminology.hl7.org/CodeSystem/v2-0074",
+                "code": "RAD"
+              }
+            ]
+          }
+        ],
+        "code": {
+          "coding": [
+            {
+              "system": "http://loinc.org",
+              "code": "30746-2",
+              "display": "Radiology report"
+            }
+          ],
+          "text": "MRI brain without contrast"
+        },
+        "subject": {
+          "reference": "Patient/demo-patient-001"
+        },
+        "effectiveDateTime": "2023-05-02",
+        "issued": "2023-05-02T15:00:00Z",
+        "conclusion": "No acute intracranial abnormality. Cortical and subcortical structures within normal limits. No evidence of structural lesion accounting for the patient's symptoms. Excludes mimics of motor neuron disease."
+      }
+    },
+    {
+      "fullUrl": "DiagnosticReport/demo-dr-pft",
+      "resource": {
+        "resourceType": "DiagnosticReport",
+        "id": "demo-dr-pft",
+        "status": "final",
+        "category": [
+          {
+            "coding": [
+              {
+                "system": "http://terminology.hl7.org/CodeSystem/v2-0074",
+                "code": "OTH"
+              }
+            ]
+          }
+        ],
+        "code": {
+          "coding": [
+            {
+              "system": "http://loinc.org",
+              "code": "11502-2",
+              "display": "Laboratory report"
+            }
+          ],
+          "text": "Pulmonary function testing"
+        },
+        "subject": {
+          "reference": "Patient/demo-patient-001"
+        },
+        "effectiveDateTime": "2023-12-01",
+        "issued": "2023-12-01T15:00:00Z",
+        "conclusion": "FVC 62% predicted (down from 78% three months ago). MIP -45 cm H2O. MEP +60 cm H2O. Findings consistent with progressive respiratory muscle weakness. NIV indicated."
+      }
+    },
+    {
+      "fullUrl": "Goal/demo-goal-fct",
+      "resource": {
+        "resourceType": "Goal",
+        "id": "demo-goal-fct",
+        "lifecycleStatus": "in-progress",
+        "achievementStatus": {
+          "coding": [
+            {
+              "system": "http://terminology.hl7.org/CodeSystem/goal-achievement",
+              "code": "in-progress"
+            }
+          ]
+        },
+        "priority": {
+          "coding": [
+            {
+              "system": "http://terminology.hl7.org/CodeSystem/goal-priority",
+              "code": "high-priority"
+            }
+          ]
+        },
+        "description": {
+          "text": "Maintain functional independence as long as possible through OT, adaptive equipment, and home modifications."
+        },
+        "subject": {
+          "reference": "Patient/demo-patient-001"
+        },
+        "startDate": "2023-08-20",
+        "target": [
+          {
+            "dueDate": "2024-12-31",
+            "detailString": "Maintain functional independence as long as possible through OT, adaptive equipment, and home modifications."
+          }
+        ]
+      }
+    },
+    {
+      "fullUrl": "Goal/demo-goal-symp",
+      "resource": {
+        "resourceType": "Goal",
+        "id": "demo-goal-symp",
+        "lifecycleStatus": "in-progress",
+        "achievementStatus": {
+          "coding": [
+            {
+              "system": "http://terminology.hl7.org/CodeSystem/goal-achievement",
+              "code": "in-progress"
+            }
+          ]
+        },
+        "priority": {
+          "coding": [
+            {
+              "system": "http://terminology.hl7.org/CodeSystem/goal-priority",
+              "code": "high-priority"
+            }
+          ]
+        },
+        "description": {
+          "text": "Manage symptoms (spasticity, sialorrhea, dysphagia, fatigue) to optimize quality of life."
+        },
+        "subject": {
+          "reference": "Patient/demo-patient-001"
+        },
+        "startDate": "2023-08-20",
+        "target": [
+          {
+            "dueDate": "2024-12-31",
+            "detailString": "Manage symptoms (spasticity, sialorrhea, dysphagia, fatigue) to optimize quality of life."
+          }
+        ]
+      }
+    },
+    {
+      "fullUrl": "Goal/demo-goal-acp",
+      "resource": {
+        "resourceType": "Goal",
+        "id": "demo-goal-acp",
+        "lifecycleStatus": "in-progress",
+        "achievementStatus": {
+          "coding": [
+            {
+              "system": "http://terminology.hl7.org/CodeSystem/goal-achievement",
+              "code": "in-progress"
+            }
+          ]
+        },
+        "priority": {
+          "coding": [
+            {
+              "system": "http://terminology.hl7.org/CodeSystem/goal-priority",
+              "code": "medium-priority"
+            }
+          ]
+        },
+        "description": {
+          "text": "Complete advance care planning including MOLST and discussion of long-term ventilation preferences."
+        },
+        "subject": {
+          "reference": "Patient/demo-patient-001"
+        },
+        "startDate": "2023-08-20",
+        "target": [
+          {
+            "dueDate": "2024-09-30",
+            "detailString": "Complete advance care planning including MOLST and discussion of long-term ventilation preferences."
+          }
+        ]
+      }
+    },
+    {
+      "fullUrl": "DocumentReference/demo-docref-001",
+      "resource": {
+        "resourceType": "DocumentReference",
+        "id": "demo-docref-001",
+        "status": "current",
+        "type": {
+          "coding": [
+            {
+              "system": "http://loinc.org",
+              "code": "34133-9",
+              "display": "Summarization of Episode Note"
+            }
+          ]
+        },
+        "subject": {
+          "reference": "Patient/demo-patient-001"
+        },
+        "date": "2024-04-15T10:00:00Z",
+        "author": [
+          {
+            "display": "Demo Health System ALS Team"
+          }
+        ],
+        "description": "ALS multidisciplinary clinic continuity of care document"
+      }
+    }
+  ]
+}
