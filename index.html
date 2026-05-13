@@ -1,2001 +1,822 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>RWDExchange — Real-World Data Exchangeability Assessment</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=Syne:wght@400;600;700;800&family=IBM+Plex+Sans:ital,wght@0,300;0,400;0,500;0,600;1,300&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg:#07111c; --bg2:#0d1f30; --bg3:#122840; --card:#0f2035;
+  --border:#1e3d5c; --border2:#2a5070;
+  --teal:#0fb8d4; --teal2:#06e6ff; --teal-dim:rgba(15,184,212,0.12);
+  --gold:#e8a21a; --gold-dim:rgba(232,162,26,0.12);
+  --purple:#a78bfa; --purple-dim:rgba(167,139,250,0.12);
+  --red:#f05252; --green:#22c55e; --yellow:#facc15;
+  --text:#e8f4f8; --text2:#8db8cc; --text3:#4a7a93;
+  --mono:'IBM Plex Mono',monospace; --sans:'IBM Plex Sans',sans-serif;
+  --display:'Playfair Display',serif; --ui:'Syne',sans-serif;
+  --radius:8px; --shadow:0 4px 32px rgba(0,0,0,0.5);
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{background:var(--bg);color:var(--text);font-family:var(--sans);line-height:1.6;min-height:100vh;overflow-x:hidden}
+body::before{content:'';position:fixed;inset:0;z-index:0;
+  background-image:linear-gradient(rgba(15,184,212,0.04) 1px,transparent 1px),linear-gradient(90deg,rgba(15,184,212,0.04) 1px,transparent 1px);
+  background-size:48px 48px;pointer-events:none}
+/* HEADER */
+header{position:relative;z-index:10;padding:32px 48px 24px;border-bottom:1px solid var(--border);
+  background:linear-gradient(180deg,rgba(7,17,28,0.98),rgba(7,17,28,0.92));backdrop-filter:blur(12px)}
+.header-inner{max-width:1280px;margin:0 auto;display:flex;align-items:flex-end;justify-content:space-between;gap:20px;flex-wrap:wrap}
+.logo-block{display:flex;flex-direction:column;gap:4px}
+.logo-eyebrow{font-family:var(--mono);font-size:10px;letter-spacing:.2em;color:var(--teal);text-transform:uppercase}
+h1{font-family:var(--display);font-size:clamp(1.8rem,3.5vw,2.6rem);font-weight:900;line-height:1.05;
+  background:linear-gradient(135deg,#e8f4f8 30%,var(--teal2) 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.tagline{font-size:12px;font-weight:300;color:var(--text2);max-width:460px;margin-top:4px}
+.header-right{display:flex;flex-direction:column;align-items:flex-end;gap:8px}
+.header-actions{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.autosave{font-family:var(--mono);font-size:10px;color:var(--text3);transition:color .3s}
+.autosave.saved{color:var(--green)}
+.version-badge{font-family:var(--mono);font-size:10px;color:var(--teal);border:1px solid var(--border);padding:3px 10px;border-radius:20px;letter-spacing:.12em}
+/* NAV */
+nav{position:sticky;top:0;z-index:50;background:rgba(7,17,28,.97);backdrop-filter:blur(20px);border-bottom:1px solid var(--border)}
+.nav-inner{max-width:1280px;margin:0 auto;display:flex;overflow-x:auto;scrollbar-width:none}
+.nav-inner::-webkit-scrollbar{display:none}
+.tab-btn{font-family:var(--ui);font-size:11px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;
+  color:var(--text3);background:none;border:none;cursor:pointer;padding:16px 20px;white-space:nowrap;
+  position:relative;transition:color .2s}
+.tab-btn::after{content:'';position:absolute;bottom:0;left:20px;right:20px;height:2px;background:var(--teal);transform:scaleX(0);transform-origin:left;transition:transform .25s ease}
+.tab-btn:hover{color:var(--text2)} .tab-btn.active{color:var(--teal)} .tab-btn.active::after{transform:scaleX(1)}
+.tab-badge{display:inline-flex;align-items:center;justify-content:center;font-size:9px;font-weight:800;
+  background:var(--teal-dim);color:var(--teal);border-radius:10px;padding:1px 6px;margin-left:5px;min-width:16px}
+.tab-new{font-size:8px;background:var(--gold-dim);color:var(--gold);border:1px solid var(--gold);border-radius:10px;padding:1px 6px;margin-left:5px}
+.tab-btn[data-tab="gray"] .tab-badge{background:var(--purple-dim);color:var(--purple)}
+/* MAIN */
+main{position:relative;z-index:1;max-width:1280px;margin:0 auto;padding:36px 48px 80px}
+.tab-panel{display:none;animation:fadeIn .3s ease} .tab-panel.active{display:block}
+@keyframes fadeIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+/* SECTION HEADER */
+.section-header{margin-bottom:28px}
+.section-eyebrow{font-family:var(--mono);font-size:10px;letter-spacing:.2em;color:var(--teal);text-transform:uppercase;margin-bottom:6px}
+.section-title{font-family:var(--display);font-size:1.7rem;font-weight:700;color:var(--text)}
+.section-desc{font-size:13px;color:var(--text2);margin-top:6px;max-width:640px}
+/* CARDS */
+.card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:24px;margin-bottom:20px}
+.card-title{font-family:var(--ui);font-size:12px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;
+  color:var(--teal);margin-bottom:18px;display:flex;align-items:center;gap:10px}
+.card-title::after{content:'';flex:1;height:1px;background:var(--border)}
+.card-title.purple{color:var(--purple)} .card-title.gold{color:var(--gold)}
+/* GRID */
+.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.form-grid.cols-3{grid-template-columns:1fr 1fr 1fr} .full-width{grid-column:1/-1}
+.field{display:flex;flex-direction:column;gap:5px}
+label{font-family:var(--ui);font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--text2)}
+input[type=text],input[type=number],input[type=date],select,textarea{
+  background:var(--bg3);border:1px solid var(--border);border-radius:var(--radius);
+  color:var(--text);font-family:var(--sans);font-size:13px;padding:9px 12px;width:100%;
+  transition:border-color .2s,box-shadow .2s;outline:none;appearance:none}
+input:focus,select:focus,textarea:focus{border-color:var(--teal);box-shadow:0 0 0 3px var(--teal-dim)}
+textarea{resize:vertical;min-height:70px}
+input[type=number]{-moz-appearance:textfield}
+/* COLLAPSIBLE */
+.coll-hdr{display:flex;align-items:center;justify-content:space-between;cursor:pointer;user-select:none;
+  padding:14px 0;border-top:1px solid var(--border);margin-top:4px}
+.coll-label{font-family:var(--ui);font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--text3)}
+.coll-arrow{font-size:11px;color:var(--text3);transition:transform .2s}
+.coll-hdr.open .coll-arrow{transform:rotate(180deg)}
+.coll-body{display:none;padding-top:16px} .coll-body.open{display:block}
+/* RADIO */
+.radio-group{display:flex;gap:7px;flex-wrap:wrap}
+.radio-option{display:none}
+.radio-label{font-family:var(--ui);font-size:11px;font-weight:600;letter-spacing:.07em;
+  color:var(--text2);background:var(--bg3);border:1px solid var(--border);border-radius:4px;
+  padding:5px 12px;cursor:pointer;transition:all .15s;user-select:none}
+.radio-option:checked+.radio-label{background:var(--teal-dim);border-color:var(--teal);color:var(--teal)}
+/* BUTTONS */
+.btn{font-family:var(--ui);font-size:11px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;
+  border:none;border-radius:var(--radius);cursor:pointer;padding:10px 18px;
+  transition:all .18s;display:inline-flex;align-items:center;gap:6px}
+.btn-primary{background:var(--teal);color:var(--bg)} .btn-primary:hover{background:var(--teal2);transform:translateY(-1px);box-shadow:0 4px 20px rgba(15,184,212,.3)}
+.btn-secondary{background:transparent;border:1px solid var(--border2);color:var(--text2)} .btn-secondary:hover{border-color:var(--teal);color:var(--teal)}
+.btn-purple{background:var(--purple);color:var(--bg)} .btn-purple:hover{filter:brightness(1.1);transform:translateY(-1px)}
+.btn-gold{background:var(--gold);color:var(--bg)} .btn-gold:hover{filter:brightness(1.1);transform:translateY(-1px);box-shadow:0 4px 20px rgba(232,162,26,.3)}
+.btn-ghost{background:transparent;border:1px solid var(--border);color:var(--text3);font-size:10px;padding:6px 12px} .btn-ghost:hover{border-color:var(--border2);color:var(--text2)}
+.btn-danger{background:transparent;border:1px solid var(--red);color:var(--red);font-size:10px;padding:4px 10px} .btn-danger:hover{background:rgba(240,82,82,.1)}
+.btn-row{display:flex;gap:10px;align-items:center;margin-top:18px;flex-wrap:wrap}
+/* VAR TABLE */
+.table-wrap{overflow-x:auto}
+.var-table{width:100%;border-collapse:collapse;min-width:860px}
+.var-table thead tr{border-bottom:1px solid var(--border)}
+.var-table th{font-family:var(--ui);font-size:9px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--text3);text-align:left;padding:9px 10px}
+.var-table td{font-size:12px;color:var(--text2);padding:11px 10px;border-bottom:1px solid rgba(30,61,92,.5);vertical-align:middle}
+.var-table tr:last-child td{border-bottom:none} .var-table tr:hover td{background:rgba(15,184,212,.04)}
+.vn{font-weight:500;color:var(--text);font-family:var(--mono);font-size:12px}
+.vp-sub{font-size:10px;color:var(--text3);margin-top:1px}
+.rwd-var{font-family:var(--mono);font-size:11px;color:var(--teal2)}
+.score-badge{display:inline-flex;align-items:center;gap:5px;font-family:var(--mono);font-size:11px;font-weight:500}
+.score-dot{width:7px;height:7px;border-radius:50%;flex-shrink:0}
+.sd-hi{background:var(--green)} .sd-md{background:var(--yellow)} .sd-lo{background:var(--red)}
+/* PROGRESS PILLS */
+.pills{display:flex;gap:4px;align-items:center}
+.pill{font-family:var(--mono);font-size:9px;font-weight:600;padding:2px 6px;border-radius:3px;border:1px solid;cursor:default}
+.pill-on{background:var(--teal-dim);border-color:var(--teal);color:var(--teal)}
+.pill-on.pu{background:var(--purple-dim);border-color:var(--purple);color:var(--purple)}
+.pill-off{background:transparent;border-color:var(--border);color:var(--text3)}
+/* VERDICT BADGE */
+.vbadge{display:inline-flex;align-items:center;gap:5px;font-family:var(--ui);font-size:10px;font-weight:700;letter-spacing:.07em;padding:3px 9px;border-radius:4px;border:1px solid;white-space:nowrap}
+.vb-hi{background:rgba(34,197,94,.12);border-color:rgba(34,197,94,.35);color:var(--green)}
+.vb-md{background:rgba(250,204,21,.12);border-color:rgba(250,204,21,.35);color:var(--yellow)}
+.vb-lo{background:rgba(240,82,82,.12);border-color:rgba(240,82,82,.35);color:var(--red)}
+.vb-pr{background:rgba(74,122,147,.15);border-color:var(--border);color:var(--text3)}
+/* CRITERIA TABLE */
+.crit-table{width:100%;border-collapse:collapse}
+.crit-table th{font-family:var(--ui);font-size:9px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--text3);text-align:left;padding:9px 12px;border-bottom:1px solid var(--border)}
+.crit-table td{padding:13px 12px;border-bottom:1px solid rgba(30,61,92,.5);vertical-align:top}
+.crit-table tr:last-child td{border-bottom:none}
+.cnum{font-family:var(--mono);font-size:12px;font-weight:500;color:var(--teal);white-space:nowrap}
+.cnum.pu{color:var(--purple)}
+.clbl{font-family:var(--ui);font-size:11px;font-weight:700;color:var(--text);margin-bottom:3px}
+.ctxt{font-size:12px;color:var(--text2);line-height:1.55} .ctxt strong{color:var(--text);font-weight:500}
+.crating select{width:180px;font-size:12px;padding:6px 10px}
+.cnotes textarea{width:100%;min-height:50px;font-size:12px}
+/* VERDICT PANEL */
+.vp-panel{background:var(--bg3);border:1px solid var(--border);border-radius:var(--radius);padding:18px 22px;margin-bottom:18px;display:flex;align-items:center;gap:22px;flex-wrap:wrap}
+.vp-ring{position:relative;width:70px;height:70px;flex-shrink:0}
+.vp-ring svg{width:70px;height:70px;transform:rotate(-90deg)}
+.ring-bg{fill:none;stroke:var(--border);stroke-width:5}
+.ring-fg{fill:none;stroke-width:5;stroke-linecap:round;transition:stroke-dasharray .6s ease}
+.ring-pct{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;font-family:var(--display);font-size:15px;font-weight:700;color:var(--text);line-height:1}
+.ring-pct span{font-family:var(--mono);font-size:9px;color:var(--text3);margin-top:1px}
+.vp-info{flex:1;min-width:200px}
+.vp-lbl{font-family:var(--ui);font-size:13px;font-weight:700;letter-spacing:.06em;margin-bottom:4px}
+.vp-note{font-size:12px;color:var(--text3)}
+.vp-bkd{display:flex;gap:12px;flex-wrap:wrap;margin-top:8px}
+.vp-comp{font-family:var(--mono);font-size:10px;color:var(--text3);display:flex;align-items:center;gap:4px}
+.vp-dot{width:6px;height:6px;border-radius:50%}
+/* EMPTY */
+.empty-state{text-align:center;padding:52px 32px;border:1px dashed var(--border);border-radius:var(--radius);margin-top:8px}
+.empty-icon{font-size:30px;margin-bottom:12px;opacity:.5}
+.empty-title{font-family:var(--ui);font-size:13px;font-weight:700;color:var(--text2)}
+.empty-desc{font-size:12px;color:var(--text3);margin-top:4px}
+/* REF BOX */
+.ref-box{background:var(--bg3);border-left:3px solid var(--teal);border-radius:0 var(--radius) var(--radius) 0;padding:13px 16px;margin-bottom:14px}
+.ref-box.pu{border-left-color:var(--purple)}
+.ref-box p{font-size:12px;color:var(--text2);line-height:1.6}
+.ref-box a{color:var(--teal);text-decoration:none} .ref-box a:hover{text-decoration:underline}
+/* STATS */
+.stats-row{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:14px;margin-bottom:22px}
+.stat-card{background:var(--bg3);border:1px solid var(--border);border-radius:var(--radius);padding:16px;text-align:center}
+.stat-num{font-family:var(--display);font-size:2rem;font-weight:700;background:linear-gradient(135deg,var(--teal),var(--teal2));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.stat-lbl{font-family:var(--ui);font-size:9px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--text3);margin-top:3px}
+/* VERDICT REPORT ROW */
+.vr-row{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;padding:13px 0;border-bottom:1px solid rgba(30,61,92,.5)}
+.vr-row:last-child{border-bottom:none}
+.vr-name{font-family:var(--mono);font-size:12px;color:var(--text);font-weight:500}
+.vr-sub{font-size:10px;color:var(--text3)}
+.vr-bars{display:flex;gap:10px;align-items:flex-end}
+.mini-bar{display:flex;flex-direction:column;align-items:center;gap:3px}
+.mb-val{font-family:var(--mono);font-size:9px;color:var(--text3)}
+.mb-track{width:40px;height:4px;background:var(--border);border-radius:2px;overflow:hidden}
+.mb-fill{height:100%;border-radius:2px;transition:width .5s ease}
+.mb-lbl{font-family:var(--mono);font-size:8px;color:var(--text3);letter-spacing:.06em}
+/* MODAL */
+.modal-backdrop{position:fixed;inset:0;background:rgba(0,0,0,.72);z-index:1000;display:flex;align-items:center;justify-content:center;padding:20px;opacity:0;pointer-events:none;transition:opacity .2s}
+.modal-backdrop.open{opacity:1;pointer-events:all}
+.modal{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:30px;width:100%;max-width:520px;position:relative;box-shadow:var(--shadow);transform:translateY(12px);transition:transform .25s}
+.modal-backdrop.open .modal{transform:translateY(0)}
+.modal-title{font-family:var(--display);font-size:1.3rem;font-weight:700;margin-bottom:8px}
+.modal-desc{font-size:13px;color:var(--text2);margin-bottom:18px;line-height:1.6}
+.url-box{background:var(--bg3);border:1px solid var(--border);border-radius:var(--radius);padding:12px;font-family:var(--mono);font-size:11px;color:var(--teal2);word-break:break-all;margin-bottom:14px;max-height:80px;overflow-y:auto}
+.modal-close{position:absolute;top:14px;right:14px;background:none;border:none;cursor:pointer;color:var(--text3);font-size:18px;padding:4px 8px;border-radius:4px;transition:color .15s}
+.modal-close:hover{color:var(--text)}
+/* STEPS */
+.steps{display:flex;flex-direction:column}
+.step{display:flex;gap:20px;padding:22px 0;border-bottom:1px solid var(--border)}
+.step:last-child{border-bottom:none}
+.step-num{font-family:var(--display);font-size:2rem;font-weight:700;color:var(--teal);opacity:.3;min-width:40px;line-height:1;flex-shrink:0}
+.step h3{font-family:var(--ui);font-size:13px;font-weight:700;letter-spacing:.06em;color:var(--text);margin-bottom:6px}
+.step p{font-size:13px;color:var(--text2);line-height:1.6}
+.step ul{margin-top:5px;padding-left:14px}
+.step li{font-size:12px;color:var(--text2);margin-bottom:3px}
+/* COMING SOON */
+.cs{text-align:center;padding:72px 32px}
+.cs-icon{font-size:44px;margin-bottom:18px}
+.cs-title{font-family:var(--display);font-size:1.9rem;font-weight:700;color:var(--text);margin-bottom:10px}
+.cs-desc{font-size:13px;color:var(--text2);max-width:480px;margin:0 auto;line-height:1.7}
+.cs-chip{display:inline-block;margin-top:18px;font-family:var(--mono);font-size:10px;letter-spacing:.15em;color:var(--gold);border:1px solid var(--gold);padding:5px 14px;border-radius:20px}
+/* TOAST */
+#toast{position:fixed;bottom:28px;left:50%;transform:translateX(-50%) translateY(80px);background:var(--card);border:1px solid var(--teal);border-radius:var(--radius);padding:10px 22px;font-family:var(--ui);font-size:11px;font-weight:700;letter-spacing:.08em;color:var(--teal);box-shadow:var(--shadow);z-index:9999;transition:transform .3s cubic-bezier(.34,1.56,.64,1)}
+#toast.show{transform:translateX(-50%) translateY(0)}
+/* PRINT */
+@media print {
+  body::before,nav,header .header-right,.btn-row,.btn,#toast,.modal-backdrop{display:none!important}
+  body,header,.card{background:white;color:black}
+  h1{color:black;-webkit-text-fill-color:black} .tagline,.logo-eyebrow{color:#444}
+  main{padding:16px} .tab-panel{display:block!important;page-break-before:always}
+  .tab-panel:first-child{page-break-before:auto}
+  .card{border:1px solid #ccc;break-inside:avoid;page-break-inside:avoid}
+  .card-title{color:#007b9a} .section-title,.section-eyebrow{color:#007b9a}
+  .var-table td,.var-table th,.crit-table td,.crit-table th{color:black}
+  .score-dot,.vp-ring{display:none}
+}
+@media(max-width:768px){header,main{padding-left:20px;padding-right:20px} .form-grid,.form-grid.cols-3{grid-template-columns:1fr}}
+code{background:var(--bg3);padding:2px 6px;border-radius:4px;font-family:var(--mono);font-size:11px;color:var(--teal2)}
+</style>
+</head>
+<body>
 
-<!doctype html>
-<html lang="en" class="no-js">
-  <head>
-    
-      <meta charset="utf-8">
-      <meta name="viewport" content="width=device-width,initial-scale=1">
-      
-        <meta name="description" content="SMART on FHIR ETL pipeline for clinical registry data">
-      
-      
-        <meta name="author" content="Boyce Lab">
-      
-      
-      
-      
-        <link rel="next" href="about/">
-      
-      
-        
-      
-      
-      <link rel="icon" href="assets/images/favicon.png">
-      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.6">
-    
-    
-      
-        <title>Registry Forge</title>
-      
-    
-    
-      <link rel="stylesheet" href="assets/stylesheets/main.484c7ddc.min.css">
-      
-        
-        <link rel="stylesheet" href="assets/stylesheets/palette.ab4e12ef.min.css">
-      
-      
-
-
-    
-    
-      
-    
-    
-      
-        
-        
-        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
-        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
-      
-    
-    
-      <link rel="stylesheet" href="stylesheets/extra.css">
-    
-    <script>__md_scope=new URL(".",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
-    
-      
-
-    
-    
-  </head>
-  
-  
-    
-    
-      
-    
-    
-    
-    
-    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="deep-purple" data-md-color-accent="indigo">
-  
-    
-    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
-    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
-    <label class="md-overlay" for="__drawer"></label>
-    <div data-md-component="skip">
-      
-        
-        <a href="#registry-forge" class="md-skip">
-          Skip to content
-        </a>
-      
+<!-- HEADER -->
+<header>
+  <div class="header-inner">
+    <div class="logo-block">
+      <span class="logo-eyebrow">BoyceLab · Clinical Informatics</span>
+      <h1>RWDExchange</h1>
+      <p class="tagline">Evaluate real-world data exchangeability for use as external comparators in clinical trials.</p>
     </div>
-    <div data-md-component="announce">
-      
-    </div>
-    
-    
-      
-
-  
-
-<header class="md-header md-header--shadow" data-md-component="header">
-  <nav class="md-header__inner md-grid" aria-label="Header">
-    <a href="." title="Registry Forge" class="md-header__button md-logo" aria-label="Registry Forge" data-md-component="logo">
-      
-  
-  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
-
-    </a>
-    <label class="md-header__button md-icon" for="__drawer">
-      
-      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
-    </label>
-    <div class="md-header__title" data-md-component="header-title">
-      <div class="md-header__ellipsis">
-        <div class="md-header__topic">
-          <span class="md-ellipsis">
-            Registry Forge
-          </span>
-        </div>
-        <div class="md-header__topic" data-md-component="header-topic">
-          <span class="md-ellipsis">
-            
-              Home
-            
-          </span>
-        </div>
-      </div>
-    </div>
-    
-      
-        <form class="md-header__option" data-md-component="palette">
-  
-    
-    
-    
-    <input class="md-option" data-md-color-media="(prefers-color-scheme: light)" data-md-color-scheme="default" data-md-color-primary="deep-purple" data-md-color-accent="indigo"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_0">
-    
-      <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_1" hidden>
-        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a4 4 0 0 0-4 4 4 4 0 0 0 4 4 4 4 0 0 0 4-4 4 4 0 0 0-4-4m0 10a6 6 0 0 1-6-6 6 6 0 0 1 6-6 6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
-      </label>
-    
-  
-    
-    
-    
-    <input class="md-option" data-md-color-media="(prefers-color-scheme: dark)" data-md-color-scheme="slate" data-md-color-primary="deep-purple" data-md-color-accent="indigo"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_1">
-    
-      <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_0" hidden>
-        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 18c-.89 0-1.74-.2-2.5-.55C11.56 16.5 13 14.42 13 12s-1.44-4.5-3.5-5.45C10.26 6.2 11.11 6 12 6a6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
-      </label>
-    
-  
-</form>
-      
-    
-    
-      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
-    
-    
-    
-      
-      
-        <label class="md-header__button md-icon" for="__search">
-          
-          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
-        </label>
-        <div class="md-search" data-md-component="search" role="dialog">
-  <label class="md-search__overlay" for="__search"></label>
-  <div class="md-search__inner" role="search">
-    <form class="md-search__form" name="search">
-      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
-      <label class="md-search__icon md-icon" for="__search">
-        
-        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
-        
-        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
-      </label>
-      <nav class="md-search__options" aria-label="Search">
-        
-        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
-          
-          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
-        </button>
-      </nav>
-      
-        <div class="md-search__suggest" data-md-component="search-suggest"></div>
-      
-    </form>
-    <div class="md-search__output">
-      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
-        <div class="md-search-result" data-md-component="search-result">
-          <div class="md-search-result__meta">
-            Initializing search
-          </div>
-          <ol class="md-search-result__list" role="presentation"></ol>
-        </div>
+    <div class="header-right">
+      <div class="header-actions">
+        <span class="autosave" id="autosaveLabel">—</span>
+        <button class="btn btn-ghost" onclick="openShareModal()">⬆ Share</button>
+        <button class="btn btn-ghost" onclick="exportJSON()">⬇ JSON</button>
+        <label class="btn btn-ghost" style="cursor:pointer">⬆ Import<input type="file" accept=".json" onchange="importJSON(event)" style="display:none"></label>
+        <button class="btn btn-ghost" onclick="window.print()">⎙ Print</button>
+        <span class="version-badge">v3.0</span>
       </div>
     </div>
   </div>
-</div>
-      
-    
-    
-  </nav>
-  
 </header>
-    
-    <div class="md-container" data-md-component="container">
-      
-      
-        
-          
-        
-      
-      <main class="md-main" data-md-component="main">
-        <div class="md-main__inner md-grid">
-          
-            
-              
-              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
-                <div class="md-sidebar__scrollwrap">
-                  <div class="md-sidebar__inner">
-                    
 
-
-
-<nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
-  <label class="md-nav__title" for="__drawer">
-    <a href="." title="Registry Forge" class="md-nav__button md-logo" aria-label="Registry Forge" data-md-component="logo">
-      
-  
-  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
-
-    </a>
-    Registry Forge
-  </label>
-  
-  <ul class="md-nav__list" data-md-scrollfix>
-    
-      
-      
-  
-  
-    
-  
-  
-  
-    <li class="md-nav__item md-nav__item--active">
-      
-      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
-      
-      
-        
-      
-      
-        <label class="md-nav__link md-nav__link--active" for="__toc">
-          
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    Home
-  
-
-    
-  </span>
-  
-  
-
-          <span class="md-nav__icon md-icon"></span>
-        </label>
-      
-      <a href="." class="md-nav__link md-nav__link--active">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    Home
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-      
-        
-
-<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
-  
-  
-  
-    
-  
-  
-    <label class="md-nav__title" for="__toc">
-      <span class="md-nav__icon md-icon"></span>
-      Table of contents
-    </label>
-    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
-      
-        <li class="md-nav__item">
-  <a href="#pipeline-at-a-glance" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Pipeline at a glance
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#get-started" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Get started
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#built-on-the-same-foundation-as-established-consumer-registry-platforms" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Built on the same foundation as established consumer registry platforms
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#a-note-on-validation" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        A note on validation
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#registry-forge-gives-you-the-bones-you-bring-the-judgment" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Registry Forge gives you the bones. You bring the judgment.
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#about-citation-and-contact" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        About, citation, and contact
-      
-    </span>
-  </a>
-  
-</li>
-      
-    </ul>
-  
+<!-- NAV -->
+<nav>
+  <div class="nav-inner">
+    <button class="tab-btn active" data-tab="variables">Variables <span class="tab-badge" id="varBadge">0</span></button>
+    <button class="tab-btn" data-tab="pocock">Pocock's Criteria</button>
+    <button class="tab-btn" data-tab="fda">FDA Guidance</button>
+    <button class="tab-btn" data-tab="gray">Gray et al. <span class="tab-badge">2020</span></button>
+    <button class="tab-btn" data-tab="report">Report <span class="tab-badge" id="reportBadge">0</span></button>
+    <button class="tab-btn" data-tab="howto">How To</button>
+    <button class="tab-btn" data-tab="omop">OMOP Scan <span class="tab-new">BETA</span></button>
+  </div>
 </nav>
-      
-    </li>
-  
 
-    
-      
-      
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="about/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    About &amp; license
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-    
-      
-      
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="overview/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    Overview
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-    
-      
-      
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="installation/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    Installation
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-    
-      
-      
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="quickstart/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    Quickstart
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-    
-      
-      
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="downloads/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    Downloads
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-    
-      
-      
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="architecture/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    Architecture
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-    
-      
-      
-  
-  
-  
-  
-    
-    
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-    
-    
-    
-      
-        
-        
-      
-    
-    
-    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
-      
-        
-        
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_8" >
-        
-          
-          <label class="md-nav__link" for="__nav_8" id="__nav_8_label" tabindex="">
-            
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    Live demos
-  
-
-    
-  </span>
-  
-  
-
-            <span class="md-nav__icon md-icon"></span>
-          </label>
-        
-        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_8_label" aria-expanded="false">
-          <label class="md-nav__title" for="__nav_8">
-            <span class="md-nav__icon md-icon"></span>
-            
-  
-    Live demos
-  
-
-          </label>
-          <ul class="md-nav__list" data-md-scrollfix>
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="dashboard/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    Cohort dashboard
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="cohort-eda/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    Cohort EDA report
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="note-dashboard/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    Clinical-note extraction dashboard
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="drug-repurposing/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    Drug repurposing report
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="device-dashboard/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    Device & equipment dashboard
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="exposure-dashboard/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    Environmental / occupational exposure dashboard
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-          </ul>
-        </nav>
-      
-    </li>
-  
-
-    
-      
-      
-  
-  
-  
-  
-    
-    
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-    
-    
-    
-      
-        
-        
-      
-    
-    
-    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
-      
-        
-        
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_9" >
-        
-          
-          <label class="md-nav__link" for="__nav_9" id="__nav_9_label" tabindex="">
-            
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    Core pipeline (Stages 1-7)
-  
-
-    
-  </span>
-  
-  
-
-            <span class="md-nav__icon md-icon"></span>
-          </label>
-        
-        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_9_label" aria-expanded="false">
-          <label class="md-nav__title" for="__nav_9">
-            <span class="md-nav__icon md-icon"></span>
-            
-  
-    Core pipeline (Stages 1-7)
-  
-
-          </label>
-          <ul class="md-nav__list" data-md-scrollfix>
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="stages/decoding/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    Stage 1 - Decoding & reassembly
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="stages/parsing/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    Stage 2 - Format detection
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="stages/fhir/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    Stage 3 - FHIR extraction
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="stages/joining/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    Stage 4 - Joining & assembly
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="stages/enrichment/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    Stage 5 - Display enrichment
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="stages/filtering/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    Stage 6 - Test-patient filter
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="code-inventory/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    Stage 7 - Code inventory
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="patient-master/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    Patient master CSV
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-          </ul>
-        </nav>
-      
-    </li>
-  
-
-    
-      
-      
-  
-  
-  
-  
-    
-    
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-        
-      
-    
-    
-    
-      
-        
-        
-      
-    
-    
-    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
-      
-        
-        
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_10" >
-        
-          
-          <label class="md-nav__link" for="__nav_10" id="__nav_10_label" tabindex="">
-            
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    Add-on modules
-  
-
-    
-  </span>
-  
-  
-
-            <span class="md-nav__icon md-icon"></span>
-          </label>
-        
-        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_10_label" aria-expanded="false">
-          <label class="md-nav__title" for="__nav_10">
-            <span class="md-nav__icon md-icon"></span>
-            
-  
-    Add-on modules
-  
-
-          </label>
-          <ul class="md-nav__list" data-md-scrollfix>
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="omop/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    OMOP CDM v5.4 ETL
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="phenopackets/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    GA4GH Phenopackets v2 ETL
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="mondo-omop-bridge/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    Mondo-OMOP bridge
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="note-extraction/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    Clinical-note extraction
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="devices/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    Device & equipment extraction
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="exposure-extraction/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    Environmental / occupational exposure extraction
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-          </ul>
-        </nav>
-      
-    </li>
-  
-
-    
-      
-      
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="qc/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    Quality control
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-    
-      
-      
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="patient-identifiers/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    Patient identifiers &amp; PHI
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-    
-      
-      
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="external-references/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    External references &amp; standards
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-    
-      
-      
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="resources/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    Resources &amp; related tools
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-    
-      
-      
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="databricks/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    Data extraction (Databricks)
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-    
-      
-      
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="samples/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    Sample data
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-    
-      
-      
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="schema/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    Output schema
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-    
-      
-      
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="configuration/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    Configuration
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-    
-      
-      
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="troubleshooting/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    Troubleshooting
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-    
-  </ul>
-</nav>
-                  </div>
-                </div>
-              </div>
-            
-            
-              
-              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
-                <div class="md-sidebar__scrollwrap">
-                  <div class="md-sidebar__inner">
-                    
-
-<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
-  
-  
-  
-    
-  
-  
-    <label class="md-nav__title" for="__toc">
-      <span class="md-nav__icon md-icon"></span>
-      Table of contents
-    </label>
-    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
-      
-        <li class="md-nav__item">
-  <a href="#pipeline-at-a-glance" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Pipeline at a glance
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#get-started" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Get started
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#built-on-the-same-foundation-as-established-consumer-registry-platforms" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Built on the same foundation as established consumer registry platforms
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#a-note-on-validation" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        A note on validation
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#registry-forge-gives-you-the-bones-you-bring-the-judgment" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Registry Forge gives you the bones. You bring the judgment.
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#about-citation-and-contact" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        About, citation, and contact
-      
-    </span>
-  </a>
-  
-</li>
-      
-    </ul>
-  
-</nav>
-                  </div>
-                </div>
-              </div>
-            
-          
-          
-            <div class="md-content" data-md-component="content">
-              
-              <article class="md-content__inner md-typeset">
-                
-                  
-
-
-
-<div class="rf-funding">
-<p><strong>Funding acknowledgement.</strong> This work was supported by the Centers for Disease Control and Prevention grant <strong># R01-TS000341</strong>.</p>
-</div>
-<div class="rf-hero">
-<p><span class="rf-hero-eyebrow">Open-source · Local-first · No servers required</span></p>
-<h1 class="rf-hero-title" id="registry-forge">Registry Forge<a class="headerlink" href="#registry-forge" title="Permanent link">&para;</a></h1>
-<p class="rf-hero-tagline">From raw EHR data to registry analytics &mdash; the whole pipeline, in one place.</p>
-<p class="rf-hero-body">
-Take raw EHR exports &mdash; <strong>C-CDA XML, FHIR R4 Bundles, RTF clinical notes, PDFs, and HTML fragments</strong> &mdash; and produce a research-ready data set in one pass: a structured patient bundle, OMOP CDM v5.4 tables, GA4GH Phenopackets, a browser dashboard, a shareable cohort EDA report, a drug repurposing report with CURE ID export, and privacy-safe device-and-equipment and environmental-exposure dashboards. Single-file Python, runs locally, ships with a five-tier QC framework and an inventory of every vocabulary and code it touched.
-</p>
-<div class="rf-badges">
-<p><span class="rf-badge-strong rf-badge">C-CDA XML</span>
-<span class="rf-badge-strong rf-badge">FHIR R4 JSON</span>
-<span class="rf-badge-strong rf-badge">RTF notes</span>
-<span class="rf-badge-strong rf-badge">PDF</span>
-<span class="rf-badge-strong rf-badge">HTML</span></p>
-</div>
-<div class="rf-cta-row">
-<p><a class="rf-cta rf-cta-primary" href="quickstart/"><span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="m13.13 22.19-1.63-3.83c1.57-.58 3.04-1.36 4.4-2.27zM5.64 12.5l-3.83-1.63 6.1-2.77C7 9.46 6.22 10.93 5.64 12.5M21.61 2.39S16.66.269 11 5.93c-2.19 2.19-3.5 4.6-4.35 6.71-.28.75-.09 1.57.46 2.13l2.13 2.12c.55.56 1.37.74 2.12.46A19.1 19.1 0 0 0 18.07 13c5.66-5.66 3.54-10.61 3.54-10.61m-7.07 7.07c-.78-.78-.78-2.05 0-2.83s2.05-.78 2.83 0c.77.78.78 2.05 0 2.83s-2.05.78-2.83 0m-5.66 7.07-1.41-1.41zM6.24 22l3.64-3.64c-.34-.09-.67-.24-.97-.45L4.83 22zM2 22h1.41l4.77-4.76-1.42-1.41L2 20.59zm0-2.83 4.09-4.08c-.21-.3-.36-.62-.45-.97L2 17.76z"/></svg></span> Quickstart</a>
-<a class="rf-cta rf-cta-secondary" href="dashboard/#live-demo" rel="noopener" target="_blank"><span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M15.5 12c2.5 0 4.5 2 4.5 4.5 0 .88-.25 1.71-.69 2.4l3.08 3.1L21 23.39l-3.12-3.07c-.69.43-1.51.68-2.38.68-2.5 0-4.5-2-4.5-4.5s2-4.5 4.5-4.5m0 2a2.5 2.5 0 0 0-2.5 2.5 2.5 2.5 0 0 0 2.5 2.5 2.5 2.5 0 0 0 2.5-2.5 2.5 2.5 0 0 0-2.5-2.5M10 4a4 4 0 0 1 4 4c0 .91-.31 1.75-.82 2.43-.86.32-1.63.83-2.27 1.47L10 12a4 4 0 0 1-4-4 4 4 0 0 1 4-4M2 20v-2c0-2.12 3.31-3.86 7.5-4-.32.78-.5 1.62-.5 2.5 0 1.29.38 2.5 1 3.5z"/></svg></span> Cohort dashboard</a>
-<a class="rf-cta rf-cta-secondary" href="cohort-eda/#live-demo" rel="noopener" target="_blank"><span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M22 16v2H6V2h2v11.57l5.71-9 3.16 2.11 2.42-2.42 1.42 1.42-3.58 3.61-2.84-1.89L8.82 16M4 20V4H2v18h20v-2Z"/></svg></span> Cohort EDA</a>
-<a class="rf-cta rf-cta-secondary" href="note-dashboard/#live-demo" rel="noopener" target="_blank"><span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="m19.31 18.9 3.08 3.1L21 23.39l-3.12-3.07c-.69.43-1.51.68-2.38.68-2.5 0-4.5-2-4.5-4.5s2-4.5 4.5-4.5 4.5 2 4.5 4.5c0 .88-.25 1.71-.69 2.4m-3.81.1a2.5 2.5 0 0 0 0-5 2.5 2.5 0 0 0 0 5M21 4v2H3V4zM3 16v-2h6v2zm0-5V9h18v2h-2.03c-1.01-.63-2.2-1-3.47-1s-2.46.37-3.47 1z"/></svg></span> Note extraction</a>
-<a class="rf-cta rf-cta-secondary" href="drug-repurposing/#live-demo" rel="noopener" target="_blank"><span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="m4.22 11.29 7.07-7.07a6.01 6.01 0 0 1 8.49 0c2.34 2.34 2.34 6.14 0 8.49l-7.07 7.07c-2.35 2.34-6.15 2.34-8.49 0a6.01 6.01 0 0 1 0-8.49m1.42 1.42a3.98 3.98 0 0 0-1.04 3.86l5.99-5.98 4.24 4.24 3.53-3.54a3.98 3.98 0 0 0 0-5.65 3.98 3.98 0 0 0-5.65 0z"/></svg></span> Drug repurposing report</a>
-<a class="rf-cta rf-cta-secondary" href="device-dashboard/#live-demo" rel="noopener" target="_blank"><span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M10 3 8 5v2H5C3.85 7 3.12 8 3 9L2 19c-.12 1 .54 2 2 2h16c1.46 0 2.12-1 2-2L21 9c-.12-1-.94-2-2-2h-3V5l-2-2zm0 2h4v2h-4zm1 5h2v3h3v2h-3v3h-2v-3H8v-2h3z"/></svg></span> Device dashboard</a>
-<a class="rf-cta rf-cta-secondary" href="exposure-dashboard/#live-demo" rel="noopener" target="_blank"><span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M17 8C8 10 5.9 16.17 3.82 21.34l1.89.66.95-2.3c.48.17.98.3 1.34.3C19 20 22 3 22 3c-1 2-8 2.25-13 3.25S2 11.5 2 13.5s1.75 3.75 1.75 3.75C7 8 17 8 17 8"/></svg></span> Exposure dashboard</a>
-<a class="rf-cta rf-cta-secondary" href="downloads/"><span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M5 20h14v-2H5m14-9h-4V3H9v6H5l7 7z"/></svg></span> Downloads</a></p>
-</div>
-<p style="text-align:center; margin: 12px auto 0; font-size: 13px; color: var(--md-default-fg-color--light); font-style: italic;">
-Six live demos run entirely in your browser: the interactive cohort dashboard (load your own bundle JSON), the privacy-safe cohort EDA report, the clinical-note extraction dashboard, the drug repurposing report, and the device-and-equipment and environmental-exposure dashboards &mdash; all pre-loaded against synthetic ALS cohorts.
-</p>
-</div>
-<p class="rf-section-eyebrow">Live demos</p>
-<h2 class="rf-section-h">Six privacy-safe demos &mdash; open the HTML and you're done</h2>
-
-<p style="max-width: 880px; margin: 0 auto 28px; color: var(--md-default-fg-color--light); font-size: 15px; line-height: 1.6;">
-Every Registry Forge demo is a <strong>single self-contained HTML file</strong>. No server, no JavaScript build, no external scripts. PT-NNNN pseudonyms, year-only dates, and k-anonymity baked into the static dashboards and reports. Open one in any browser; share it with collaborators as an artifact attached to an email.
-</p>
-
-<div class="grid cards">
-<ul>
-<li>
-<p><span class="twemoji lg"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M15.5 12c2.5 0 4.5 2 4.5 4.5 0 .88-.25 1.71-.69 2.4l3.08 3.1L21 23.39l-3.12-3.07c-.69.43-1.51.68-2.38.68-2.5 0-4.5-2-4.5-4.5s2-4.5 4.5-4.5m0 2a2.5 2.5 0 0 0-2.5 2.5 2.5 2.5 0 0 0 2.5 2.5 2.5 2.5 0 0 0 2.5-2.5 2.5 2.5 0 0 0-2.5-2.5M10 4a4 4 0 0 1 4 4c0 .91-.31 1.75-.82 2.43-.86.32-1.63.83-2.27 1.47L10 12a4 4 0 0 1-4-4 4 4 0 0 1 4-4M2 20v-2c0-2.12 3.31-3.86 7.5-4-.32.78-.5 1.62-.5 2.5 0 1.29.38 2.5 1 3.5z"/></svg></span> &nbsp; <strong><a href="dashboard/">Cohort dashboard</a></strong></p>
-<p>The interactive patient-and-cohort dashboard produced by the core
-pipeline. Loads your own bundle JSON in the browser and shows
-demographics, problems, medications, labs, encounters, and an
-integrated note viewer for every patient.</p>
-<p><a class="md-button" href="dashboard/#live-demo" rel="noopener" target="_blank"><span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M22 12a10 10 0 0 1-10 10A10 10 0 0 1 2 12 10 10 0 0 1 12 2a10 10 0 0 1 10 10M6 13h8l-3.5 3.5 1.42 1.42L17.84 12l-5.92-5.92L10.5 7.5 14 11H6z"/></svg></span> Open demo</a></p>
-</li>
-<li>
-<p><span class="twemoji lg"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M22 16v2H6V2h2v11.57l5.71-9 3.16 2.11 2.42-2.42 1.42 1.42-3.58 3.61-2.84-1.89L8.82 16M4 20V4H2v18h20v-2Z"/></svg></span> &nbsp; <strong><a href="cohort-eda/">Cohort EDA report</a></strong></p>
-<p>Privacy-safe exploratory analysis report. ALS-specific measurements
-(ALSFRS-R, FVC% predicted, El Escorial), demographics, comorbidities,
-and code-vocabulary distribution. Designed for sharing outside the
-clinical firewall.</p>
-<p><a class="md-button" href="cohort-eda/#live-demo" rel="noopener" target="_blank"><span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M22 12a10 10 0 0 1-10 10A10 10 0 0 1 2 12 10 10 0 0 1 12 2a10 10 0 0 1 10 10M6 13h8l-3.5 3.5 1.42 1.42L17.84 12l-5.92-5.92L10.5 7.5 14 11H6z"/></svg></span> Open demo</a></p>
-</li>
-<li>
-<p><span class="twemoji lg"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="m19.31 18.9 3.08 3.1L21 23.39l-3.12-3.07c-.69.43-1.51.68-2.38.68-2.5 0-4.5-2-4.5-4.5s2-4.5 4.5-4.5 4.5 2 4.5 4.5c0 .88-.25 1.71-.69 2.4m-3.81.1a2.5 2.5 0 0 0 0-5 2.5 2.5 0 0 0 0 5M21 4v2H3V4zM3 16v-2h6v2zm0-5V9h18v2h-2.03c-1.01-.63-2.2-1-3.47-1s-2.46.37-3.47 1z"/></svg></span> &nbsp; <strong><a href="note-dashboard/">Clinical-note extraction dashboard</a></strong></p>
-<p>ALS-specific clinical content recovered from unstructured narrative:
-ALSFRS-R total and four subdomain scores, FVC % predicted, El
-Escorial / Awaji-Shima certainty, onset region, family history,
-genetic mutations, FTD-spectrum mentions, and dated treatment
-milestones (PEG, tracheostomy, NIV, riluzole, edaravone).</p>
-<p><a class="md-button" href="note-dashboard/#live-demo" rel="noopener" target="_blank"><span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M22 12a10 10 0 0 1-10 10A10 10 0 0 1 2 12 10 10 0 0 1 12 2a10 10 0 0 1 10 10M6 13h8l-3.5 3.5 1.42 1.42L17.84 12l-5.92-5.92L10.5 7.5 14 11H6z"/></svg></span> Open demo</a></p>
-</li>
-<li>
-<p><span class="twemoji lg"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="m4.22 11.29 7.07-7.07a6.01 6.01 0 0 1 8.49 0c2.34 2.34 2.34 6.14 0 8.49l-7.07 7.07c-2.35 2.34-6.15 2.34-8.49 0a6.01 6.01 0 0 1 0-8.49m1.42 1.42a3.98 3.98 0 0 0-1.04 3.86l5.99-5.98 4.24 4.24 3.53-3.54a3.98 3.98 0 0 0 0-5.65 3.98 3.98 0 0 0-5.65 0z"/></svg></span> &nbsp; <strong><a href="drug-repurposing/">Drug repurposing report</a></strong></p>
-<p>Reimer-methodology pharmacoepidemiology hypothesis generation.
-Produces an HTML report with the ALS clinical-interest medication
-panel, an ATC-class-grouped medication summary, a forest plot, and a
-CURE ID intake CSV ready for off-label-use reporting.</p>
-<p><a class="md-button" href="drug-repurposing/#live-demo" rel="noopener" target="_blank"><span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M22 12a10 10 0 0 1-10 10A10 10 0 0 1 2 12 10 10 0 0 1 12 2a10 10 0 0 1 10 10M6 13h8l-3.5 3.5 1.42 1.42L17.84 12l-5.92-5.92L10.5 7.5 14 11H6z"/></svg></span> Open demo</a></p>
-</li>
-<li>
-<p><span class="twemoji lg"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M10 3 8 5v2H5C3.85 7 3.12 8 3 9L2 19c-.12 1 .54 2 2 2h16c1.46 0 2.12-1 2-2L21 9c-.12-1-.94-2-2-2h-3V5l-2-2zm0 2h4v2h-4zm1 5h2v3h3v2h-3v3h-2v-3H8v-2h3z"/></svg></span> &nbsp; <strong><a href="device-dashboard/">Device &amp; equipment dashboard</a></strong></p>
-<p>Devices, durable-medical-equipment indicators, and ALS-care-pathway
-procedures (spirometry, sleep studies, EMG/NCS, PT/OT evaluations,
-speech screening, mobility status). Combines structured codes and
-note-regex matches with source-snippet drill-down.</p>
-<p><a class="md-button" href="device-dashboard/#live-demo" rel="noopener" target="_blank"><span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M22 12a10 10 0 0 1-10 10A10 10 0 0 1 2 12 10 10 0 0 1 12 2a10 10 0 0 1 10 10M6 13h8l-3.5 3.5 1.42 1.42L17.84 12l-5.92-5.92L10.5 7.5 14 11H6z"/></svg></span> Open demo</a></p>
-</li>
-<li>
-<p><span class="twemoji lg"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M17 8C8 10 5.9 16.17 3.82 21.34l1.89.66.95-2.3c.48.17.98.3 1.34.3C19 20 22 3 22 3c-1 2-8 2.25-13 3.25S2 11.5 2 13.5s1.75 3.75 1.75 3.75C7 8 17 8 17 8"/></svg></span> &nbsp; <strong><a href="exposure-dashboard/">Environmental / occupational exposure dashboard</a></strong></p>
-<p>ALS-relevant environmental, occupational, and toxic exposures grounded
-in <a href="https://github.com/EnvironmentOntology/environmental-exposure-ontology">ECTO</a>,
-the GA4GH-Phenopackets-compatible exposure ontology. Smoking, military
-service, pesticides, heavy metals, solvents, head trauma, cyanotoxins,
-asbestos, EMF, air pollution, mold &mdash; with verified ECTO term IDs
-where available and an explicit curation worklist for the rest.</p>
-<p><a class="md-button" href="exposure-dashboard/#live-demo" rel="noopener" target="_blank"><span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M22 12a10 10 0 0 1-10 10A10 10 0 0 1 2 12 10 10 0 0 1 12 2a10 10 0 0 1 10 10M6 13h8l-3.5 3.5 1.42 1.42L17.84 12l-5.92-5.92L10.5 7.5 14 11H6z"/></svg></span> Open demo</a></p>
-</li>
-</ul>
-</div>
-<p class="rf-section-eyebrow">Everything you get</p>
-<h2 class="rf-section-h">A complete EHR-to-research pipeline, in sixteen modules</h2>
-
-<p style="max-width: 880px; margin: 0 auto 28px; color: var(--md-default-fg-color--light); font-size: 15px; line-height: 1.6;">
-Registry Forge is organized as a small <strong>core pipeline</strong> (<code>run_pipeline.py</code>, Stages 1&ndash;7, plus the browser dashboard) and a set of independent <strong>add-on modules</strong> that consume the bundle the core produces. Run only the core and you have a researcher-usable bundle and a dashboard. Add OMOP for OHDSI federation, Phenopackets for rare disease research, the cohort EDA for PHI-safe sharing, drug repurposing for pharmacoepidemiology hypothesis generation &mdash; whatever your use case calls for. Every module is plain Python with editable seed dictionaries; the modules are starting points, not finished products.
-</p>
-
-<div class="grid cards">
-<ul>
-<li>
-<p><span class="twemoji lg"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 3C8.59 3 5.69 4.07 4.54 5.57l5.25 5.25c.71.11 1.43.18 2.21.18 4.42 0 8-1.79 8-4s-3.58-4-8-4M3.92 7.08 2.5 8.5 5 11H0v2h5l-2.5 2.5 1.42 1.42L8.84 12M20 9c0 2.21-3.58 4-8 4-.66 0-1.3-.05-1.91-.13l-2.47 2.47c1.26.41 2.76.66 4.38.66 4.42 0 8-1.79 8-4m0 2c0 2.21-3.58 4-8 4-2.28 0-4.33-.5-5.79-1.25l-1.68 1.68C5.68 19.93 8.59 21 12 21c4.42 0 8-1.79 8-4"/></svg></span> &nbsp; <strong>Multi-format ingest</strong></p>
-<p>Reads raw C-CDA XML, FHIR R4 JSON Bundles, RTF clinical notes, HTML
-fragments, base64-chunked CSV exports, and PDFs &mdash; routed to format-
-specific parsers by magic-byte detection. No conversion required upstream.</p>
-</li>
-<li>
-<p><span class="twemoji lg"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M16.5 12A2.5 2.5 0 0 0 19 9.5 2.5 2.5 0 0 0 16.5 7 2.5 2.5 0 0 0 14 9.5a2.5 2.5 0 0 0 2.5 2.5M9 11a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m7.5 3c-1.83 0-5.5.92-5.5 2.75V19h11v-2.25c0-1.83-3.67-2.75-5.5-2.75M9 13c-2.33 0-7 1.17-7 3.5V19h7v-2.25c0-.85.33-2.34 2.37-3.47C10.5 13.1 9.66 13 9 13"/></svg></span> &nbsp; <strong>Cross-format patient linkage</strong></p>
-<p>Resolves FHIR <code>medicationReference</code>, <code>DocumentReference.subject</code>, and
-UUID-to-identifier bridges so the same patient across CCDA + FHIR + notes
-appears as one record. Survives messy production identifier drift.</p>
-</li>
-<li>
-<p><span class="twemoji lg"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="m12.87 15.07-2.54-2.51.03-.03A17.5 17.5 0 0 0 14.07 6H17V4h-7V2H8v2H1v2h11.17C11.5 7.92 10.44 9.75 9 11.35 8.07 10.32 7.3 9.19 6.69 8h-2c.73 1.63 1.73 3.17 2.98 4.56l-5.09 5.02L4 19l5-5 3.11 3.11zM18.5 10h-2L12 22h2l1.12-3h4.75L21 22h2zm-2.62 7 1.62-4.33L19.12 17z"/></svg></span> &nbsp; <strong>Coding troubleshooting &amp; enrichment</strong></p>
-<p>Built-in display-name lookup for common LOINC and SNOMED codes fills the
-blanks the EHR left empty. Multiple codings preserved per record so
-downstream consumers can pick the one that fits.</p>
-</li>
-<li>
-<p><span class="twemoji lg"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 5h6v6H3zm2 2v2h2V7zm6 0h10v2H11zm0 8h10v2H11zm-6 5-3.5-3.5 1.41-1.41L5 17.17l4.59-4.58L11 14z"/></svg></span> &nbsp; <strong>Code inventory report</strong></p>
-<p>Stage 7 walks every record and emits a CSV listing every (vocabulary, code)
-pair encountered, with reference and unique-patient counts and the bundle
-categories the code appears in. Your seed-mapping worklist.</p>
-</li>
-<li>
-<p><span class="twemoji lg"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8zm4 18H6V4h7v5h5zm-8-7H7v-2h3zm4 0h-3v-2h3zm-4 3H7v-2h3zm4 0h-3v-2h3zm-4 3H7v-2h3zm4 0h-3v-2h3z"/></svg></span> &nbsp; <strong>Patient master CSV</strong></p>
-<p>A long-format master CSV that joins every patient's demographics onto every
-coded record, with FHIR-only and CCDA-only splits, raw record JSON
-preserved per row, and Excel-safe encoding for collaborator review.</p>
-</li>
-<li>
-<p><span class="twemoji lg"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 3C7.58 3 4 4.79 4 7s3.58 4 8 4c.5 0 1-.03 1.5-.08V9.5h2.89l-1-1L18.9 5c-1.4-1.2-3.96-2-6.9-2m6.92 4.08L17.5 8.5 20 11h-5v2h5l-2.5 2.5 1.42 1.42L23.84 12M4 9v3c0 2.21 3.58 4 8 4 1.17 0 2.26-.15 3.25-.37l1.13-1.13H13.5v-1.58c-.5.05-1 .08-1.5.08-4.42 0-8-1.79-8-4m0 5v3c0 2.21 3.58 4 8 4 2.94 0 5.5-.8 6.9-2L17 17.1c-1.39.56-3.1.9-5 .9-4.42 0-8-1.79-8-4"/></svg></span> &nbsp; <strong><a href="https://ohdsi.github.io/CommonDataModel/cdm54.html">OMOP CDM v5.4</a> ETL</strong></p>
-<p>Maps every source code to its standard concept via <a href="https://athena.ohdsi.org/">Athena</a>
-<code>CONCEPT_RELATIONSHIP</code> <em>Maps to</em> and routes records by domain into nine CDM tables.
-Output folder tagged with the vocabulary release version for reproducibility.</p>
-</li>
-<li>
-<p><span class="twemoji lg"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M4 2h2v2c0 1.44.68 2.61 1.88 3.78.86.83 2.01 1.63 3.21 2.42l-1.83 1.19C8.27 10.72 7.31 10 6.5 9.21 5.07 7.82 4 6.1 4 4zm14 0h2v2c0 2.1-1.07 3.82-2.5 5.21-1.41 1.38-3.21 2.52-4.96 3.63-1.75 1.12-3.45 2.21-4.66 3.38C6.68 17.39 6 18.56 6 20v2H4v-2c0-2.1 1.07-3.82 2.5-5.21 1.41-1.38 3.21-2.52 4.96-3.63 1.75-1.12 3.45-2.21 4.66-3.38C17.32 6.61 18 5.44 18 4zm-3.26 10.61c.99.67 1.95 1.39 2.76 2.18C18.93 16.18 20 17.9 20 20v2h-2v-2c0-1.44-.68-2.61-1.88-3.78-.86-.83-2.01-1.63-3.21-2.42zM7 3h10v1l-.06.5H7.06L7 4zm.68 3h8.64c-.24.34-.52.69-.9 1.06l-.51.44H9.07l-.49-.44c-.38-.37-.66-.72-.9-1.06m1.41 10.5h5.84l.49.44c.38.37.66.72.9 1.06H7.68c.24-.34.52-.69.9-1.06zm-2.03 3h9.88l.06.5v1H7v-1z"/></svg></span> &nbsp; <strong><a href="https://www.ga4gh.org/">GA4GH</a> <a href="https://phenopacket-schema.readthedocs.io/">Phenopackets v2</a> ETL</strong></p>
-<p>Structured-code-driven Phenopackets &mdash; ICD-10 / SNOMED &rarr; <a href="https://hpo.jax.org/">HPO</a>
-and <a href="https://mondo.monarchinitiative.org/">Mondo</a> via seed tables for spectrum of motor
-neuron disease, epilepsy, and autoimmune disease. Plug in a curated genetics CSV to
-populate full HGNC/HGVS/ACMG GenomicInterpretations.</p>
-</li>
-<li>
-<p><span class="twemoji lg"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 5a3.5 3.5 0 0 0-3.5 3.5A3.5 3.5 0 0 0 12 12a3.5 3.5 0 0 0 3.5-3.5A3.5 3.5 0 0 0 12 5m0 2a1.5 1.5 0 0 1 1.5 1.5A1.5 1.5 0 0 1 12 10a1.5 1.5 0 0 1-1.5-1.5A1.5 1.5 0 0 1 12 7M5.5 8A2.5 2.5 0 0 0 3 10.5c0 .94.53 1.75 1.29 2.18.36.2.77.32 1.21.32s.85-.12 1.21-.32c.37-.21.68-.51.91-.87A5.42 5.42 0 0 1 6.5 8.5v-.28c-.3-.14-.64-.22-1-.22m13 0c-.36 0-.7.08-1 .22v.28c0 1.2-.39 2.36-1.12 3.31.12.19.25.34.4.49a2.482 2.482 0 0 0 1.72.7c.44 0 .85-.12 1.21-.32.76-.43 1.29-1.24 1.29-2.18A2.5 2.5 0 0 0 18.5 8M12 14c-2.34 0-7 1.17-7 3.5V19h14v-1.5c0-2.33-4.66-3.5-7-3.5m-7.29.55C2.78 14.78 0 15.76 0 17.5V19h3v-1.93c0-1.01.69-1.85 1.71-2.52m14.58 0c1.02.67 1.71 1.51 1.71 2.52V19h3v-1.5c0-1.74-2.78-2.72-4.71-2.95M12 16c1.53 0 3.24.5 4.23 1H7.77c.99-.5 2.7-1 4.23-1"/></svg></span> &nbsp; <strong>Mondo-OMOP cohort builder</strong></p>
-<p>Given a <a href="https://mondo.monarchinitiative.org/">Mondo</a> term ID, walks the disease hierarchy to find every
-descendant and emits a code list (SNOMED + ICD-10) defining the cohort,
-plus OMOP standard concept_ids. Built-in rare disease subset flags
-(GARD, NORD, Orphanet). Adapted from Monarch Initiative's mondo2omop.</p>
-</li>
-<li>
-<p><span class="twemoji lg"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="m19.31 18.9 3.08 3.1L21 23.39l-3.12-3.07c-.69.43-1.51.68-2.38.68-2.5 0-4.5-2-4.5-4.5s2-4.5 4.5-4.5 4.5 2 4.5 4.5c0 .88-.25 1.71-.69 2.4m-3.81.1a2.5 2.5 0 0 0 0-5 2.5 2.5 0 0 0 0 5M21 4v2H3V4zM3 16v-2h6v2zm0-5V9h18v2h-2.03c-1.01-.63-2.2-1-3.47-1s-2.46.37-3.47 1z"/></svg></span> &nbsp; <strong>Note extraction (regex)</strong></p>
-<p>Recovers ALS-specific content from free-text narratives that rarely makes
-it into discrete fields: ALSFRS-R total + 4 subdomains, ECAS scores, El
-Escorial, family history, gene mentions, treatment milestones. Demonstration
-layer; production-graded by site-specific clinical review.</p>
-</li>
-<li>
-<p><span class="twemoji lg"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="m14 16 1.32 1.76C14.32 19.68 12.31 21 10 21c-3.31 0-6-2.69-6-6 0-2.43 1.46-4.5 3.55-5.45l.21 2.17C6.71 12.44 6 13.63 6 15c0 2.21 1.79 4 4 4 1.86 0 3.41-1.28 3.86-3zm5.55.11-1.25.62L15.5 13h-4.59l-.2-2H14V9h-3.5l-.3-3c1.01-.12 1.8-.96 1.8-2a2 2 0 1 0-4 0v.1L9.1 15h5.4l3.2 4.27 2.75-1.37z"/></svg></span> &nbsp; <strong>Device &amp; equipment extraction</strong></p>
-<p>Walks the bundle for HCPCS Level II + SNOMED + CPT codes (speech-generating
-devices, wheelchairs, BiPAP, cough-assist, feeding tubes, hospital beds, orthotics)
-and runs regex against narratives for both generic equipment terms and brand-name
-detection (Tobii Dynavox, Trilogy, Hoyer lift, The Vest, Kangaroo pump,
-AVAPS / NIPPV, OT/PT/SLP eval). Emits two joinable CSVs.</p>
-</li>
-<li>
-<p><span class="twemoji lg"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9 17H7v-7h2zm4 0h-2V7h2zm4 0h-2v-4h2zm2 2H5V5h14v14.1M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2"/></svg></span> &nbsp; <strong>Browser dashboard</strong></p>
-<p>A single static HTML file that loads the bundle in any browser &mdash; no
-server, no install. Per-patient views, cohort overview, format filters,
-and a global keyword search across every document body and clinical record.</p>
-</li>
-<li>
-<p><span class="twemoji lg"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M22 16v2H6V2h2v11.57l5.71-9 3.16 2.11 2.42-2.42 1.42 1.42-3.58 3.61-2.84-1.89L8.82 16M4 20V4H2v18h20v-2Z"/></svg></span> &nbsp; <strong>Cohort EDA report</strong></p>
-<p>A single self-contained HTML page summarizing demographics, code coverage,
-observation period, vocabulary distribution, and ALS-specific signal &mdash;
-safe to share with colleagues. Pseudonymized IDs, banded ages, k-anonymity
-suppression, no per-patient diagnostic codes, no free text. <a href="cohort-eda/">Live demo &rarr;</a></p>
-</li>
-<li>
-<p><span class="twemoji lg"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="m4.22 11.29 7.07-7.07a6.01 6.01 0 0 1 8.49 0c2.34 2.34 2.34 6.14 0 8.49l-7.07 7.07c-2.35 2.34-6.15 2.34-8.49 0a6.01 6.01 0 0 1 0-8.49m1.42 1.42a3.98 3.98 0 0 0-1.04 3.86l5.99-5.98 4.24 4.24 3.53-3.54a3.98 3.98 0 0 0 0-5.65 3.98 3.98 0 0 0-5.65 0z"/></svg></span> &nbsp; <strong>Drug repurposing analysis</strong></p>
-<p>Adapts the methodology of <a href="https://doi.org/10.1016/j.landig.2025.100963">Reimer et al., <em>Lancet Digit Health</em> 2026</a>
-to your bundle: identifies the motor-neuron-disease cohort, applies the
-paper&rsquo;s exposure criteria A and B, groups medications by ATC class, and
-exports a clean cohort table for downstream Cox / propensity analysis plus
-a CURE ID intake CSV ready for FDA / NCATS-NIH submission. Highly customizable
-via the <code>ATC_SEED</code> and exposure-window constants. <a href="drug-repurposing/">Read more &rarr;</a></p>
-</li>
-<li>
-<p><span class="twemoji lg"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="m10 17-4-4 1.41-1.41L10 14.17l6.59-6.59L18 9m-6-8L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5z"/></svg></span> &nbsp; <strong>Five-tier QC framework</strong></p>
-<p>A starting set of checks &mdash; schema validation, mapping coverage tracking,
-cross-output consistency, clinician spot-review, and synthetic-cohort
-regression testing &mdash; with recommended cadence. Built in, not bolted on.
-Adopters review their data through the established frameworks: the
-<a href="https://doi.org/10.13063/2327-9214.1244">Kahn et al. 2016</a> taxonomy and
-the <a href="https://ohdsi.github.io/TheBookOfOhdsi/DataQuality.html">Book of OHDSI Chapter 15</a>
-+ <a href="https://github.com/OHDSI/DataQualityDashboard">OHDSI DQD</a> for OMOP.</p>
-</li>
-<li>
-<p><span class="twemoji lg"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M2 10.96a.985.985 0 0 1-.37-1.37L3.13 7c.11-.2.28-.34.47-.42l7.83-4.4c.16-.12.36-.18.57-.18s.41.06.57.18l7.9 4.44c.19.1.35.26.44.46l1.45 2.52c.28.48.11 1.09-.36 1.36l-1 .58v4.96c0 .38-.21.71-.53.88l-7.9 4.44c-.16.12-.36.18-.57.18s-.41-.06-.57-.18l-7.9-4.44A.99.99 0 0 1 3 16.5v-5.54c-.3.17-.68.18-1 0m10-6.81v6.7l5.96-3.35zM5 15.91l6 3.38v-6.71L5 9.21zm14 0v-3.22l-5 2.9c-.33.18-.7.17-1 .01v3.69zm-5.15-2.55 6.28-3.63-.58-1.01-6.28 3.63z"/></svg></span> &nbsp; <strong>Reproducibility built in</strong></p>
-<p>OMOP and Phenopackets output folders carry the vocabulary release version
-in the folder name; <code>metaData.resources</code> records every ontology version
-used. Any output file is traceable to the exact mappings that produced it.</p>
-</li>
-<li>
-<p><span class="twemoji lg"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M7 2v2h1v14a4 4 0 0 0 4 4 4 4 0 0 0 4-4V4h1V2zm4 14c-.6 0-1-.4-1-1s.4-1 1-1 1 .4 1 1-.4 1-1 1m2-4c-.6 0-1-.4-1-1s.4-1 1-1 1 .4 1 1-.4 1-1 1m1-5h-4V4h4z"/></svg></span> &nbsp; <strong>Synthetic demo cohort</strong></p>
-<p>Jane Marie Demo &mdash; a clinically-realistic synthetic ALS patient with 84
-records spanning every bundle category. Ships with the pipeline; runs end-
-to-end in seconds; the regression-test bedrock for every change.</p>
-</li>
-</ul>
-</div>
-<div class="rf-tested">
-<p><span class="rf-tested-label">Tested across multiple production source-data variants</span></p>
-<div class="rf-tested-row">
-<p><span class="rf-tested-chip">Production C-CDA exports</span>
-<span class="rf-tested-chip">FHIR R4 Bundle</span>
-<span class="rf-tested-chip">Real ARC production data</span>
-<span class="rf-tested-chip">Production RTF notes</span>
-<span class="rf-tested-chip">Generic PDF</span>
-<span class="rf-tested-chip">Databricks chunked CSV</span></p>
-</div>
-</div>
-<h2 id="pipeline-at-a-glance">Pipeline at a glance<a class="headerlink" href="#pipeline-at-a-glance" title="Permanent link">&para;</a></h2>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>Databricks export (chunked CSVs)  +  FHIR Bundle pulls  +  C-CDA XML
-<a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>                              |
-<a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a>                              v
-<a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a>+----------------------------------------------------------+
-<a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a>|  Stage 1   Decoding &amp; reassembly   (base64, chunk concat) |
-<a id="__codelineno-0-6" name="__codelineno-0-6" href="#__codelineno-0-6"></a>|  Stage 2   Format detection         (magic-byte routing)  |
-<a id="__codelineno-0-7" name="__codelineno-0-7" href="#__codelineno-0-7"></a>|  Stage 3   FHIR resource extraction (13 resource types)   |
-<a id="__codelineno-0-8" name="__codelineno-0-8" href="#__codelineno-0-8"></a>|  Stage 4   Joining &amp; assembly       (cross-format linkage)|
-<a id="__codelineno-0-9" name="__codelineno-0-9" href="#__codelineno-0-9"></a>|  Stage 5   Display-name enrichment  (LOINC / SNOMED)      |
-<a id="__codelineno-0-10" name="__codelineno-0-10" href="#__codelineno-0-10"></a>|  Stage 6   Test-patient exclusion   (rule-based filter)   |
-<a id="__codelineno-0-11" name="__codelineno-0-11" href="#__codelineno-0-11"></a>|  Stage 7   Code inventory + master CSV + note extraction  |
-<a id="__codelineno-0-12" name="__codelineno-0-12" href="#__codelineno-0-12"></a>+----------------------------------------------------------+
-<a id="__codelineno-0-13" name="__codelineno-0-13" href="#__codelineno-0-13"></a>                              |
-<a id="__codelineno-0-14" name="__codelineno-0-14" href="#__codelineno-0-14"></a>            +-----------------+-----------------+
-<a id="__codelineno-0-15" name="__codelineno-0-15" href="#__codelineno-0-15"></a>            v                 v                 v
-<a id="__codelineno-0-16" name="__codelineno-0-16" href="#__codelineno-0-16"></a>   dashboard_data.json   omop_etl.py    phenopackets_etl.py
-<a id="__codelineno-0-17" name="__codelineno-0-17" href="#__codelineno-0-17"></a>   + dashboard.html      9 OMOP CDM     GA4GH Phenopackets v2
-<a id="__codelineno-0-18" name="__codelineno-0-18" href="#__codelineno-0-18"></a>   + patient_master.csv  v5.4 tables    + cohort + summary
-</code></pre></div>
-<h2 id="get-started">Get started<a class="headerlink" href="#get-started" title="Permanent link">&para;</a></h2>
-<ul>
-<li><a href="overview/">Overview</a> &mdash; a single-page summary</li>
-<li><a href="installation/">Installation</a> &mdash; Python environment setup</li>
-<li><a href="quickstart/">Quickstart</a> &mdash; run end-to-end against the included synthetic data</li>
-<li><a href="demo/">Live dashboard demo</a> &mdash; the patient dashboard running on the synthetic cohort</li>
-<li><a href="cohort-eda/">Cohort EDA demo</a> &mdash; the no-PHI cohort report you can share with colleagues</li>
-<li><a href="databricks/">Data extraction (Databricks)</a> &mdash; generate the chunked CSV inputs from your warehouse</li>
-</ul>
-<h2 id="built-on-the-same-foundation-as-established-consumer-registry-platforms">Built on the same foundation as established consumer registry platforms<a class="headerlink" href="#built-on-the-same-foundation-as-established-consumer-registry-platforms" title="Permanent link">&para;</a></h2>
-<p>Registry Forge uses the same patient-directed SMART on FHIR + OAuth 2.0 acquisition pattern that has become standard across consumer health-record applications, registry platforms, and rare disease frameworks built on REDCap or similar tools. It is the open-source ETL layer for organizations that want the same data flow without standing up a vendor platform.</p>
-<h2 id="a-note-on-validation">A note on validation<a class="headerlink" href="#a-note-on-validation" title="Permanent link">&para;</a></h2>
-<p>Registry Forge has been built and tested against the ALS Therapy Development Institute's ARC Study data. We have not yet tested it against data from other organizations, EHR vendors, or registry deployments. If you would like to use Registry Forge with your own data and help us understand how it performs in other settings, please <a href="https://www.als.net/">contact us</a> &mdash; we would welcome the collaboration.</p>
-<h2 id="registry-forge-gives-you-the-bones-you-bring-the-judgment">Registry Forge gives you the bones. You bring the judgment.<a class="headerlink" href="#registry-forge-gives-you-the-bones-you-bring-the-judgment" title="Permanent link">&para;</a></h2>
-<p>Registry Forge automates the engineering work &mdash; schema parsing, code system normalization, vocabulary harmonization, FHIR / C-CDA chunk reassembly, the OMOP and Phenopackets ETLs, the device and note extraction layers &mdash; that would otherwise take a small team many thousands of hours to write from scratch. <strong>What it does not do is replace your own clinical, methodological, and editorial judgment about your registry.</strong></p>
-<p>Real ETL is iterative:</p>
-<ul>
-<li>You will look at the OMOP <code>CONDITION_OCCURRENCE</code> table and decide some source codes shouldn't have mapped to those standard concepts &mdash; or that they need a different mapping for your study.</li>
-<li>You will look at the cohort EDA and decide to drop a handful of patients who shouldn't be in the analysis, or to revisit a participant whose record looks anomalous.</li>
-<li>You will look at the Phenopackets output and add disease seed mappings before submitting to a Matchmaker network.</li>
-<li>You will look at the device extraction CSVs and decide which brand-name matches to collapse to a generic class, and which to keep distinct.</li>
-<li>You will tune the note-extraction regex against your own narrative style.</li>
-</ul>
-<p>That iteration is <strong>your</strong> work, and it's what makes the registry trustworthy. Registry Forge is a starting point that gets you to that iteration much faster &mdash; not a substitute for it.</p>
-<p>For the canonical reference on doing this work well, read the OHDSI community's <a href="https://ohdsi.github.io/TheBookOfOhdsi/ExtractTransformLoad.html">Book of OHDSI, Chapter 6 &mdash; Extract Transform Load</a>. It covers how to plan an ETL, how to think about source-to-target mapping, when to add custom logic, and how to validate the result. Registry Forge follows the spirit of those practices; the depth comes from you.</p>
-<h2 id="about-citation-and-contact">About, citation, and contact<a class="headerlink" href="#about-citation-and-contact" title="Permanent link">&para;</a></h2>
-<p>Registry Forge was developed by <strong>Danielle Boyce, MPH, DPA</strong>, of the <a href="https://www.als.net/">ALS Therapy Development Institute</a>, as part of the <a href="https://www.als.net/arc/">ARC Study</a> natural history registry program. De-identified ARC data is being made available through the <a href="https://www.als.net/arc/data-commons/">ARC Data Commons</a>.</p>
-<p>A DOI for this software and its companion manuscript is forthcoming. Registry Forge is released under the <a href="about/#license">MIT License</a> &mdash; permissive, no warranty, free to use and modify. If you would like help adapting it to your own registry or EHR vendor, please reach out: <a href="mailto:dboyce@als.net">dboyce@als.net</a>.</p>
-<p>See the <a href="about/">About &amp; license</a> page for full details, acknowledgements, and how to cite. For related tools and training &mdash; CDAtransformer (single-file C-CDA inspection), the ALS TDI Real World Evidence Resources hub, <em>Guide to Real-World Data for Clinical Research</em>, and the OMOP introductory course &mdash; see the <a href="resources/">Resources &amp; related tools</a> page.</p>
-
-
-
-
-
-
-
-
-
-
-
-
-                
-              </article>
-            </div>
-          
-          
-<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
-        </div>
-        
-          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
-  
-  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"/></svg>
-  Back to top
-</button>
-        
-      </main>
-      
-        <footer class="md-footer">
-  
-  <div class="md-footer-meta md-typeset">
-    <div class="md-footer-meta__inner md-grid">
-      <div class="md-copyright">
-  
-  
-</div>
-      
+<!-- MAIN -->
+<main>
+
+<!-- TAB: VARIABLES -->
+<section class="tab-panel active" id="tab-variables">
+  <div class="section-header">
+    <p class="section-eyebrow">Step 1 of 4</p>
+    <h2 class="section-title">Variable Assessment</h2>
+    <p class="section-desc">Evaluate each candidate variable. Answer six exchangeability questions to generate an initial feasibility score. Use the collapsible sections to add data quality metrics and confounders.</p>
+  </div>
+  <div class="card">
+    <div class="card-title">Add New Variable</div>
+    <div class="form-grid">
+      <div class="field"><label>Project / Study Name</label><input type="text" id="projName" placeholder="e.g., ATLAS Registry 2024"></div>
+      <div class="field"><label>RWD Source Type</label>
+        <select id="rwdSource"><option value="">Select…</option><option>Electronic Health Record (EHR)</option><option>Patient Registry</option><option>Claims Database</option><option>Biobank</option><option>Natural History Study</option><option>Other</option></select></div>
+      <div class="field"><label>Clinical Trial Variable Name</label><input type="text" id="trialVar" placeholder="e.g., ALSFRS-R Total Score"></div>
+      <div class="field"><label>RWD Variable Name</label><input type="text" id="rwdVar" placeholder="e.g., als_functional_rating_total"></div>
+      <div class="field"><label>Variable Category</label>
+        <select id="varCategory"><option value="">Select…</option><option>Demographics</option><option>Diagnosis / Eligibility</option><option>Treatment / Medication</option><option>Outcome / Endpoint</option><option>Laboratory / Biomarker</option><option>Functional Assessment</option><option>Comorbidity</option><option>Survival / Time-to-Event</option><option>Other</option></select></div>
+      <div class="field"><label>Variable Role in Trial</label>
+        <select id="varRole"><option value="">Select…</option><option>Primary Outcome</option><option>Secondary Outcome</option><option>Eligibility Criterion</option><option>Prognostic Factor / Covariate</option><option>Safety Endpoint</option><option>Other</option></select></div>
+    </div>
+    <div style="margin:20px 0 8px"><div class="card-title" style="margin-bottom:10px">Exchangeability Questions</div></div>
+    <div class="form-grid">
+      <div class="field"><label>1. Routinely collected in RWD source?</label>
+        <div class="radio-group"><input type="radio" class="radio-option" name="q1" id="q1y" value="Yes"><label for="q1y" class="radio-label">Yes</label><input type="radio" class="radio-option" name="q1" id="q1n" value="No"><label for="q1n" class="radio-label">No</label><input type="radio" class="radio-option" name="q1" id="q1u" value="Unknown"><label for="q1u" class="radio-label">Unknown</label></div></div>
+      <div class="field"><label>2. Available at baseline / index date?</label>
+        <div class="radio-group"><input type="radio" class="radio-option" name="q2" id="q2y" value="Yes"><label for="q2y" class="radio-label">Yes</label><input type="radio" class="radio-option" name="q2" id="q2n" value="No"><label for="q2n" class="radio-label">No</label><input type="radio" class="radio-option" name="q2" id="q2u" value="Unknown"><label for="q2u" class="radio-label">Unknown</label></div></div>
+      <div class="field"><label>3. Definition comparable to trial specification?</label>
+        <div class="radio-group"><input type="radio" class="radio-option" name="q3" id="q3y" value="Yes"><label for="q3y" class="radio-label">Yes</label><input type="radio" class="radio-option" name="q3" id="q3p" value="Partially"><label for="q3p" class="radio-label">Partially</label><input type="radio" class="radio-option" name="q3" id="q3n" value="No"><label for="q3n" class="radio-label">No</label></div></div>
+      <div class="field"><label>4. Completeness acceptable (&lt;20% missing)?</label>
+        <div class="radio-group"><input type="radio" class="radio-option" name="q4" id="q4y" value="Yes"><label for="q4y" class="radio-label">Yes</label><input type="radio" class="radio-option" name="q4" id="q4n" value="No"><label for="q4n" class="radio-label">No</label><input type="radio" class="radio-option" name="q4" id="q4u" value="Unknown"><label for="q4u" class="radio-label">Unknown</label></div></div>
+      <div class="field"><label>5. Measurement method standardized / validated?</label>
+        <div class="radio-group"><input type="radio" class="radio-option" name="q5" id="q5y" value="Yes"><label for="q5y" class="radio-label">Yes</label><input type="radio" class="radio-option" name="q5" id="q5n" value="No"><label for="q5n" class="radio-label">No</label><input type="radio" class="radio-option" name="q5" id="q5u" value="Unknown"><label for="q5u" class="radio-label">Unknown</label></div></div>
+      <div class="field"><label>6. Collected over comparable follow-up period?</label>
+        <div class="radio-group"><input type="radio" class="radio-option" name="q6" id="q6y" value="Yes"><label for="q6y" class="radio-label">Yes</label><input type="radio" class="radio-option" name="q6" id="q6p" value="Partially"><label for="q6p" class="radio-label">Partially</label><input type="radio" class="radio-option" name="q6" id="q6n" value="No"><label for="q6n" class="radio-label">No</label></div></div>
+      <div class="field full-width"><label>Notes</label><textarea id="varNotes" placeholder="Observations, caveats, data dictionary references…"></textarea></div>
+    </div>
+    <!-- Data Quality Metrics -->
+    <div class="coll-hdr" onclick="toggleColl(this)"><span class="coll-label">📊 Data Quality Metrics <span style="color:var(--text3);font-weight:400;text-transform:none">(optional)</span></span><span class="coll-arrow">▼</span></div>
+    <div class="coll-body">
+      <div class="form-grid cols-3">
+        <div class="field"><label>Sample Size (N)</label><input type="number" id="sampleN" placeholder="e.g., 2450" min="0"></div>
+        <div class="field"><label>% Missing for This Variable</label><input type="number" id="pctMissing" placeholder="e.g., 8.3" min="0" max="100" step="0.1"></div>
+        <div class="field"><label>Data Version / Cut Date</label><input type="text" id="dataVersion" placeholder="e.g., v2.1 / 2023-Q4"></div>
+        <div class="field"><label>Data Collection Start</label><input type="date" id="dataStart"></div>
+        <div class="field"><label>Data Collection End</label><input type="date" id="dataEnd"></div>
+      </div>
+    </div>
+    <!-- Confounders -->
+    <div class="coll-hdr" onclick="toggleColl(this)"><span class="coll-label">🔗 Confounders &amp; Analytical Approach <span style="color:var(--text3);font-weight:400;text-transform:none">(optional)</span></span><span class="coll-arrow">▼</span></div>
+    <div class="coll-body">
+      <div class="form-grid">
+        <div class="field"><label>Planned Covariates / Confounders</label><textarea id="covariates" placeholder="e.g., age, sex, disease duration, ALSFRS-R baseline, site of onset…"></textarea></div>
+        <div class="field"><label>Analytical Approach</label>
+          <select id="analyticalMethod"><option value="">Select…</option><option>Propensity Score Matching (PSM)</option><option>IPTW</option><option>Augmented IPTW (AIPTW)</option><option>Coarsened Exact Matching (CEM)</option><option>Direct Regression Adjustment</option><option>Exact Matching</option><option>Synthetic Control</option><option>Other / TBD</option></select></div>
+        <div class="field full-width"><label>Analytical Notes</label><textarea id="analyticalNotes" placeholder="Rationale, sensitivity analyses planned…"></textarea></div>
+      </div>
+    </div>
+    <div class="btn-row">
+      <button class="btn btn-primary" onclick="addVariable()">＋ Add Variable</button>
+      <button class="btn btn-secondary" onclick="clearVarForm()">Clear Form</button>
     </div>
   </div>
+  <!-- Variable list -->
+  <div class="card">
+    <div class="card-title">Assessed Variables</div>
+    <div id="varEmpty" class="empty-state"><div class="empty-icon">📋</div><div class="empty-title">No variables yet</div><div class="empty-desc">Use the form above to add your first variable.</div></div>
+    <div class="table-wrap">
+      <table class="var-table" id="varTable" style="display:none">
+        <thead><tr><th>#</th><th>Trial Variable</th><th>RWD Variable</th><th>Category</th><th>Score</th><th>Progress</th><th>Verdict</th><th></th></tr></thead>
+        <tbody id="varTBody"></tbody>
+      </table>
+    </div>
+  </div>
+</section>
+
+<!-- TAB: POCOCK -->
+<section class="tab-panel" id="tab-pocock">
+  <div class="section-header"><p class="section-eyebrow">Step 2 of 4</p><h2 class="section-title">Pocock's Criteria</h2><p class="section-desc">Evaluate the seven criteria for acceptable use of historical controls (Pocock, 1976).</p></div>
+  <div class="ref-box"><p><strong>Reference:</strong> Pocock SJ. The combination of randomized and historical controls in clinical trials. <em>J Chronic Dis.</em> 1976;29(3):175-88. doi: <a href="https://doi.org/10.1016/0021-9681(76)90044-8" target="_blank">10.1016/0021-9681(76)90044-8</a></p></div>
+  <div class="card"><div class="card-title">Select Variable</div>
+    <div class="field" style="max-width:420px"><label>Variable to Evaluate</label><select id="pocockSel" onchange="loadPanel('pocock')"></select></div></div>
+  <div id="pocockVP"></div><div id="pocockContent"><div class="empty-state"><div class="empty-icon">🔬</div><div class="empty-title">Add variables first</div></div></div>
+</section>
+
+<!-- TAB: FDA -->
+<section class="tab-panel" id="tab-fda">
+  <div class="section-header"><p class="section-eyebrow">Step 3 of 4</p><h2 class="section-title">FDA Guidance Assessment</h2><p class="section-desc">Evaluate alignment with the FDA 2023 guidance on externally controlled trials.</p></div>
+  <div class="ref-box"><p><strong>Reference:</strong> US FDA. "Considerations for the Design and Conduct of Externally Controlled Trials." February 2023. <a href="https://www.fda.gov/regulatory-information/search-fda-guidance-documents/considerations-design-and-conduct-externally-controlled-trials-drug-and-biological-products" target="_blank">View guidance ↗</a></p></div>
+  <div class="card"><div class="card-title">Select Variable</div>
+    <div class="field" style="max-width:420px"><label>Variable to Evaluate</label><select id="fdaSel" onchange="loadPanel('fda')"></select></div></div>
+  <div id="fdaVP"></div><div id="fdaContent"><div class="empty-state"><div class="empty-icon">📄</div><div class="empty-title">Add variables first</div></div></div>
+</section>
+
+<!-- TAB: GRAY -->
+<section class="tab-panel" id="tab-gray">
+  <div class="section-header"><p class="section-eyebrow">Step 4 of 4</p><h2 class="section-title">Gray et al. Framework</h2><p class="section-desc">Eight methodological domains for evidence assessment in studies using external comparators from real-world data (Gray et al., Drug Saf. 2020).</p></div>
+  <div class="ref-box pu"><p><strong>Reference:</strong> Gray CM, Grimson F, Layton D, Pocock S, Kim J. A Framework for Methodological Choice and Evidence Assessment for Studies Using External Comparators from Real-World Data. <em>Drug Saf.</em> 2020;43(7):623-633. doi: <a href="https://doi.org/10.1007/s40264-020-00944-1" target="_blank">10.1007/s40264-020-00944-1</a></p></div>
+  <div class="card"><div class="card-title purple">Select Variable</div>
+    <div class="field" style="max-width:420px"><label>Variable to Evaluate</label><select id="graySel" onchange="loadPanel('gray')"></select></div></div>
+  <div id="grayVP"></div><div id="grayContent"><div class="empty-state"><div class="empty-icon">📐</div><div class="empty-title">Add variables first</div></div></div>
+</section>
+
+<!-- TAB: REPORT -->
+<section class="tab-panel" id="tab-report">
+  <div class="section-header"><p class="section-eyebrow">Export &amp; Summary</p><h2 class="section-title">Assessment Report</h2></div>
+  <div class="stats-row">
+    <div class="stat-card"><div class="stat-num" id="sVars">0</div><div class="stat-lbl">Variables</div></div>
+    <div class="stat-card"><div class="stat-num" id="sStrong">0</div><div class="stat-lbl">Strong Potential</div></div>
+    <div class="stat-card"><div class="stat-num" id="sCond">0</div><div class="stat-lbl">Conditional</div></div>
+    <div class="stat-card"><div class="stat-num" id="sLimited">0</div><div class="stat-lbl">Limited Potential</div></div>
+    <div class="stat-card"><div class="stat-num" id="sComplete">0</div><div class="stat-lbl">Fully Assessed</div></div>
+  </div>
+  <div class="card"><div class="card-title gold">Composite Verdicts</div><div id="verdictList"><div class="empty-state"><div class="empty-icon">📊</div><div class="empty-title">No variables yet</div></div></div></div>
+  <div class="card"><div class="card-title">Export</div>
+    <p style="font-size:13px;color:var(--text2);margin-bottom:16px">Download individual sections or the full combined report. JSON export preserves all data for re-import or sharing.</p>
+    <div class="btn-row">
+      <button class="btn btn-gold" onclick="downloadReport('all')">⬇ Full Report (CSV)</button>
+      <button class="btn btn-secondary" onclick="downloadReport('variables')">Variables CSV</button>
+      <button class="btn btn-secondary" onclick="downloadReport('pocock')">Pocock CSV</button>
+      <button class="btn btn-secondary" onclick="downloadReport('fda')">FDA CSV</button>
+      <button class="btn btn-secondary" onclick="downloadReport('gray')">Gray CSV</button>
+    </div>
+    <div style="margin-top:20px;padding-top:20px;border-top:1px solid var(--border)"><button class="btn btn-danger" onclick="clearAllData()">⚠ Clear All Data</button></div>
+  </div>
+</section>
+
+<!-- TAB: HOWTO -->
+<section class="tab-panel" id="tab-howto">
+  <div class="section-header"><p class="section-eyebrow">User Guide</p><h2 class="section-title">How To Use RWDExchange</h2></div>
+  <div class="card"><div class="card-title">About</div>
+    <p style="font-size:13px;color:var(--text2);line-height:1.7;margin-bottom:10px">RWDExchange provides a structured, multi-framework assessment of whether real-world data can serve as a reliable external comparator in a clinical trial. It implements four complementary frameworks: a variable-level feasibility score, Pocock's seven historical control criteria, the FDA 2023 guidance for externally controlled trials, and the Gray et al. (2020) methodological framework — synthesized into a single composite verdict per variable.</p>
+    <p style="font-size:13px;color:var(--text2);line-height:1.7">All data is stored in your browser via <code>localStorage</code>. Use <strong>Export JSON</strong> to back up your session, <strong>Import</strong> to restore it, and <strong>Share</strong> to generate a URL that encodes your entire session for a colleague.</p></div>
+  <div class="card"><div class="card-title">Steps</div>
+    <div class="steps">
+      <div class="step"><div class="step-num">01</div><div><h3>Variable Assessment</h3><p>Add each variable. Answer six exchangeability questions for a 0–6 score. Optionally add data quality metrics (N, % missing, date range) and document planned confounders and analytical approach.</p></div></div>
+      <div class="step"><div class="step-num">02</div><div><h3>Pocock's Criteria</h3><p>Select a variable and rate each of the seven Pocock criteria. The composite verdict ring updates live as you rate. Save each evaluation separately.</p></div></div>
+      <div class="step"><div class="step-num">03</div><div><h3>FDA Guidance</h3><p>Rate alignment with each of the eight 2023 FDA considerations. Each rating and note will appear in your exported report.</p></div></div>
+      <div class="step"><div class="step-num">04</div><div><h3>Gray et al. Framework</h3><p>Complete the eight methodological domain assessment from Gray et al. 2020, covering research question fit, population representativeness, confounders, analytical approach, and reproducibility.</p></div></div>
+      <div class="step"><div class="step-num">05</div><div><h3>Report &amp; Export</h3><p>View composite verdicts on the Report tab. Download CSV per section or as a full combined report. Use Share to generate a URL encoding your full session.</p></div></div>
+    </div>
+  </div>
+  <div class="card"><div class="card-title">Verdict Interpretation</div>
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:12px">
+      <div style="background:var(--bg3);border:1px solid rgba(34,197,94,.3);border-radius:var(--radius);padding:14px"><div style="font-family:var(--ui);font-size:11px;font-weight:700;color:var(--green);margin-bottom:6px">🟢 STRONG (≥70%)</div><p style="font-size:12px;color:var(--text2)">Variable is well-suited as an external comparator. Proceed to study design.</p></div>
+      <div style="background:var(--bg3);border:1px solid rgba(250,204,21,.3);border-radius:var(--radius);padding:14px"><div style="font-family:var(--ui);font-size:11px;font-weight:700;color:var(--yellow);margin-bottom:6px">🟡 CONDITIONAL (45–69%)</div><p style="font-size:12px;color:var(--text2)">Usable with documented caveats and planned sensitivity analyses.</p></div>
+      <div style="background:var(--bg3);border:1px solid rgba(240,82,82,.3);border-radius:var(--radius);padding:14px"><div style="font-family:var(--ui);font-size:11px;font-weight:700;color:var(--red);margin-bottom:6px">🔴 LIMITED (&lt;45%)</div><p style="font-size:12px;color:var(--text2)">Significant limitations. Consider excluding or flagging as a major uncertainty.</p></div>
+      <div style="background:var(--bg3);border:1px solid var(--border);border-radius:var(--radius);padding:14px"><div style="font-family:var(--ui);font-size:11px;font-weight:700;color:var(--text3);margin-bottom:6px">⚪ PRELIMINARY</div><p style="font-size:12px;color:var(--text2)">Variable score only. Complete Pocock, FDA, and Gray for a full verdict.</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- TAB: OMOP -->
+<section class="tab-panel" id="tab-omop">
+  <div class="section-header"><p class="section-eyebrow">In Development</p><h2 class="section-title">OMOP Data Scan</h2></div>
+  <div class="cs"><div class="cs-icon">🔭</div><h3 class="cs-title">Coming Soon</h3>
+    <p class="cs-desc">The OMOP Data Scan will scan OMOP CDM–formatted data using pre-specified concept codes representing the variables assessed in the other modules, enabling automated standardized data characterization for external comparator feasibility.</p>
+    <span class="cs-chip">BETA · IN DEVELOPMENT</span>
+    <p style="font-size:12px;color:var(--text3);margin-top:20px">Contact: <a href="mailto:danielle@boycedatascience.com" style="color:var(--teal);text-decoration:none">danielle@boycedatascience.com</a></p>
+  </div>
+</section>
+</main>
+
+<footer style="position:relative;z-index:1;border-top:1px solid var(--border);padding:22px 48px;text-align:center">
+  <p style="font-size:11px;color:var(--text3)">RWDExchange v3.0 · <a href="mailto:danielle@boycedatascience.com" style="color:var(--teal);text-decoration:none">Danielle Boyce, MPH, DPA</a> · <a href="https://github.com/BoyceLab/RWDExchange" target="_blank" style="color:var(--teal);text-decoration:none">GitHub ↗</a> · MIT License · All data stored locally in your browser</p>
 </footer>
-      
+
+<div id="toast"></div>
+
+<!-- SHARE MODAL -->
+<div class="modal-backdrop" id="shareModal" onclick="if(event.target.id==='shareModal')closeShare()">
+  <div class="modal">
+    <button class="modal-close" onclick="closeShare()">✕</button>
+    <h3 class="modal-title">Share Session</h3>
+    <p class="modal-desc">This URL encodes your entire assessment session. Opening it in any browser will offer to import your data — no server required.</p>
+    <div class="url-box" id="shareUrlBox">Generating…</div>
+    <div class="btn-row">
+      <button class="btn btn-primary" onclick="copyUrl()">Copy URL</button>
+      <button class="btn btn-secondary" onclick="closeShare()">Close</button>
     </div>
-    <div class="md-dialog" data-md-component="dialog">
-      <div class="md-dialog__inner md-typeset"></div>
-    </div>
-    
-    
-    
-      
-      
-      <script id="__config" type="application/json">{"annotate": null, "base": ".", "features": ["navigation.sections", "navigation.indexes", "navigation.top", "content.code.copy", "content.code.annotate", "search.highlight", "search.suggest", "toc.follow"], "search": "assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
-    
-    
-      <script src="assets/javascripts/bundle.79ae519e.min.js"></script>
-      
-    
-  </body>
+  </div>
+</div>
+
+<script>
+/* ═══════════ DATA STORE ═══════════ */
+const DB = {
+  get variables(){ return JSON.parse(localStorage.getItem('rwdx_vars')||'[]') },
+  set variables(v){ localStorage.setItem('rwdx_vars',JSON.stringify(v)); autosaved() },
+  get pocock(){ return JSON.parse(localStorage.getItem('rwdx_poc')||'{}') },
+  set pocock(v){ localStorage.setItem('rwdx_poc',JSON.stringify(v)); autosaved() },
+  get fda(){ return JSON.parse(localStorage.getItem('rwdx_fda')||'{}') },
+  set fda(v){ localStorage.setItem('rwdx_fda',JSON.stringify(v)); autosaved() },
+  get gray(){ return JSON.parse(localStorage.getItem('rwdx_gray')||'{}') },
+  set gray(v){ localStorage.setItem('rwdx_gray',JSON.stringify(v)); autosaved() }
+};
+
+function autosaved(){
+  const el=document.getElementById('autosaveLabel');
+  el.textContent='Saved just now'; el.className='autosave saved';
+  clearTimeout(window._st);
+  window._st=setTimeout(()=>{el.textContent='Auto-saved';el.className='autosave'},3000);
+}
+
+/* ═══════════ CRITERIA DEFINITIONS ═══════════ */
+const POCOCK=[
+  {id:'p1',lbl:'Standardized Treatment',txt:'The historical controls received a <strong>precisely defined standard treatment</strong> comparable to the active arm standard of care.'},
+  {id:'p2',lbl:'Eligibility Criteria',txt:'Patients in both groups fulfill <strong>identical eligibility criteria</strong> (same inclusion/exclusion criteria applied).'},
+  {id:'p3',lbl:'Evaluation Methods',txt:'<strong>Methods for patient evaluation</strong> — data collection, timing, instruments, endpoints — are the same or highly comparable.'},
+  {id:'p4',lbl:'Patient Characteristics',txt:'The <strong>distribution of important prognostic characteristics</strong> is comparable between the two groups.'},
+  {id:'p5',lbl:'No Differential Effects',txt:'There is <strong>no known reason to expect systematically different outcomes</strong> (e.g., temporal trends, geographic drift, secular changes in care).'},
+  {id:'p6',lbl:'Recency & Relevance',txt:'Historical controls are <strong>recent and relevant</strong> to the current treatment landscape, institution, and patient population.'},
+  {id:'p7',lbl:'Investigator Involvement',txt:'The principal investigator has <strong>previously been involved</strong> with the historical control study or has access to raw individual patient-level data.'}
+];
+const FDA_C=[
+  {id:'f1',lbl:'Disease & Population Comparability',txt:'Disease definition, diagnostic criteria, and <strong>patient population</strong> in the external data are comparable to the trial population.'},
+  {id:'f2',lbl:'Standard of Care Consistency',txt:'The <strong>standard of care</strong> (background therapy, co-medications, supportive care) has remained consistent between the historical period and current trial.'},
+  {id:'f3',lbl:'Endpoint Definition & Ascertainment',txt:'<strong>Primary and secondary endpoint definitions</strong> and ascertainment methods are comparable across data sources.'},
+  {id:'f4',lbl:'Data Collection Comparability',txt:'Data collected in a <strong>comparable manner</strong> (visit schedule, instruments) with consistent timing relative to treatment initiation.'},
+  {id:'f5',lbl:'External Data Source Quality',txt:'The data source meets <strong>acceptable quality standards</strong>: completeness, accuracy, and validity of key variables assessed and documented.'},
+  {id:'f6',lbl:'Risk of Bias Assessment',txt:'Potential <strong>selection, information bias, and confounding</strong> identified; plans to address or quantify bias are in place.'},
+  {id:'f7',lbl:'Temporal & Geographic Trends',txt:'<strong>Temporal trends</strong> and geographic factors that could affect outcome comparability have been evaluated.'},
+  {id:'f8',lbl:'Pre-specified Analysis Plan',txt:'External comparator use and analyses are <strong>pre-specified in the protocol and SAP</strong> before unblinding or data availability.'}
+];
+const GRAY_C=[
+  {id:'g1',lbl:'Research Question & Data Source Fit',txt:'The RWD source was selected on <strong>predefined, documented criteria</strong> directly matching the research question; demonstrably fit-for-purpose.'},
+  {id:'g2',lbl:'Study Population Representativeness',txt:'The RWD population is <strong>representative of the target clinical population</strong>; selection criteria comparable and transparently documented.'},
+  {id:'g3',lbl:'Exposure / Comparator Equivalence',txt:'The treatment or comparator in the RWD is <strong>sufficiently equivalent</strong> to the trial control arm (type, dose, route, duration, indication).'},
+  {id:'g4',lbl:'Outcome Definition & Measurement',txt:'The primary outcome is <strong>defined and measured comparably</strong>; adjudication and coding practices are equivalent or differences are fully documented.'},
+  {id:'g5',lbl:'Confounder Identification & Availability',txt:'Key confounders and effect modifiers have been <strong>identified a priori</strong>; the necessary variables are available, valid, and sufficiently complete.'},
+  {id:'g6',lbl:'Analytical Approach Appropriateness',txt:'The planned analytical method is <strong>appropriate for the study context</strong> and adequately addresses identified confounding and selection bias.'},
+  {id:'g7',lbl:'Bias Assessment & Sensitivity Analyses',txt:'Sources of bias have been <strong>systematically identified</strong>; quantitative bias analyses or sensitivity analyses are planned and pre-specified.'},
+  {id:'g8',lbl:'Transparency, Reproducibility & Reporting',txt:'Study design, data sources, and analysis code are <strong>sufficiently documented</strong>; the analysis could be independently reproduced.'}
+];
+
+const FW={
+  pocock:{criteria:POCOCK, ratings:['Met','Partially Met','Not Met','Unknown','N/A'],
+    key:'pocock', saveLabel:"Save Pocock Evaluation", pu:false,
+    score:r=>r==='Met'?1:r==='Partially Met'?.5:r==='N/A'?null:r==='Unknown'?.2:0},
+  fda:{criteria:FDA_C, ratings:['Aligned','Partially Aligned','Not Aligned','Unknown','N/A'],
+    key:'fda', saveLabel:"Save FDA Evaluation", pu:false,
+    score:r=>r==='Aligned'?1:r==='Partially Aligned'?.5:r==='N/A'?null:r==='Unknown'?.2:0},
+  gray:{criteria:GRAY_C, ratings:['Adequate','Adequate with Limitations','Inadequate','Unclear','N/A'],
+    key:'gray', saveLabel:"Save Gray Evaluation", pu:true,
+    score:r=>r==='Adequate'?1:r==='Adequate with Limitations'?.5:r==='N/A'?null:r==='Unclear'?.2:0}
+};
+
+/* ═══════════ VERDICT ENGINE ═══════════ */
+function fwScore(fwKey, varId){
+  const cfg=FW[fwKey], saved=DB[cfg.key][varId]||{};
+  const rated=cfg.criteria.filter(c=>saved[c.id]?.rating);
+  if(rated.length < Math.ceil(cfg.criteria.length*.55)) return null;
+  const vals=rated.map(c=>cfg.score(saved[c.id].rating)).filter(v=>v!==null);
+  return vals.length?vals.reduce((a,b)=>a+b,0)/cfg.criteria.length:null;
+}
+
+function computeVerdict(varId){
+  const v=DB.variables.find(x=>x.id===varId);
+  if(!v) return null;
+  const vS=v.score/6, pS=fwScore('pocock',varId), fS=fwScore('fda',varId), gS=fwScore('gray',varId);
+  const done=[pS,fS,gS].filter(x=>x!==null).length;
+  const bd={var:Math.round(vS*100), poc:pS!==null?Math.round(pS*100):null, fda:fS!==null?Math.round(fS*100):null, gray:gS!==null?Math.round(gS*100):null};
+  if(done===0){
+    const pct=Math.round(vS*100), lvl=pct>=67?'hi':pct>=33?'md':'lo';
+    return{pct,label:pct>=67?'Promising':pct>=33?'Unclear':'Concerning',level:lvl,preliminary:true,done:0,bd};
+  }
+  const wts=[{s:vS,w:.20}];
+  if(pS!==null) wts.push({s:pS,w:.27}); if(fS!==null) wts.push({s:fS,w:.27}); if(gS!==null) wts.push({s:gS,w:.26});
+  const tw=wts.reduce((a,b)=>a+b.w,0);
+  const weighted=wts.reduce((a,b)=>a+b.s*b.w,0)/tw;
+  const pct=Math.round(weighted*100), lvl=pct>=70?'hi':pct>=45?'md':'lo';
+  return{pct,label:pct>=70?'Strong Potential':pct>=45?'Conditional':'Limited Potential',level:lvl,preliminary:false,done,bd};
+}
+
+function vbadge(vrd){
+  if(!vrd) return '<span class="vbadge vb-pr">—</span>';
+  const c=vrd.level==='hi'?'vb-hi':vrd.level==='md'?'vb-md':'vb-lo';
+  return `<span class="vbadge ${c}">${vrd.pct}% ${vrd.label}${vrd.preliminary?' *':''}</span>`;
+}
+
+function ringHTML(vrd){
+  if(!vrd) return '';
+  const r=30,ci=2*Math.PI*r,dash=(vrd.pct/100)*ci,gap=ci-dash;
+  const col=vrd.level==='hi'?'#22c55e':vrd.level==='md'?'#facc15':'#f05252';
+  const lc=vrd.level==='hi'?'vb-hi':vrd.level==='md'?'vb-md':'vb-lo';
+  return `<div class="vp-panel"><div class="vp-ring">
+    <svg viewBox="0 0 72 72"><circle class="ring-bg" cx="36" cy="36" r="${r}"/>
+    <circle class="ring-fg" cx="36" cy="36" r="${r}" stroke="${col}"
+      stroke-dasharray="${dash.toFixed(1)} ${gap.toFixed(1)}"/></svg>
+    <div class="ring-pct">${vrd.pct}<span>%</span></div></div>
+    <div class="vp-info">
+      <div class="vp-lbl ${lc}">${vrd.label}${vrd.preliminary?' (Preliminary)':''}</div>
+      <div class="vp-note">${vrd.done}/3 frameworks assessed</div>
+      <div class="vp-bkd">
+        ${[['VAR',vrd.bd.var,'var(--teal)'],['POC',vrd.bd.poc,'var(--teal)'],['FDA',vrd.bd.fda,'var(--teal)'],['GRY',vrd.bd.gray,'var(--purple)']].map(([l,s,c])=>
+          `<span class="vp-comp"><span class="vp-dot" style="background:${s!==null?c:'var(--border)'}"></span>${l}: ${s!==null?s+'%':'—'}</span>`).join('')}
+      </div>
+    </div></div>`;
+}
+
+/* ═══════════ COLLAPSIBLE ═══════════ */
+function toggleColl(hdr){ hdr.classList.toggle('open'); hdr.nextElementSibling.classList.toggle('open') }
+
+/* ═══════════ TAB NAV ═══════════ */
+document.querySelectorAll('.tab-btn').forEach(btn=>{
+  btn.addEventListener('click',()=>{
+    document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
+    document.querySelectorAll('.tab-panel').forEach(p=>p.classList.remove('active'));
+    btn.classList.add('active');
+    document.getElementById('tab-'+btn.dataset.tab).classList.add('active');
+    const t=btn.dataset.tab;
+    if(t==='pocock') refreshFW('pocock');
+    if(t==='fda')    refreshFW('fda');
+    if(t==='gray')   refreshFW('gray');
+    if(t==='report') refreshReport();
+  });
+});
+
+/* ═══════════ VARIABLE ASSESSMENT ═══════════ */
+function gR(n){ const e=document.querySelector(`input[name="${n}"]:checked`); return e?e.value:'' }
+function calcScore(a){ return Math.round(a.reduce((s,v)=>s+(v==='Yes'?1:v==='Partially'?.5:0),0)) }
+
+function addVariable(){
+  const tv=document.getElementById('trialVar').value.trim();
+  const rv=document.getElementById('rwdVar').value.trim();
+  if(!tv||!rv){ toast('Enter both variable names.'); return; }
+  const answers=['q1','q2','q3','q4','q5','q6'].map(gR);
+  const v={
+    id:Date.now().toString(), created:new Date().toLocaleDateString(),
+    project:document.getElementById('projName').value.trim(),
+    source:document.getElementById('rwdSource').value,
+    trialVar:tv, rwdVar:rv,
+    category:document.getElementById('varCategory').value,
+    role:document.getElementById('varRole').value,
+    answers, score:calcScore(answers),
+    notes:document.getElementById('varNotes').value.trim(),
+    sampleN:document.getElementById('sampleN').value,
+    pctMissing:document.getElementById('pctMissing').value,
+    dataVersion:document.getElementById('dataVersion').value.trim(),
+    dataStart:document.getElementById('dataStart').value,
+    dataEnd:document.getElementById('dataEnd').value,
+    covariates:document.getElementById('covariates').value.trim(),
+    analyticalMethod:document.getElementById('analyticalMethod').value,
+    analyticalNotes:document.getElementById('analyticalNotes').value.trim()
+  };
+  DB.variables=[...DB.variables,v];
+  renderVarTable(); clearVarForm(); updateBadges(); toast('Variable added ✓');
+}
+
+function clearVarForm(){
+  ['projName','trialVar','rwdVar','varNotes','sampleN','pctMissing','dataVersion','dataStart','dataEnd','covariates','analyticalNotes'].forEach(id=>document.getElementById(id).value='');
+  ['rwdSource','varCategory','varRole','analyticalMethod'].forEach(id=>document.getElementById(id).selectedIndex=0);
+  document.querySelectorAll('input[type=radio]').forEach(r=>r.checked=false);
+}
+
+function deleteVar(id){
+  if(!confirm('Remove this variable and all its assessments?')) return;
+  DB.variables=DB.variables.filter(v=>v.id!==id);
+  ['pocock','fda','gray'].forEach(k=>{ const d=DB[k]; delete d[id]; DB[k]=d; });
+  renderVarTable(); updateBadges(); toast('Removed.');
+}
+
+function renderVarTable(){
+  const vars=DB.variables;
+  document.getElementById('varEmpty').style.display=vars.length?'none':'';
+  const t=document.getElementById('varTable'); t.style.display=vars.length?'':'none';
+  if(!vars.length) return;
+  document.getElementById('varTBody').innerHTML=vars.map((v,i)=>{
+    const sc=v.score, dc=sc>=4?'sd-hi':sc>=2?'sd-md':'sd-lo', dl=sc>=4?'High':sc>=2?'Med':'Low';
+    const pDone=fwScore('pocock',v.id)!==null, fDone=fwScore('fda',v.id)!==null, gDone=fwScore('gray',v.id)!==null;
+    const pills=`<div class="pills">
+      <span class="pill ${pDone?'pill-on':'pill-off'}">POC</span>
+      <span class="pill ${fDone?'pill-on':'pill-off'}">FDA</span>
+      <span class="pill ${gDone?'pill-on pu':'pill-off'}">GRY</span></div>`;
+    return `<tr>
+      <td style="color:var(--text3);font-family:var(--mono);font-size:10px">${i+1}</td>
+      <td><div class="vn">${esc(v.trialVar)}</div><div class="vp-sub">${esc(v.project)}</div></td>
+      <td class="rwd-var">${esc(v.rwdVar)}</td>
+      <td style="font-size:11px;color:var(--text2)">${esc(v.category)}</td>
+      <td><span class="score-badge"><span class="score-dot ${dc}"></span>${sc}/6 ${dl}</span></td>
+      <td>${pills}</td>
+      <td>${vbadge(computeVerdict(v.id))}</td>
+      <td><button class="btn btn-danger" onclick="deleteVar('${v.id}')">✕</button></td>
+    </tr>`;
+  }).join('');
+}
+
+function updateBadges(){
+  const n=DB.variables.length;
+  document.getElementById('varBadge').textContent=n;
+  document.getElementById('reportBadge').textContent=n;
+}
+
+/* ═══════════ FRAMEWORK PANELS ═══════════ */
+function refreshFW(fw){
+  const vars=DB.variables, sel=document.getElementById(fw+'Sel'), cur=sel.value;
+  sel.innerHTML=vars.length
+    ?vars.map(v=>`<option value="${v.id}">${esc(v.trialVar)} — ${esc(v.rwdVar)}</option>`).join('')
+    :'<option value="">No variables added yet</option>';
+  if(cur&&vars.find(v=>v.id===cur)) sel.value=cur;
+  loadPanel(fw);
+}
+
+function loadPanel(fw){
+  const cfg=FW[fw], vars=DB.variables, sel=document.getElementById(fw+'Sel');
+  const vp=document.getElementById(fw+'VP'), content=document.getElementById(fw+'Content');
+  const icon={pocock:'🔬',fda:'📄',gray:'📐'}[fw];
+  if(!vars.length||!sel.value){
+    vp.innerHTML=''; content.innerHTML=`<div class="empty-state"><div class="empty-icon">${icon}</div><div class="empty-title">Add variables first</div></div>`; return;
+  }
+  const vid=sel.value;
+  vp.innerHTML=ringHTML(computeVerdict(vid));
+  const saved=DB[cfg.key][vid]||{};
+  const pu=cfg.pu;
+  content.innerHTML=`<div class="card">
+    <div class="card-title ${pu?'purple':''}">${{pocock:"Pocock's Seven Criteria",fda:'FDA Guidance Considerations',gray:'Gray et al. Methodological Domains'}[fw]}</div>
+    <div style="overflow-x:auto"><table class="crit-table" style="min-width:680px">
+      <thead><tr><th style="width:36px">#</th><th>Criterion</th><th style="width:185px">Rating</th><th>Notes</th></tr></thead>
+      <tbody>${cfg.criteria.map(c=>{const sv=saved[c.id]||{};return`<tr>
+        <td class="cnum ${pu?'pu':''}">${c.id.toUpperCase()}</td>
+        <td><div class="clbl">${c.lbl}</div><div class="ctxt">${c.txt}</div></td>
+        <td class="crating"><select id="${fw}_${c.id}">
+          <option value="">— Select —</option>
+          ${cfg.ratings.map(r=>`<option ${sv.rating===r?'selected':''}>${esc(r)}</option>`).join('')}
+        </select></td>
+        <td class="cnotes"><textarea id="${fw}n_${c.id}" placeholder="Notes…">${esc(sv.notes||'')}</textarea></td>
+      </tr>`}).join('')}</tbody>
+    </table></div>
+    <div class="btn-row"><button class="btn ${pu?'btn-purple':'btn-primary'}" onclick="saveFW('${fw}','${vid}')">${cfg.saveLabel}</button></div>
+  </div>`;
+}
+
+function saveFW(fw,vid){
+  const cfg=FW[fw], data={};
+  cfg.criteria.forEach(c=>{data[c.id]={rating:document.getElementById(`${fw}_${c.id}`).value,notes:document.getElementById(`${fw}n_${c.id}`).value}});
+  const all=DB[cfg.key]; all[vid]=data; DB[cfg.key]=all;
+  loadPanel(fw); renderVarTable();
+  toast(`${{pocock:'Pocock',fda:'FDA',gray:'Gray'}[fw]} evaluation saved ✓`);
+}
+
+/* ═══════════ REPORT ═══════════ */
+function refreshReport(){
+  const vars=DB.variables, vds=vars.map(v=>({v,vrd:computeVerdict(v.id)}));
+  document.getElementById('sVars').textContent=vars.length;
+  document.getElementById('sStrong').textContent=vds.filter(x=>x.vrd?.level==='hi').length;
+  document.getElementById('sCond').textContent=vds.filter(x=>x.vrd?.level==='md').length;
+  document.getElementById('sLimited').textContent=vds.filter(x=>x.vrd?.level==='lo').length;
+  document.getElementById('sComplete').textContent=vds.filter(x=>x.vrd&&!x.vrd.preliminary&&x.vrd.done===3).length;
+  const list=document.getElementById('verdictList');
+  if(!vars.length){list.innerHTML='<div class="empty-state"><div class="empty-icon">📊</div><div class="empty-title">No variables yet</div></div>';return;}
+  list.innerHTML=vds.map(({v,vrd})=>{
+    const bd=vrd?.bd||{};
+    const bar=(val,col,lbl)=>`<div class="mini-bar"><div class="mb-val">${val!==null?val+'%':'—'}</div><div class="mb-track"><div class="mb-fill" style="width:${val||0}%;background:${col}"></div></div><div class="mb-lbl">${lbl}</div></div>`;
+    return `<div class="vr-row">
+      <div><div class="vr-name">${esc(v.trialVar)}</div><div class="vr-sub">${esc(v.rwdVar)} · ${esc(v.project)}</div></div>
+      <div class="vr-bars">
+        ${bar(bd.var,'var(--teal)','VAR')}${bar(bd.poc,'var(--teal)','POC')}${bar(bd.fda,'var(--teal)','FDA')}${bar(bd.gray,'var(--purple)','GRY')}
+      </div>
+      ${vbadge(vrd)}</div>`;
+  }).join('');
+}
+
+/* ═══════════ CSV EXPORT ═══════════ */
+function downloadReport(type){
+  const vars=DB.variables; if(!vars.length){toast('No data to export.');return;}
+  const Q=['Routinely Collected','Baseline Available','Definition Comparable','Completeness OK','Measurement Validated','Comparable Follow-up'];
+  if(type==='all'||type==='variables'){
+    const h=['ID','Date','Project','RWD Source','Trial Variable','RWD Variable','Category','Role',
+      ...Q,'Score (0-6)','Score Level','Verdict %','Verdict Label',
+      'Sample N','% Missing','Data Version','Data Start','Data End','Covariates','Analytical Method','Analytical Notes','Notes'];
+    const r=vars.map(v=>{const vrd=computeVerdict(v.id);return[v.id,v.created,v.project,v.source,v.trialVar,v.rwdVar,v.category,v.role,
+      ...v.answers,v.score,v.score>=4?'High':v.score>=2?'Medium':'Low',vrd?.pct??'',vrd?.label??'',
+      v.sampleN||'',v.pctMissing||'',v.dataVersion||'',v.dataStart||'',v.dataEnd||'',
+      v.covariates||'',v.analyticalMethod||'',v.analyticalNotes||'',v.notes||'']});
+    dlCSV('RWDExchange_Variables_'+td()+'.csv',h,r);
+  }
+  ['pocock','fda','gray'].forEach(fw=>{
+    if(type!=='all'&&type!==fw) return;
+    const cfg=FW[fw];
+    const h=['Variable ID','Trial Variable','RWD Variable',...cfg.criteria.flatMap(c=>[c.lbl+' Rating',c.lbl+' Notes'])];
+    const r=vars.map(v=>{const s=DB[cfg.key][v.id]||{};return[v.id,v.trialVar,v.rwdVar,...cfg.criteria.flatMap(c=>[(s[c.id]||{}).rating||'',(s[c.id]||{}).notes||''])];});
+    dlCSV(`RWDExchange_${fw.charAt(0).toUpperCase()+fw.slice(1)}_${td()}.csv`,h,r);
+  });
+}
+function dlCSV(name,hdrs,rows){
+  const csv=[hdrs,...rows].map(r=>r.map(c=>`"${String(c||'').replace(/"/g,'""')}"`).join(',')).join('\n');
+  const a=document.createElement('a'); a.href=URL.createObjectURL(new Blob([csv],{type:'text/csv'})); a.download=name; a.click();
+}
+function td(){ return new Date().toISOString().split('T')[0] }
+
+/* ═══════════ JSON IMPORT / EXPORT ═══════════ */
+function exportJSON(){
+  const data={version:3,exported:new Date().toISOString(),variables:DB.variables,pocock:DB.pocock,fda:DB.fda,gray:DB.gray};
+  const a=document.createElement('a');
+  a.href=URL.createObjectURL(new Blob([JSON.stringify(data,null,2)],{type:'application/json'}));
+  a.download='RWDExchange_Session_'+td()+'.json'; a.click(); toast('JSON exported ✓');
+}
+function importJSON(evt){
+  const file=evt.target.files[0]; if(!file) return;
+  const reader=new FileReader();
+  reader.onload=e=>{
+    try{
+      const data=JSON.parse(e.target.result);
+      if(!data.variables){toast('Invalid file format.');return;}
+      if(!confirm(`Import ${data.variables.length} variable(s) from "${file.name}"? This replaces your current session.`)) return;
+      DB.variables=data.variables||[]; DB.pocock=data.pocock||{}; DB.fda=data.fda||{}; DB.gray=data.gray||{};
+      renderVarTable(); updateBadges(); toast(`Imported ${data.variables.length} variable(s) ✓`);
+    }catch(err){toast('Could not parse JSON file.');}
+  };
+  reader.readAsText(file); evt.target.value='';
+}
+
+/* ═══════════ SHARE VIA URL ═══════════ */
+function openShareModal(){
+  const data={v:DB.variables,p:DB.pocock,f:DB.fda,g:DB.gray};
+  const enc=btoa(unescape(encodeURIComponent(JSON.stringify(data))));
+  const url=location.origin+location.pathname+'#state='+enc;
+  document.getElementById('shareUrlBox').textContent=url;
+  window._shareUrl=url;
+  document.getElementById('shareModal').classList.add('open');
+}
+function copyUrl(){
+  navigator.clipboard.writeText(window._shareUrl||'').then(()=>toast('URL copied ✓')).catch(()=>toast('Select and copy the URL manually.'));
+}
+function closeShare(){ document.getElementById('shareModal').classList.remove('open') }
+
+function checkUrlState(){
+  const hash=location.hash;
+  if(!hash.startsWith('#state=')) return;
+  try{
+    const data=JSON.parse(decodeURIComponent(escape(atob(hash.slice(7)))));
+    if(!data.v?.length) return;
+    if(!confirm(`This URL contains a shared session with ${data.v.length} variable(s). Import it?`)){history.replaceState(null,'',location.pathname);return;}
+    DB.variables=data.v||[]; DB.pocock=data.p||{}; DB.fda=data.f||{}; DB.gray=data.g||{};
+    renderVarTable(); updateBadges(); toast(`Imported ${data.v.length} variable(s) ✓`);
+    history.replaceState(null,'',location.pathname);
+  }catch(e){console.warn('URL state decode failed',e);}
+}
+
+/* ═══════════ CLEAR ALL ═══════════ */
+function clearAllData(){
+  if(!confirm('Permanently delete ALL variables and assessments?')) return;
+  ['rwdx_vars','rwdx_poc','rwdx_fda','rwdx_gray'].forEach(k=>localStorage.removeItem(k));
+  renderVarTable(); updateBadges(); refreshReport(); toast('All data cleared.');
+}
+
+/* ═══════════ UTILS ═══════════ */
+function esc(s){if(!s)return'';return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;')}
+let _tt;
+function toast(msg){const el=document.getElementById('toast');el.textContent=msg;el.classList.add('show');clearTimeout(_tt);_tt=setTimeout(()=>el.classList.remove('show'),2600);}
+
+/* ═══════════ INIT ═══════════ */
+checkUrlState();
+renderVarTable();
+updateBadges();
+if(DB.variables.length){const el=document.getElementById('autosaveLabel');el.textContent='Data loaded from browser';el.className='autosave saved';setTimeout(()=>{el.textContent='Auto-saved';el.className='autosave'},3000);}
+</script>
+</body>
 </html>
