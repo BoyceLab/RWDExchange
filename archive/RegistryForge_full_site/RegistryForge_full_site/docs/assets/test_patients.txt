@@ -1,0 +1,27 @@
+# test_patients.txt
+# ----------------------------------------------------------------------------
+# Stage 6 of the pipeline reads this file and removes any matching patient
+# (and all their records) from the final dashboard bundle.
+#
+# One rule per line. Lines starting with # are comments. Blank lines are ignored.
+#
+# Four match modes:
+#   id: <patient_id>           -> exact patient_id (UUID)
+#   name: <First Last>         -> exact full name match (case-insensitive)
+#   name_contains: <substring> -> first or last name contains (case-insensitive)
+#   mrn_contains: <substring>  -> MRN contains (case-insensitive)
+#
+# Lines without a "type:" prefix default to name_contains.
+# ----------------------------------------------------------------------------
+
+# Examples (delete these, replace with your real test patients):
+
+# name: Test Patient
+# name: Z Test
+# name_contains: zztest
+# name_contains: training
+# mrn_contains: 99999
+# id: ad84e7c2-1234-5678-9abc-def012345678
+
+# Add real exclusions below this line:
+

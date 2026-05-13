@@ -1,0 +1,311 @@
+/* === Registry Forge homepage hero ====================================== */
+
+/* CDC funding acknowledgement banner — first thing on the page */
+.rf-funding {
+  max-width: 1080px;
+  margin: 12px auto 16px auto;
+  padding: 14px 22px;
+  background: linear-gradient(135deg, #fff8e1 0%, #fff5d6 100%);
+  border: 1px solid #f0c965;
+  border-left: 5px solid #b8860b;
+  border-radius: 6px;
+  font-size: 14px;
+  color: #5c4d1e;
+  line-height: 1.55;
+}
+.rf-funding strong { color: #3d3210; }
+
+.rf-hero {
+  position: relative;
+  margin: 0 0 2rem;
+  padding: 2.75rem 2.25rem 2.25rem;
+  border-radius: 1rem;
+  background:
+    radial-gradient(ellipse at top right, rgba(255,255,255,0.18), transparent 60%),
+    radial-gradient(ellipse at bottom left, rgba(0,0,0,0.20), transparent 55%),
+    linear-gradient(135deg, #4a148c 0%, #6a1b9a 35%, #3949ab 100%);
+  color: #fff;
+  box-shadow: 0 12px 32px -10px rgba(74,20,140,0.45);
+  overflow: hidden;
+}
+
+.rf-hero::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background-image:
+    radial-gradient(circle at 20% 30%, rgba(255,255,255,0.06) 0, rgba(255,255,255,0) 40%),
+    radial-gradient(circle at 80% 70%, rgba(255,255,255,0.05) 0, rgba(255,255,255,0) 45%);
+  pointer-events: none;
+}
+
+.rf-hero-eyebrow {
+  display: inline-block;
+  text-transform: uppercase;
+  letter-spacing: 0.18em;
+  font-size: 0.72rem;
+  font-weight: 700;
+  padding: 0.32rem 0.7rem;
+  border-radius: 999px;
+  background: rgba(255,255,255,0.16);
+  border: 1px solid rgba(255,255,255,0.30);
+  margin-bottom: 1rem;
+}
+
+.rf-hero h1.rf-hero-title {
+  margin: 0 0 0.45rem;
+  font-size: 2.4rem;
+  line-height: 1.1;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  color: #fff;
+  border: none;
+}
+
+.rf-hero h1.rf-hero-title::before { content: none; }
+
+.rf-hero .rf-hero-tagline {
+  margin: 0 0 1.1rem;
+  font-size: 1.15rem;
+  font-weight: 500;
+  opacity: 0.96;
+}
+
+.rf-hero .rf-hero-body {
+  font-size: 1rem;
+  line-height: 1.6;
+  margin: 0 0 1.4rem;
+  max-width: 62ch;
+  opacity: 0.95;
+}
+
+.rf-hero .rf-hero-body strong { color: #fff; }
+
+.rf-badges {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-top: 1.1rem;
+}
+
+.rf-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.32rem 0.7rem;
+  border-radius: 999px;
+  font-size: 0.78rem;
+  font-weight: 600;
+  letter-spacing: 0.01em;
+  background: rgba(255,255,255,0.14);
+  color: #fff;
+  border: 1px solid rgba(255,255,255,0.28);
+  backdrop-filter: blur(2px);
+}
+
+.rf-badge-strong {
+  background: #fff;
+  color: #4a148c;
+  border-color: #fff;
+}
+
+.rf-cta-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.6rem;
+  margin-top: 1.5rem;
+}
+
+.rf-cta {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.6rem 1.05rem;
+  border-radius: 0.5rem;
+  font-weight: 700;
+  font-size: 0.93rem;
+  text-decoration: none !important;
+  transition: transform 120ms ease, box-shadow 120ms ease;
+}
+
+.rf-cta-primary {
+  background: #fff;
+  color: #4a148c !important;
+  box-shadow: 0 6px 18px -8px rgba(0,0,0,0.45);
+}
+
+.rf-cta-primary:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 10px 24px -8px rgba(0,0,0,0.55);
+}
+
+.rf-cta-secondary {
+  background: rgba(255,255,255,0.10);
+  color: #fff !important;
+  border: 1px solid rgba(255,255,255,0.40);
+}
+
+.rf-cta-secondary:hover {
+  background: rgba(255,255,255,0.18);
+}
+
+/* Dark-mode adjustment for the hero */
+[data-md-color-scheme="slate"] .rf-hero {
+  background:
+    radial-gradient(ellipse at top right, rgba(255,255,255,0.10), transparent 60%),
+    radial-gradient(ellipse at bottom left, rgba(0,0,0,0.30), transparent 55%),
+    linear-gradient(135deg, #311b92 0%, #4527a0 35%, #283593 100%);
+  box-shadow: 0 12px 32px -10px rgba(0,0,0,0.55);
+}
+
+/* Section header for "Everything you get" */
+.rf-section-eyebrow {
+  text-align: center;
+  text-transform: uppercase;
+  letter-spacing: 0.16em;
+  font-size: 0.78rem;
+  font-weight: 700;
+  color: var(--md-primary-fg-color);
+  margin: 2.4rem 0 0.4rem;
+}
+
+.rf-section-h {
+  text-align: center;
+  font-size: 1.7rem;
+  font-weight: 800;
+  margin: 0.2rem 0 1.4rem;
+  letter-spacing: -0.01em;
+  border: none !important;
+}
+
+.rf-section-h::before { content: none !important; }
+
+/* Tighten spacing between hero and the grid below */
+.rf-hero + .rf-section-eyebrow { margin-top: 0.4rem; }
+
+/* Grid card icon scale-up — Material's default is small */
+.md-typeset .grid.cards > ul > li > p:first-child .twemoji,
+.md-typeset .grid.cards > ol > li > p:first-child .twemoji,
+.md-typeset .grid.cards > ul > li > hr + p .twemoji {
+  height: 1.6rem;
+  width: 1.6rem;
+}
+
+/* "Tested on" strip */
+.rf-tested {
+  text-align: center;
+  margin: 2rem 0 1.5rem;
+  padding: 1rem 1.2rem;
+  border-radius: 0.6rem;
+  background: var(--md-default-bg-color--lightest, #f5f3ff);
+  border: 1px dashed var(--md-primary-fg-color);
+}
+
+[data-md-color-scheme="slate"] .rf-tested {
+  background: rgba(255,255,255,0.04);
+}
+
+.rf-tested-label {
+  font-size: 0.78rem;
+  text-transform: uppercase;
+  letter-spacing: 0.16em;
+  font-weight: 700;
+  color: var(--md-primary-fg-color);
+  display: block;
+  margin-bottom: 0.55rem;
+}
+
+.rf-tested-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.45rem;
+  justify-content: center;
+}
+
+.rf-tested-chip {
+  display: inline-block;
+  padding: 0.28rem 0.75rem;
+  border-radius: 999px;
+  font-size: 0.82rem;
+  font-weight: 600;
+  background: var(--md-primary-fg-color);
+  color: var(--md-primary-bg-color);
+}
+
+/* Responsive niceties */
+@media screen and (max-width: 600px) {
+  .rf-hero { padding: 2rem 1.4rem 1.6rem; border-radius: 0.8rem; }
+  .rf-hero h1.rf-hero-title { font-size: 1.85rem; }
+  .rf-hero .rf-hero-tagline { font-size: 1rem; }
+  .rf-section-h { font-size: 1.35rem; }
+}
+
+/* === Embedded dashboard demos (exposure / device / note pages) ============ */
+.rf-demo-embed {
+  margin: 18px 0 32px 0;
+  border: 1px solid #d8d2e8;
+  border-radius: 6px;
+  overflow: hidden;
+  box-shadow: 0 2px 8px rgba(74, 20, 140, 0.06);
+  background: #fff;
+}
+.rf-demo-toolbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 16px;
+  background: linear-gradient(90deg, #f5f0fa 0%, #ebf4f4 100%);
+  border-bottom: 1px solid #d8d2e8;
+  font-size: 13px;
+}
+.rf-demo-toolbar-label {
+  color: #5f6478;
+  font-style: italic;
+}
+.rf-demo-toolbar-link {
+  color: #4a148c;
+  text-decoration: none;
+  font-weight: 500;
+  white-space: nowrap;
+}
+.rf-demo-toolbar-link:hover {
+  text-decoration: underline;
+  color: #2a0857;
+}
+.rf-demo-iframe {
+  width: 100%;
+  height: 880px;
+  border: none;
+  display: block;
+  background: #f7f6f1;
+}
+@media (max-width: 900px) {
+  .rf-demo-iframe {
+    height: 720px;
+  }
+}
+
+/* === Preview badge — subtle "in active development" note for modules =====
+   that are still being refined; sits right under the page H1 title       */
+.rf-preview-tag {
+  display: block;
+  margin: -8px 0 22px 0;
+  padding: 8px 14px;
+  background: linear-gradient(135deg, #fff8e1 0%, #fff5d6 100%);
+  border: 1px solid #f0c965;
+  border-left: 4px solid #b8860b;
+  border-radius: 4px;
+  font-size: 12.5px;
+  color: #5c4d1e;
+  font-style: italic;
+  line-height: 1.55;
+}
+.rf-preview-tag strong {
+  color: #3d3210;
+  font-style: normal;
+  font-weight: 600;
+}
+.rf-preview-tag .twemoji {
+  vertical-align: -3px;
+  margin-right: 4px;
+}

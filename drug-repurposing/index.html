@@ -1,0 +1,2533 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="SMART on FHIR ETL pipeline for clinical registry data">
+      
+      
+        <meta name="author" content="Boyce Lab">
+      
+      
+      
+        <link rel="prev" href="../note-dashboard/">
+      
+      
+        <link rel="next" href="../device-dashboard/">
+      
+      
+        
+      
+      
+      <link rel="icon" href="../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.6">
+    
+    
+      
+        <title>Drug repurposing report - Registry Forge</title>
+      
+    
+    
+      <link rel="stylesheet" href="../assets/stylesheets/main.484c7ddc.min.css">
+      
+        
+        <link rel="stylesheet" href="../assets/stylesheets/palette.ab4e12ef.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+      <link rel="stylesheet" href="../stylesheets/extra.css">
+    
+    <script>__md_scope=new URL("..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="deep-purple" data-md-color-accent="indigo">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#drug-repurposing-analysis" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href=".." title="Registry Forge" class="md-header__button md-logo" aria-label="Registry Forge" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            Registry Forge
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Drug repurposing report
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: light)" data-md-color-scheme="default" data-md-color-primary="deep-purple" data-md-color-accent="indigo"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a4 4 0 0 0-4 4 4 4 0 0 0 4 4 4 4 0 0 0 4-4 4 4 0 0 0-4-4m0 10a6 6 0 0 1-6-6 6 6 0 0 1 6-6 6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: dark)" data-md-color-scheme="slate" data-md-color-primary="deep-purple" data-md-color-accent="indigo"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 18c-.89 0-1.74-.2-2.5-.55C11.56 16.5 13 14.42 13 12s-1.44-4.5-3.5-5.45C10.26 6.2 11.11 6 12 6a6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+        <div class="md-search__suggest" data-md-component="search-suggest"></div>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+
+<nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href=".." title="Registry Forge" class="md-nav__button md-logo" aria-label="Registry Forge" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    Registry Forge
+  </label>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href=".." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Home
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../about/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    About &amp; license
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../overview/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Overview
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../installation/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Installation
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../quickstart/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Quickstart
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../downloads/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Downloads
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../architecture/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Architecture
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_8" checked>
+        
+          
+          <label class="md-nav__link" for="__nav_8" id="__nav_8_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Live demos
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_8_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_8">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Live demos
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../dashboard/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Cohort dashboard
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../cohort-eda/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Cohort EDA report
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../note-dashboard/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Clinical-note extraction dashboard
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Drug repurposing report
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Drug repurposing report
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#live-demo" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Live demo
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#what-it-does-what-it-does-not-do" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        What it does, what it does not do
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#cohort-definition" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Cohort definition
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#exposure-criteria" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Exposure criteria
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#tuning-min_exposed-for-small-cohorts" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Tuning min_exposed for small cohorts
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#diagnostic-output" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Diagnostic output
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#atc-class-seed-mapping" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        ATC class seed mapping
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="ATC class seed mapping">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#nuedexta-and-its-ingredients-are-tracked-three-ways" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Nuedexta and its ingredients are tracked three ways
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#brand-name-resolution" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Brand-name resolution
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#outputs" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Outputs
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Outputs">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#1-drug_repurposing_cohortcsv" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1. drug_repurposing_cohort.csv
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#2-drug_repurposing_summarycsv" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2. drug_repurposing_summary.csv
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#3-cure_id_intakecsv" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3. cure_id_intake.csv
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#4-drug_repurposing_reporthtml" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4. drug_repurposing_report.html
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#customization" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Customization
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#limitations-to-keep-in-mind" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Limitations to keep in mind
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#reference" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Reference
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../device-dashboard/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Device & equipment dashboard
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../exposure-dashboard/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Environmental / occupational exposure dashboard
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_9" >
+        
+          
+          <label class="md-nav__link" for="__nav_9" id="__nav_9_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Core pipeline (Stages 1-7)
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_9_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_9">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Core pipeline (Stages 1-7)
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../stages/decoding/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Stage 1 - Decoding & reassembly
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../stages/parsing/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Stage 2 - Format detection
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../stages/fhir/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Stage 3 - FHIR extraction
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../stages/joining/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Stage 4 - Joining & assembly
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../stages/enrichment/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Stage 5 - Display enrichment
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../stages/filtering/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Stage 6 - Test-patient filter
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../code-inventory/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Stage 7 - Code inventory
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../patient-master/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Patient master CSV
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_10" >
+        
+          
+          <label class="md-nav__link" for="__nav_10" id="__nav_10_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Add-on modules
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_10_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_10">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Add-on modules
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../omop/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    OMOP CDM v5.4 ETL
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../phenopackets/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    GA4GH Phenopackets v2 ETL
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../mondo-omop-bridge/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Mondo-OMOP bridge
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../note-extraction/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Clinical-note extraction
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../devices/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Device & equipment extraction
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../exposure-extraction/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Environmental / occupational exposure extraction
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../qc/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Quality control
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../patient-identifiers/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Patient identifiers &amp; PHI
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../external-references/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    External references &amp; standards
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../resources/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Resources &amp; related tools
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../databricks/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Data extraction (Databricks)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../samples/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Sample data
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../schema/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Output schema
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../configuration/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Configuration
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../troubleshooting/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Troubleshooting
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#live-demo" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Live demo
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#what-it-does-what-it-does-not-do" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        What it does, what it does not do
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#cohort-definition" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Cohort definition
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#exposure-criteria" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Exposure criteria
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#tuning-min_exposed-for-small-cohorts" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Tuning min_exposed for small cohorts
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#diagnostic-output" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Diagnostic output
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#atc-class-seed-mapping" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        ATC class seed mapping
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="ATC class seed mapping">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#nuedexta-and-its-ingredients-are-tracked-three-ways" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Nuedexta and its ingredients are tracked three ways
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#brand-name-resolution" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Brand-name resolution
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#outputs" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Outputs
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Outputs">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#1-drug_repurposing_cohortcsv" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1. drug_repurposing_cohort.csv
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#2-drug_repurposing_summarycsv" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2. drug_repurposing_summary.csv
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#3-cure_id_intakecsv" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3. cure_id_intake.csv
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#4-drug_repurposing_reporthtml" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4. drug_repurposing_report.html
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#customization" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Customization
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#limitations-to-keep-in-mind" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Limitations to keep in mind
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#reference" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Reference
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+
+<h1 id="drug-repurposing-analysis">Drug repurposing analysis<a class="headerlink" href="#drug-repurposing-analysis" title="Permanent link">&para;</a></h1>
+<p class="rf-preview-tag"><span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 2.03v2.02c4.39.54 7.5 4.53 6.96 8.92-.46 3.64-3.32 6.53-6.96 6.96v2c5.5-.55 9.5-5.43 8.95-10.93-.45-4.75-4.22-8.5-8.95-8.97m-2 .03c-1.95.19-3.81.94-5.33 2.2L7.1 5.74c1.12-.9 2.47-1.48 3.9-1.68zM4.26 5.67A9.9 9.9 0 0 0 2.05 11h2c.19-1.42.75-2.77 1.64-3.9zM2.06 13c.2 1.96.97 3.81 2.21 5.33l1.42-1.43A8 8 0 0 1 4.06 13zm5.04 5.37-1.43 1.37A10 10 0 0 0 11 22v-2a8 8 0 0 1-3.9-1.63m9.72-3.18-4.11-4.11c.41-1.04.18-2.26-.68-3.11-.9-.91-2.25-1.09-3.34-.59l1.94 1.94-1.35 1.36-1.99-1.95c-.54 1.09-.29 2.44.59 3.35.86.86 2.08 1.08 3.12.68l4.11 4.1c.18.19.45.19.63 0l1.04-1.03c.22-.18.22-.5.04-.64"/></svg></span> <strong>Preview &mdash; under active development.</strong> This module is still being refined. Patterns, mappings, and category boundaries should be validated against your own corpus before being relied on for analysis or publication.</p>
+<p><code>drug_repurposing.py</code> is the add-on module that adapts the methodology of <a href="https://doi.org/10.1016/j.landig.2025.100963">Reimer et al., <em>Lancet Digital Health</em> 2026</a> &mdash; an EHR-based study identifying drug repurposing candidates for ALS in the US Veterans Health Administration database &mdash; to the bundle that <code>run_pipeline.py</code> produces. It also exports candidate cases in the schema of the <a href="https://cure.ncats.io/">FDA / NCATS-NIH / Critical Path Institute CURE Drug Repurposing Collaboratory</a> Treatment Registry intake CRF.</p>
+<h2 id="live-demo">Live demo<a class="headerlink" href="#live-demo" title="Permanent link">&para;</a></h2>
+<p>Below is the actual drug repurposing report, pre-loaded against a synthetic 220-patient ALS cohort that exercises every section &mdash; cohort overview, 21 medications grouped under 15 ATC classes, crude exposed-vs-unexposed median survival comparison, and protective / harmful directional markers. All values are synthetic; no real ARC data.</p>
+<div class="rf-demo-embed">
+<div class="rf-demo-toolbar">
+<p><span class="rf-demo-toolbar-label">Live demo &mdash; pre-loaded against a synthetic 220-patient ALS cohort</span>
+<a href="../assets/drug_repurposing_demo.html" target="_blank" rel="noopener" class="rf-demo-toolbar-link">Open in new tab <span class="twemoji">↗</span></a></p>
+</div>
+<iframe class="rf-demo-iframe" loading="lazy" src="../assets/drug_repurposing_demo.html" title="Drug repurposing report live demo"></iframe>
+</div>
+<h2 id="what-it-does-what-it-does-not-do">What it does, what it does not do<a class="headerlink" href="#what-it-does-what-it-does-not-do" title="Permanent link">&para;</a></h2>
+<p>This module is responsible for <strong>cohort assembly and exposure assignment</strong>. It identifies who counts as exposed to a given medication under explicit criteria, computes baseline characteristics, attaches survival information, groups medications by ATC class, and exports both an analytic data set and a CURE ID intake file.</p>
+<p>It deliberately does <strong>not</strong> run propensity-score matching or Cox proportional hazards regression. Rigorous causal inference on observational EHR data needs <code>lifelines</code> / <code>statsmodels</code> and per-cohort tuning of caliper widths, immortal-time-bias correction, covariate-balance checks, and multiple-testing correction. The cohort data set this module emits (<code>drug_repurposing_cohort.csv</code>) is the input to those tools &mdash; not a substitute for them.</p>
+<h2 id="cohort-definition">Cohort definition<a class="headerlink" href="#cohort-definition" title="Permanent link">&para;</a></h2>
+<p>The module walks the bundle <code>problems[]</code> for any record coded under the motor-neuron-disease spectrum:</p>
+<table>
+<thead>
+<tr>
+<th>Vocabulary</th>
+<th>Code</th>
+<th>Meaning</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>ICD-10-CM</td>
+<td>G12.21</td>
+<td>Amyotrophic lateral sclerosis</td>
+</tr>
+<tr>
+<td>ICD-10-CM</td>
+<td>G12.20</td>
+<td>Motor neuron disease, unspecified</td>
+</tr>
+<tr>
+<td>ICD-10-CM</td>
+<td>G12.22</td>
+<td>Progressive bulbar palsy</td>
+</tr>
+<tr>
+<td>ICD-10-CM</td>
+<td>G12.23</td>
+<td>Primary lateral sclerosis (adult)</td>
+</tr>
+<tr>
+<td>ICD-10-CM</td>
+<td>G12.29</td>
+<td>Other motor neuron disease</td>
+</tr>
+<tr>
+<td>ICD-9-CM</td>
+<td>335.20&ndash;29</td>
+<td>Motor neuron disease (legacy)</td>
+</tr>
+<tr>
+<td>SNOMED CT</td>
+<td>86044005</td>
+<td>Amyotrophic lateral sclerosis</td>
+</tr>
+<tr>
+<td>SNOMED CT</td>
+<td>230258005</td>
+<td>Motor neuron disease</td>
+</tr>
+<tr>
+<td>Mondo</td>
+<td>MONDO:0004976</td>
+<td>Amyotrophic lateral sclerosis</td>
+</tr>
+<tr>
+<td>Mondo</td>
+<td>MONDO:0019056</td>
+<td>Motor neuron disease</td>
+</tr>
+</tbody>
+</table>
+<p>Cohort entry date is the earliest such diagnosis. Patients with no medication record after cohort entry are excluded as a proxy for lack of engagement with the index health system, following Reimer 2026.</p>
+<h2 id="exposure-criteria">Exposure criteria<a class="headerlink" href="#exposure-criteria" title="Permanent link">&para;</a></h2>
+<p>The module supports four exposure-criterion modes via the <code>criterion</code> parameter.</p>
+<p><strong><code>criterion='any'</code> (default) &mdash; Criterion C, fits C-CDA / FHIR registry data.</strong> A patient is <strong>exposed</strong> to a medication if they have at least one medication record with <code>effective_date</code> in the window from 6 months before to 12 months after cohort entry. This is the right default for Registry Forge bundles produced by <code>run_pipeline.py</code>, where each medication row represents one prescription event (C-CDA SubstanceAdministration or FHIR MedicationRequest / MedicationStatement) and there is typically no separate end-date.</p>
+<p><strong><code>criterion='reimer'</code>, <code>'reimer-a'</code>, <code>'reimer-b'</code> &mdash; the strict Reimer 2026 criteria, designed for VHA-style dispense-event data.</strong> Reimer's data had one row per pharmacy fill with dispense_date and supply_days, allowing the reconstruction of treatment intervals. Criterion A requires the prescription start <em>or</em> end to fall within 12 months of cohort entry <em>and</em> the end date to be at least 6 months after the start. Criterion B requires at least two dispenses in the [-6, +12] month window. Neither will fire on C-CDA / FHIR data with one record per medication and no end_date.</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="kn">import</span><span class="w"> </span><span class="nn">drug_repurposing</span>
+<a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a><span class="n">drug_repurposing</span><span class="o">.</span><span class="n">main</span><span class="p">(</span>
+<a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a>    <span class="n">bundle_path</span> <span class="o">=</span> <span class="s1">&#39;dashboard_data.json&#39;</span><span class="p">,</span>
+<a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a>    <span class="n">out_dir</span>     <span class="o">=</span> <span class="s1">&#39;drug_repurposing_output&#39;</span><span class="p">,</span>
+<a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a>    <span class="n">min_exposed</span> <span class="o">=</span> <span class="mi">5</span><span class="p">,</span>           <span class="c1"># see &quot;Tuning min_exposed for small cohorts&quot; below</span>
+<a id="__codelineno-0-6" name="__codelineno-0-6" href="#__codelineno-0-6"></a>    <span class="n">k</span>           <span class="o">=</span> <span class="mi">5</span><span class="p">,</span>
+<a id="__codelineno-0-7" name="__codelineno-0-7" href="#__codelineno-0-7"></a>    <span class="n">criterion</span>   <span class="o">=</span> <span class="s1">&#39;any&#39;</span><span class="p">,</span>       <span class="c1"># default; &#39;reimer&#39; for dispense-event data</span>
+<a id="__codelineno-0-8" name="__codelineno-0-8" href="#__codelineno-0-8"></a>    <span class="n">cohort_name</span> <span class="o">=</span> <span class="s1">&#39;ARC Study EHR cohort&#39;</span><span class="p">,</span>
+<a id="__codelineno-0-9" name="__codelineno-0-9" href="#__codelineno-0-9"></a><span class="p">)</span>
+</code></pre></div>
+<h2 id="tuning-min_exposed-for-small-cohorts">Tuning <code>min_exposed</code> for small cohorts<a class="headerlink" href="#tuning-min_exposed-for-small-cohorts" title="Permanent link">&para;</a></h2>
+<p>Reimer used <code>min_exposed = 30</code> against 11,003 ALS patients. For a 96-patient cohort that threshold is far too high &mdash; almost no medication will have 30+ exposed patients, and the output will be empty. The default in <code>drug_repurposing.py</code> is <code>min_exposed = 5</code>, which is a sensible starting value for cohorts of a few dozen to a few hundred patients.</p>
+<p>If your run produces empty output, the diagnostic log prints a hint telling you what the top medication's exposed-patient count is, so you can lower <code>min_exposed</code> accordingly:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a>top exposed medications across cohort:
+<a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a>     12 patients  riluzole    (dropped, &lt; min_exposed=30)
+<a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a>      8 patients  atorvastatin    (dropped, &lt; min_exposed=30)
+<a id="__codelineno-1-4" name="__codelineno-1-4" href="#__codelineno-1-4"></a>HINT: top medication has 12 exposed patients (need &gt;= 30).
+<a id="__codelineno-1-5" name="__codelineno-1-5" href="#__codelineno-1-5"></a>      Try drug_repurposing.main(..., min_exposed=12) to see signal.
+</code></pre></div>
+<h2 id="diagnostic-output">Diagnostic output<a class="headerlink" href="#diagnostic-output" title="Permanent link">&para;</a></h2>
+<p>Empty outputs are not silent. The module logs counts at every step:</p>
+<ul>
+<li>How many problem rows were scanned, how many matched a motor-neuron-disease code, and which coding system they came from.</li>
+<li>How many medication rows had a patient_id, how many normalized to a non-empty name, how many had a parseable date, how many had an <code>end_date</code> (with an explicit note if none did), and how many resolved to a known <code>ATC_SEED</code> entry.</li>
+<li>The top 15 unmatched medication names &mdash; the right list to consult when extending <code>ATC_SEED</code> or <code>BRAND_TO_GENERIC</code> for your data.</li>
+<li>How many cohort patients had any medication record, how many medications had &ge;1 exposed patient under the selected criterion, and which medications met <code>min_exposed</code>.</li>
+</ul>
+<h2 id="atc-class-seed-mapping">ATC class seed mapping<a class="headerlink" href="#atc-class-seed-mapping" title="Permanent link">&para;</a></h2>
+<p>Medications are grouped by Anatomical Therapeutic Chemical (ATC) classification via the <code>ATC_SEED</code> dictionary at the top of the module. The seed covers every drug Reimer reported plus obvious extensions:</p>
+<table>
+<thead>
+<tr>
+<th>ATC code</th>
+<th>Class</th>
+<th>Drugs in seed</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>C10AA</td>
+<td>HMG-CoA reductase inhibitors</td>
+<td>simvastatin, lovastatin, pravastatin, atorvastatin, rosuvastatin, pitavastatin, fluvastatin</td>
+</tr>
+<tr>
+<td>G04BE</td>
+<td>PDE5 inhibitors</td>
+<td>sildenafil, vardenafil, tadalafil, avanafil</td>
+</tr>
+<tr>
+<td>G04CA</td>
+<td>&alpha;-adrenoreceptor antagonists</td>
+<td>tamsulosin, terazosin, alfuzosin, silodosin</td>
+</tr>
+<tr>
+<td>M03BX</td>
+<td>Centrally acting muscle relaxants</td>
+<td>cyclobenzaprine, baclofen, tizanidine</td>
+</tr>
+<tr>
+<td>N07XX</td>
+<td>Other nervous system drugs &mdash; ALS</td>
+<td>riluzole, edaravone, tofersen</td>
+</tr>
+<tr>
+<td>N07XX59</td>
+<td>Other nervous system drugs &mdash; pseudobulbar affect</td>
+<td><strong>dextromethorphan-quinidine</strong> (FDA-approved combination, brand name <strong>Nuedexta</strong>)</td>
+</tr>
+<tr>
+<td>R05DA09</td>
+<td>Opium alkaloid antitussive</td>
+<td><strong>dextromethorphan</strong> (when prescribed alone, almost always an antitussive; also the active CNS ingredient in Nuedexta)</td>
+</tr>
+<tr>
+<td>C01BA01</td>
+<td>Class IA antiarrhythmic</td>
+<td><strong>quinidine</strong> (when prescribed alone at therapeutic doses; in Nuedexta it is the subtherapeutic CYP2D6-inhibitor ingredient)</td>
+</tr>
+<tr>
+<td>M01AC</td>
+<td>Oxicam NSAIDs</td>
+<td>meloxicam</td>
+</tr>
+<tr>
+<td>A11CC</td>
+<td>Vitamin D</td>
+<td>colecalciferol</td>
+</tr>
+<tr>
+<td>B01AF</td>
+<td>Direct factor Xa inhibitors</td>
+<td>rivaroxaban</td>
+</tr>
+<tr>
+<td>C03AA</td>
+<td>Thiazide diuretics</td>
+<td>hydrochlorothiazide</td>
+</tr>
+<tr>
+<td>C09AA</td>
+<td>ACE inhibitors</td>
+<td>lisinopril</td>
+</tr>
+<tr>
+<td>A03AB</td>
+<td>Anticholinergics (for sialorrhea)</td>
+<td>glycopyrrolate</td>
+</tr>
+<tr>
+<td>A04AA</td>
+<td>5HT3 antagonists</td>
+<td>ondansetron</td>
+</tr>
+<tr>
+<td>N02AB</td>
+<td>Opioid analgesics</td>
+<td>fentanyl</td>
+</tr>
+<tr>
+<td>N02BF</td>
+<td>Gabapentinoids</td>
+<td>gabapentin</td>
+</tr>
+<tr>
+<td>R01BA</td>
+<td>Decongestants</td>
+<td>pseudoephedrine</td>
+</tr>
+<tr>
+<td>R05CA</td>
+<td>Mucolytics</td>
+<td>guaifenesin</td>
+</tr>
+<tr>
+<td>R06AE</td>
+<td>H1 antihistamines</td>
+<td>cetirizine</td>
+</tr>
+<tr>
+<td>R03AC</td>
+<td>Short-acting β-agonists</td>
+<td>salbutamol / albuterol</td>
+</tr>
+<tr>
+<td>R03DC</td>
+<td>Leukotriene receptor antagonists</td>
+<td>montelukast</td>
+</tr>
+</tbody>
+</table>
+<h3 id="nuedexta-and-its-ingredients-are-tracked-three-ways">Nuedexta and its ingredients are tracked three ways<a class="headerlink" href="#nuedexta-and-its-ingredients-are-tracked-three-ways" title="Permanent link">&para;</a></h3>
+<p>Following Reimer 2026, the module tracks the FDA-approved dextromethorphan-quinidine combination <em>and</em> its two active ingredients <strong>separately</strong>, because they appear in EHR data in different clinical contexts:</p>
+<ol>
+<li><strong>Combination (Nuedexta) &rarr; N07XX59.</strong> Prescribed for pseudobulbar affect in ALS. Resolves from <code>Nuedexta</code>, <code>dextromethorphan-quinidine</code>, <code>dextromethorphan/quinidine</code>, or any dosage-suffixed variant.</li>
+<li><strong>Dextromethorphan alone &rarr; R05DA09.</strong> Almost always an antitussive when prescribed alone. Reimer reported standalone dextromethorphan as a separate harm-direction signal under this class.</li>
+<li><strong>Quinidine alone &rarr; C01BA01.</strong> A Class IA antiarrhythmic when prescribed alone at therapeutic doses; the subtherapeutic CYP2D6-inhibitor role in Nuedexta is distinct.</li>
+</ol>
+<p>Adopters with different therapeutic-area focus extend <code>ATC_SEED</code> directly in source.</p>
+<h2 id="brand-name-resolution">Brand-name resolution<a class="headerlink" href="#brand-name-resolution" title="Permanent link">&para;</a></h2>
+<p>Real EHR data routinely names medications by brand (Lipitor, Flomax, Nuedexta, Robinul, Radicava) rather than generic. The module ships a second dictionary, <code>BRAND_TO_GENERIC</code>, that <code>_norm_med_name</code> consults <em>before</em> the <code>ATC_SEED</code> lookup. A record with display name <code>"Lipitor 20 mg tablet"</code> is therefore normalized to <code>"atorvastatin"</code> and matches the atorvastatin entry; <code>"Nuedexta 20 mg-10 mg tablet"</code> is normalized to <code>"dextromethorphan-quinidine"</code> and matches the combination entry.</p>
+<p>Brand coverage in the shipped seed:</p>
+<table>
+<thead>
+<tr>
+<th>Category</th>
+<th>Brand &rarr; generic mappings</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>ALS FDA-approved</td>
+<td>Rilutek / Tiglutik / Exservan &rarr; riluzole · Radicava / Radicava ORS &rarr; edaravone · Qalsody &rarr; tofersen · <strong>Nuedexta &rarr; dextromethorphan-quinidine</strong> · Relyvrio / Albrioza &rarr; sodium phenylbutyrate-taurursodiol</td>
+</tr>
+<tr>
+<td>Statins</td>
+<td>Lipitor &rarr; atorvastatin · Crestor &rarr; rosuvastatin · Zocor &rarr; simvastatin · Mevacor / Altoprev &rarr; lovastatin · Pravachol &rarr; pravastatin · Livalo / Zypitamag &rarr; pitavastatin · Lescol &rarr; fluvastatin</td>
+</tr>
+<tr>
+<td>PDE5 inhibitors</td>
+<td>Viagra / Revatio &rarr; sildenafil · Levitra / Staxyn &rarr; vardenafil · Cialis / Adcirca &rarr; tadalafil · Stendra &rarr; avanafil</td>
+</tr>
+<tr>
+<td>&alpha;-blockers</td>
+<td>Flomax &rarr; tamsulosin · Hytrin &rarr; terazosin · Uroxatral &rarr; alfuzosin · Rapaflo &rarr; silodosin · Cardura &rarr; doxazosin</td>
+</tr>
+<tr>
+<td>Muscle relaxants</td>
+<td>Flexeril / Amrix / Fexmid &rarr; cyclobenzaprine · Zanaflex &rarr; tizanidine · Lioresal / Gablofen / Ozobax &rarr; baclofen</td>
+</tr>
+<tr>
+<td>Sialorrhea</td>
+<td>Robinul / Cuvposa / Glycate / Dartisla &rarr; glycopyrrolate</td>
+</tr>
+<tr>
+<td>Antiemetics</td>
+<td>Zofran / Zuplenz &rarr; ondansetron</td>
+</tr>
+<tr>
+<td>Opioids</td>
+<td>Sublimaze / Duragesic / Actiq / Fentora / Abstral / Subsys / Lazanda &rarr; fentanyl</td>
+</tr>
+<tr>
+<td>Gabapentinoids</td>
+<td>Neurontin / Gralise / Horizant &rarr; gabapentin</td>
+</tr>
+<tr>
+<td>Cough / cold</td>
+<td>Sudafed &rarr; pseudoephedrine · Mucinex / Robitussin &rarr; guaifenesin</td>
+</tr>
+<tr>
+<td>Antihistamines</td>
+<td>Zyrtec / Reactine &rarr; cetirizine</td>
+</tr>
+<tr>
+<td>Bronchodilators</td>
+<td>Ventolin / Proventil / ProAir / AccuNeb &rarr; salbutamol · Xopenex &rarr; levalbuterol</td>
+</tr>
+<tr>
+<td>Leukotrienes</td>
+<td>Singulair &rarr; montelukast</td>
+</tr>
+<tr>
+<td>ACE inhibitors</td>
+<td>Prinivil / Zestril / Qbrelis &rarr; lisinopril</td>
+</tr>
+<tr>
+<td>Anticoagulants</td>
+<td>Xarelto &rarr; rivaroxaban</td>
+</tr>
+<tr>
+<td>Vitamin D</td>
+<td>Vitamin D / Vitamin D3 / D3 / cholecalciferol &rarr; colecalciferol</td>
+</tr>
+</tbody>
+</table>
+<p>Adopters extend <code>BRAND_TO_GENERIC</code> for brand names common in their own site's EHR; the dictionary lookup is performed before the <code>ATC_SEED</code> lookup so adding a new brand requires no other changes.</p>
+<h2 id="outputs">Outputs<a class="headerlink" href="#outputs" title="Permanent link">&para;</a></h2>
+<p>Four files are produced in <code>out_dir</code>:</p>
+<h3 id="1-drug_repurposing_cohortcsv">1. <code>drug_repurposing_cohort.csv</code><a class="headerlink" href="#1-drug_repurposing_cohortcsv" title="Permanent link">&para;</a></h3>
+<p>Long-form per-(patient, medication) data set, one row per cohort patient per kept medication.</p>
+<table>
+<thead>
+<tr>
+<th>Column</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>patient_id</code></td>
+<td>Bundle patient identifier</td>
+</tr>
+<tr>
+<td><code>cohort_entry</code></td>
+<td>Earliest motor-neuron-disease diagnosis date (ISO)</td>
+</tr>
+<tr>
+<td><code>age_at_entry</code></td>
+<td>Years (float)</td>
+</tr>
+<tr>
+<td><code>sex</code>, <code>race</code>, <code>ethnicity</code>, <code>marital_status</code></td>
+<td>Baseline covariates</td>
+</tr>
+<tr>
+<td><code>medication</code></td>
+<td>Normalized medication name</td>
+</tr>
+<tr>
+<td><code>atc_code</code>, <code>atc_class</code></td>
+<td>From <code>ATC_SEED</code> lookup</td>
+</tr>
+<tr>
+<td><code>exposed</code></td>
+<td>1 if either criterion A or B was met, else 0</td>
+</tr>
+<tr>
+<td><code>criterion</code></td>
+<td>"A", "B", "A+B", or empty</td>
+</tr>
+<tr>
+<td><code>n_dispenses_window</code></td>
+<td>Number of dispenses in &minus;6 to +12 month window</td>
+</tr>
+<tr>
+<td><code>first_dispense</code></td>
+<td>First dispense date (ISO)</td>
+</tr>
+<tr>
+<td><code>survival_days</code></td>
+<td>Days from cohort entry to death (or to today if censored)</td>
+</tr>
+<tr>
+<td><code>death_observed</code></td>
+<td>1 if death recorded, 0 if censored</td>
+</tr>
+<tr>
+<td><code>deceased_date</code></td>
+<td>Death date if recorded</td>
+</tr>
+</tbody>
+</table>
+<p>This is the input to Cox proportional hazards regression and propensity-score-matched analysis. A typical follow-on notebook does:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a><span class="kn">import</span><span class="w"> </span><span class="nn">pandas</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pd</span>
+<a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a><span class="kn">from</span><span class="w"> </span><span class="nn">lifelines</span><span class="w"> </span><span class="kn">import</span> <span class="n">CoxPHFitter</span>
+<a id="__codelineno-2-3" name="__codelineno-2-3" href="#__codelineno-2-3"></a>
+<a id="__codelineno-2-4" name="__codelineno-2-4" href="#__codelineno-2-4"></a><span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="s1">&#39;drug_repurposing_cohort.csv&#39;</span><span class="p">)</span>
+<a id="__codelineno-2-5" name="__codelineno-2-5" href="#__codelineno-2-5"></a>
+<a id="__codelineno-2-6" name="__codelineno-2-6" href="#__codelineno-2-6"></a><span class="k">for</span> <span class="n">med</span> <span class="ow">in</span> <span class="n">df</span><span class="p">[</span><span class="s1">&#39;medication&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">unique</span><span class="p">():</span>
+<a id="__codelineno-2-7" name="__codelineno-2-7" href="#__codelineno-2-7"></a>    <span class="n">sub</span> <span class="o">=</span> <span class="n">df</span><span class="p">[</span><span class="n">df</span><span class="p">[</span><span class="s1">&#39;medication&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="n">med</span><span class="p">]</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+<a id="__codelineno-2-8" name="__codelineno-2-8" href="#__codelineno-2-8"></a>    <span class="n">sub</span><span class="p">[</span><span class="s1">&#39;exposed&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">sub</span><span class="p">[</span><span class="s1">&#39;exposed&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">int</span><span class="p">)</span>
+<a id="__codelineno-2-9" name="__codelineno-2-9" href="#__codelineno-2-9"></a>    <span class="n">cph</span> <span class="o">=</span> <span class="n">CoxPHFitter</span><span class="p">()</span>
+<a id="__codelineno-2-10" name="__codelineno-2-10" href="#__codelineno-2-10"></a>    <span class="n">cph</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">sub</span><span class="p">[[</span><span class="s1">&#39;survival_days&#39;</span><span class="p">,</span><span class="s1">&#39;death_observed&#39;</span><span class="p">,</span><span class="s1">&#39;exposed&#39;</span><span class="p">,</span>
+<a id="__codelineno-2-11" name="__codelineno-2-11" href="#__codelineno-2-11"></a>                 <span class="s1">&#39;age_at_entry&#39;</span><span class="p">,</span><span class="s1">&#39;sex&#39;</span><span class="p">,</span><span class="s1">&#39;race&#39;</span><span class="p">]]</span><span class="o">.</span><span class="n">dropna</span><span class="p">(),</span>
+<a id="__codelineno-2-12" name="__codelineno-2-12" href="#__codelineno-2-12"></a>            <span class="n">duration_col</span><span class="o">=</span><span class="s1">&#39;survival_days&#39;</span><span class="p">,</span>
+<a id="__codelineno-2-13" name="__codelineno-2-13" href="#__codelineno-2-13"></a>            <span class="n">event_col</span><span class="o">=</span><span class="s1">&#39;death_observed&#39;</span><span class="p">,</span>
+<a id="__codelineno-2-14" name="__codelineno-2-14" href="#__codelineno-2-14"></a>            <span class="n">formula</span><span class="o">=</span><span class="s1">&#39;exposed + age_at_entry + C(sex) + C(race)&#39;</span><span class="p">)</span>
+<a id="__codelineno-2-15" name="__codelineno-2-15" href="#__codelineno-2-15"></a>    <span class="n">hr</span> <span class="o">=</span> <span class="n">cph</span><span class="o">.</span><span class="n">hazard_ratios_</span><span class="p">[</span><span class="s1">&#39;exposed&#39;</span><span class="p">]</span>
+<a id="__codelineno-2-16" name="__codelineno-2-16" href="#__codelineno-2-16"></a>    <span class="n">p</span>  <span class="o">=</span> <span class="n">cph</span><span class="o">.</span><span class="n">summary</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="s1">&#39;exposed&#39;</span><span class="p">,</span><span class="s1">&#39;p&#39;</span><span class="p">]</span>
+<a id="__codelineno-2-17" name="__codelineno-2-17" href="#__codelineno-2-17"></a>    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">med</span><span class="si">:</span><span class="s1">20s</span><span class="si">}</span><span class="s1"> HR=</span><span class="si">{</span><span class="n">hr</span><span class="si">:</span><span class="s1">.2f</span><span class="si">}</span><span class="s1">  p=</span><span class="si">{</span><span class="n">p</span><span class="si">:</span><span class="s1">.4f</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
+</code></pre></div>
+<p>For propensity matching, use <code>psmpy</code> or implement caliper matching directly per Reimer's Methods (caliper width 0.2 &times; SD of the logit of the propensity score, up to three matched controls per treated unit).</p>
+<h3 id="2-drug_repurposing_summarycsv">2. <code>drug_repurposing_summary.csv</code><a class="headerlink" href="#2-drug_repurposing_summarycsv" title="Permanent link">&para;</a></h3>
+<p>Per-medication summary, one row per medication.</p>
+<table>
+<thead>
+<tr>
+<th>Column</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>medication</code></td>
+<td>Normalized medication name</td>
+</tr>
+<tr>
+<td><code>atc_code</code>, <code>atc_class</code></td>
+<td>From <code>ATC_SEED</code></td>
+</tr>
+<tr>
+<td><code>n_exposed</code></td>
+<td>Count with k-anonymity threshold applied (renders as "&lt;5" if below)</td>
+</tr>
+<tr>
+<td><code>n_unexposed</code></td>
+<td>Count of patients in cohort not exposed</td>
+</tr>
+<tr>
+<td><code>n_deaths_exposed</code>, <code>n_deaths_unexposed</code></td>
+<td>Deaths in each arm</td>
+</tr>
+<tr>
+<td><code>median_survival_days_exposed</code>, <code>median_survival_days_unexposed</code></td>
+<td>Crude median survival in each arm</td>
+</tr>
+</tbody>
+</table>
+<h3 id="3-cure_id_intakecsv">3. <code>cure_id_intake.csv</code><a class="headerlink" href="#3-cure_id_intakecsv" title="Permanent link">&para;</a></h3>
+<p>One row per exposed (patient, medication) formatted to match the FDA / NCATS-NIH / Critical Path Institute <a href="https://cure.ncats.io/">CURE ID Treatment Registry</a> intake CRF. Banded and pseudonymized for PII-free submission:</p>
+<table>
+<thead>
+<tr>
+<th>Column</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>therapeutic_area</code></td>
+<td>"Rare Genetic Disorders"</td>
+</tr>
+<tr>
+<td><code>disease</code></td>
+<td>"Amyotrophic lateral sclerosis (or motor neuron disease spectrum)"</td>
+</tr>
+<tr>
+<td><code>user_type</code></td>
+<td>"A Healthcare Provider"</td>
+</tr>
+<tr>
+<td><code>pseudo_patient_id</code></td>
+<td>"PT-NNNN" (stable per run, not persisted)</td>
+</tr>
+<tr>
+<td><code>age_group</code></td>
+<td>CURE ID age band ("51 - 60 years", "61 - 70 years", etc.)</td>
+</tr>
+<tr>
+<td><code>sex</code></td>
+<td>"Female" / "Male" / "Unknown"</td>
+</tr>
+<tr>
+<td><code>country_treated</code></td>
+<td>"United States"</td>
+</tr>
+<tr>
+<td><code>races</code></td>
+<td>Comma-separated CURE ID race options</td>
+</tr>
+<tr>
+<td><code>medication_name</code>, <code>medication_atc_class</code>, <code>medication_atc_code</code></td>
+<td>From cohort table</td>
+</tr>
+<tr>
+<td><code>exposure_criterion</code></td>
+<td>"A", "B", or "A+B"</td>
+</tr>
+<tr>
+<td><code>n_dispenses_window</code></td>
+<td>Number of dispenses in window</td>
+</tr>
+<tr>
+<td><code>why_new_way</code></td>
+<td>"Repurposing candidate identified from EHR survival signal"</td>
+</tr>
+<tr>
+<td><code>treatment_outcome</code></td>
+<td>Banded by survival days from cohort entry</td>
+</tr>
+<tr>
+<td><code>source_pipeline</code></td>
+<td>"Registry Forge drug_repurposing.py (Reimer 2026 methodology)"</td>
+</tr>
+</tbody>
+</table>
+<p>This file is the artifact a registry submits to the CURE ID platform. The PII-free posture (pseudonymized identifiers, banded ages, no absolute dates, k-anonymity at the medication level) matches the registry's documented expectations.</p>
+<h3 id="4-drug_repurposing_reporthtml">4. <code>drug_repurposing_report.html</code><a class="headerlink" href="#4-drug_repurposing_reporthtml" title="Permanent link">&para;</a></h3>
+<p>Single-file analytical report grouped by ATC class. Cohort overview cards, per-class medication tables with exposed and unexposed counts, crude median survival comparison, and methodological limitations.</p>
+<h2 id="customization">Customization<a class="headerlink" href="#customization" title="Permanent link">&para;</a></h2>
+<p>The module exposes several knobs for site-specific tuning:</p>
+<ul>
+<li><strong><code>MIN_EXPOSED_PATIENTS</code></strong> &mdash; default 30 (Reimer); lower for smaller cohorts.</li>
+<li><strong><code>DEFAULT_K_ANONYMITY</code></strong> &mdash; default 5; raise for smaller or more sensitive cohorts.</li>
+<li><strong><code>CRITERION_A_*</code>, <code>CRITERION_B_*</code></strong> &mdash; exposure-window constants (12 months after, 6 months minimum duration; 6 months before, 12 months after, 2 dispenses minimum). Site-specific exposure definitions can adjust these directly.</li>
+<li><strong><code>COHORT_CODES</code></strong> &mdash; dictionary of <code>(system, code) → display</code> for cohort identification. Adapt to a different disease by replacing with the relevant ICD-10-CM / SNOMED / Mondo codes.</li>
+<li><strong><code>ATC_SEED</code></strong> &mdash; medication-to-ATC-class mapping. Extend with additional drugs relevant to your therapeutic area.</li>
+<li><strong><code>CURE_ID_AGE_BANDS</code></strong> &mdash; age-band definitions, currently aligned to the CURE ID Generic Other Disease CRF.</li>
+<li><strong><code>CURE_ID_RACE_MAP</code></strong> &mdash; bundle-to-CURE-ID race-option mapping.</li>
+</ul>
+<p>All of these live as plain Python dictionaries at the top of the module file.</p>
+<h2 id="limitations-to-keep-in-mind">Limitations to keep in mind<a class="headerlink" href="#limitations-to-keep-in-mind" title="Permanent link">&para;</a></h2>
+<ul>
+<li><strong>Indication bias</strong> &mdash; a patient prescribed a PDE5 inhibitor may by virtue of that indication be healthier than average; the patient prescribed an opioid may by virtue of that indication be in advanced disease. Propensity matching helps but does not eliminate this.</li>
+<li><strong>Immortal-time bias</strong> &mdash; the exposure criteria already account for this by requiring duration or repeat dispensing, but downstream Cox analysis must continue the care.</li>
+<li><strong>EHR diagnosis accuracy</strong> &mdash; Reimer addressed this by running a sensitivity analysis restricted to riluzole-treated patients (a drug with a very ALS-specific indication). The same sensitivity analysis is appropriate here.</li>
+<li><strong>Dose-response unavailable</strong> &mdash; dosage information is not currently surfaced from the bundle; adopters wanting a dose-response analysis should extend the medication parser.</li>
+<li><strong>Multiple-testing burden</strong> &mdash; screening hundreds of medications inflates the false-positive rate. Bonferroni correction at the medication count is the conservative default; Reimer reported both uncorrected and Bonferroni-corrected results.</li>
+<li><strong>Single-cohort generalization</strong> &mdash; outputs are for hypothesis generation, not for confirmatory inference. Prospective randomized trials remain the gold standard for therapeutic efficacy.</li>
+</ul>
+<h2 id="reference">Reference<a class="headerlink" href="#reference" title="Permanent link">&para;</a></h2>
+<p>Reimer RJ, Soper B, Wilson JL, Goncalves AR, Cadena J, Suarez P, Gryshuk AL, Osborne TF, Grimes KV, Ray P. Identification of drug repurposing candidates for amyotrophic lateral sclerosis using electronic health records: a retrospective cohort study. <em>Lancet Digit Health</em> 2026. <a href="https://doi.org/10.1016/j.landig.2025.100963">https://doi.org/10.1016/j.landig.2025.100963</a></p>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"/></svg>
+  Back to top
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "..", "features": ["navigation.sections", "navigation.indexes", "navigation.top", "content.code.copy", "content.code.annotate", "search.highlight", "search.suggest", "toc.follow"], "search": "../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="../assets/javascripts/bundle.79ae519e.min.js"></script>
+      
+    
+  </body>
+</html>

@@ -1,0 +1,1590 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Registry Forge</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700&family=JetBrains+Mono:wght@400;500;700&family=Inter+Tight:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  /* ALS TDI Brand Palette */
+  :root {
+    --purple: #93358C;
+    --purple-bold: #701F61;
+    --purple-deep: #51284F;
+    --purple-soft: #D48CC7;
+    --purple-light: #EDD6E4;
+    --navy: #1C355E;
+    --navy-soft: #517DB9;
+    --navy-light: #DAE1E9;
+
+    --ink: #1a1f26;
+    --ink-soft: #4a5563;
+    --paper: #ffffff;
+    --paper-warm: #f7f5fa;
+    --rule: #e5e0eb;
+    --code-bg: #1C355E;
+    --code-fg: #DAE1E9;
+    --shadow: 0 1px 0 rgba(28, 53, 94, 0.04), 0 4px 16px rgba(28, 53, 94, 0.08);
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  html, body {
+    height: 100%;
+    margin: 0;
+    font-family: 'Inter Tight', system-ui, sans-serif;
+    background: var(--paper);
+    color: var(--ink);
+    font-size: 14px;
+    line-height: 1.5;
+    -webkit-font-smoothing: antialiased;
+    overflow: hidden;
+  }
+
+  /* CRITICAL: fixed positioning + grid for guaranteed scroll */
+  .app {
+    position: fixed;
+    inset: 0;
+    display: grid;
+    grid-template-columns: 380px 1fr;
+  }
+
+  /* === SIDEBAR === */
+  .sidebar {
+    background: var(--navy);
+    color: var(--paper);
+    display: grid;
+    grid-template-rows: auto auto auto 1fr;
+    height: 100%;
+    overflow: hidden;
+    border-right: 1px solid var(--purple-deep);
+  }
+
+  .sidebar-header {
+    padding: 24px 24px 18px;
+    border-bottom: 1px solid rgba(255,255,255,0.1);
+    background: linear-gradient(135deg, var(--navy) 0%, #14264a 100%);
+  }
+  .brand {
+    font-family: 'Fraunces', serif;
+    font-weight: 600;
+    font-size: 22px;
+    letter-spacing: -0.02em;
+    line-height: 1.05;
+    color: var(--paper);
+  }
+  .brand .als {
+    color: var(--purple-soft);
+    font-style: italic;
+    font-weight: 500;
+  }
+  .brand-sub {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.18em;
+    color: var(--purple-soft);
+    margin-top: 6px;
+    font-weight: 500;
+  }
+  .brand-rule {
+    width: 40px;
+    height: 2px;
+    background: var(--purple);
+    margin-top: 12px;
+  }
+
+  .stats {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1px;
+    background: rgba(255,255,255,0.08);
+    margin-top: 18px;
+    border: 1px solid rgba(255,255,255,0.08);
+  }
+  .stat { background: var(--navy); padding: 10px 12px; }
+  .stat-num {
+    font-family: 'Fraunces', serif;
+    font-weight: 500;
+    font-size: 22px;
+    color: var(--paper);
+    line-height: 1.1;
+  }
+  .stat-label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 9px;
+    text-transform: uppercase;
+    letter-spacing: 0.15em;
+    color: var(--purple-soft);
+    margin-top: 2px;
+  }
+
+  .upload-zone {
+    padding: 16px 24px;
+    border-bottom: 1px solid rgba(255,255,255,0.1);
+  }
+  .upload-zone label {
+    display: block;
+    padding: 10px 14px;
+    background: rgba(147, 53, 140, 0.15);
+    border: 1px dashed var(--purple-soft);
+    color: var(--paper);
+    font-size: 12px;
+    font-family: 'JetBrains Mono', monospace;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.15s;
+    font-weight: 500;
+  }
+  .upload-zone label:hover {
+    background: var(--purple);
+    border-color: var(--purple);
+    border-style: solid;
+  }
+  .upload-zone input { display: none; }
+  .upload-zone .file-info {
+    font-size: 10px;
+    color: var(--purple-soft);
+    margin-top: 6px;
+    font-family: 'JetBrains Mono', monospace;
+  }
+
+  .search-box {
+    padding: 16px 24px 12px;
+    border-bottom: 1px solid rgba(255,255,255,0.1);
+  }
+  .search-box input {
+    width: 100%;
+    padding: 10px 12px;
+    background: rgba(255,255,255,0.06);
+    border: 1px solid rgba(255,255,255,0.12);
+    color: var(--paper);
+    font-family: 'Inter Tight', sans-serif;
+    font-size: 13px;
+    outline: none;
+    transition: border-color 0.15s;
+    border-radius: 0;
+  }
+  .search-box input:focus {
+    border-color: var(--purple-soft);
+    background: rgba(147, 53, 140, 0.1);
+  }
+  .search-box input::placeholder { color: rgba(255,255,255,0.4); }
+
+  .filter-pills { display: flex; gap: 6px; margin-top: 10px; flex-wrap: wrap; }  .pill {
+    padding: 4px 10px;
+    background: transparent;
+    border: 1px solid rgba(255,255,255,0.2);
+    color: rgba(255,255,255,0.65);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    cursor: pointer;
+    transition: all 0.15s;
+    font-weight: 500;
+  }
+  .pill:hover { color: var(--paper); border-color: var(--purple-soft); }
+  .pill.active {
+    background: var(--purple);
+    border-color: var(--purple);
+    color: var(--paper);
+  }
+
+  /* the scrolling area */
+  .patient-list {
+    overflow-y: auto;
+    overflow-x: hidden;
+    padding: 8px 0;
+    min-height: 0;
+  }
+  .patient-list::-webkit-scrollbar { width: 8px; }
+  .patient-list::-webkit-scrollbar-track { background: rgba(255,255,255,0.04); }
+  .patient-list::-webkit-scrollbar-thumb { background: var(--purple); border-radius: 4px; }
+  .patient-list::-webkit-scrollbar-thumb:hover { background: var(--purple-soft); }
+
+  /* === MODE TOGGLE (Browse vs Search) === */
+  .mode-toggle {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0;
+    margin-bottom: 14px;
+    border: 1px solid var(--purple);
+  }
+  .mode-btn {
+    padding: 8px 4px;
+    text-align: center;
+    background: transparent;
+    color: var(--purple-soft);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 9px;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.15s;
+    border: none;
+    border-right: 1px solid var(--purple);
+  }
+  .mode-btn:last-child { border-right: none; }
+  .mode-btn.active { background: var(--purple); color: white; }
+  .mode-btn:hover:not(.active) { background: rgba(147, 53, 140, 0.2); color: white; }
+
+  /* === KEYWORD SEARCH RESULTS === */
+  .keyword-results-header {
+    background: var(--paper);
+    padding: 16px 24px;
+    border-bottom: 1px solid var(--rule);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 12px;
+  }
+  .keyword-stats {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    color: var(--ink);
+  }
+  .keyword-stats strong { color: var(--purple); }
+  .keyword-results {
+    padding: 0;
+    overflow-y: auto;
+  }
+  .keyword-hit {
+    padding: 14px 24px;
+    border-bottom: 1px solid var(--rule);
+    cursor: pointer;
+    transition: background 0.1s;
+  }
+  .keyword-hit:hover { background: rgba(147, 53, 140, 0.04); }
+  .keyword-hit-meta {
+    display: flex;
+    gap: 14px;
+    align-items: center;
+    flex-wrap: wrap;
+    margin-bottom: 6px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+  }
+  .keyword-hit-tab {
+    background: var(--purple);
+    color: white;
+    padding: 2px 8px;
+    font-weight: 700;
+  }
+  .keyword-hit-patient {
+    color: var(--navy);
+    font-weight: 600;
+    text-transform: none;
+    letter-spacing: 0;
+    font-family: 'Inter Tight', sans-serif;
+    font-size: 13px;
+  }
+  .keyword-hit-date { color: var(--ink-soft); }
+  .keyword-hit-file {
+    color: var(--purple);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+  }
+  .keyword-hit-snippet {
+    color: var(--ink);
+    font-size: 13px;
+    line-height: 1.5;
+    margin-top: 4px;
+  }
+  .keyword-hit-snippet mark {
+    background: #FFE066;
+    color: var(--ink);
+    padding: 1px 3px;
+    font-weight: 700;
+    border-radius: 2px;
+  }
+  .keyword-empty-state {
+    padding: 60px 24px;
+    text-align: center;
+    color: var(--ink-soft);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+  }
+
+  .patient-item {
+    padding: 12px 24px;
+    border-bottom: 1px solid rgba(255,255,255,0.06);
+    cursor: pointer;
+    transition: background 0.12s;
+    position: relative;
+  }
+  .patient-item:hover { background: rgba(147, 53, 140, 0.1); }
+  .patient-item.active { background: rgba(147, 53, 140, 0.2); }
+  .patient-item.active::before {
+    content: '';
+    position: absolute;
+    left: 0; top: 0; bottom: 0;
+    width: 3px;
+    background: var(--purple);
+  }
+  .patient-name {
+    font-family: 'Fraunces', serif;
+    font-weight: 500;
+    font-size: 15px;
+    color: var(--paper);
+    line-height: 1.2;
+  }
+  .patient-name.no-name {
+    color: rgba(255,255,255,0.45);
+    font-style: italic;
+    font-weight: 400;
+  }
+  .patient-meta {
+    display: flex; gap: 12px; margin-top: 4px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    color: rgba(255,255,255,0.5);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+  .patient-meta .pid { color: var(--purple-soft); }
+
+  .empty-state {
+    padding: 40px 24px;
+    text-align: center;
+    color: rgba(255,255,255,0.45);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    line-height: 1.6;
+  }
+
+  /* === MAIN === */
+  .main {
+    overflow-y: auto;
+    background: var(--paper);
+    height: 100%;
+  }
+  .main::-webkit-scrollbar { width: 8px; }
+  .main::-webkit-scrollbar-track { background: var(--paper-warm); }
+  .main::-webkit-scrollbar-thumb { background: var(--purple-soft); border-radius: 4px; }
+  .main::-webkit-scrollbar-thumb:hover { background: var(--purple); }
+
+  .welcome { padding: 80px 60px; max-width: 720px; }
+  .welcome h1 {
+    font-family: 'Fraunces', serif;
+    font-weight: 400;
+    font-size: 56px;
+    line-height: 1;
+    letter-spacing: -0.03em;
+    margin-bottom: 20px;
+    color: var(--navy);
+  }
+  .welcome h1 em { font-style: italic; color: var(--purple); }
+  .welcome p {
+    font-size: 16px;
+    line-height: 1.65;
+    color: var(--ink-soft);
+    margin-bottom: 14px;
+    max-width: 620px;
+  }
+  .welcome .hr {
+    width: 60px;
+    height: 2px;
+    background: var(--purple);
+    margin: 24px 0;
+  }
+  .welcome ol { margin: 20px 0 20px 18px; color: var(--ink-soft); }
+  .welcome ol li { margin-bottom: 10px; padding-left: 8px; }
+  .welcome code {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+    background: var(--purple-light);
+    color: var(--purple-deep);
+    padding: 2px 6px;
+    font-weight: 500;
+  }
+  .welcome .tagline {
+    margin-top: 60px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.2em;
+    color: var(--purple);
+    font-weight: 700;
+  }
+
+  .detail { padding: 40px 60px 80px; max-width: 1100px; }
+
+  .detail-header {
+    border-bottom: 2px solid var(--navy);
+    padding-bottom: 18px;
+    margin-bottom: 28px;
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    gap: 30px;
+  }
+  .detail-name {
+    font-family: 'Fraunces', serif;
+    font-weight: 500;
+    font-size: 44px;
+    line-height: 1;
+    letter-spacing: -0.025em;
+    color: var(--navy);
+  }
+  .detail-name em { font-style: italic; font-weight: 400; color: var(--purple); }
+  .detail-name.no-name {
+    color: var(--ink-soft);
+    font-style: italic;
+    font-weight: 400;
+    font-size: 32px;
+  }
+  .detail-id-block {
+    text-align: right;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    line-height: 1.6;
+    color: var(--ink-soft);
+  }
+  .detail-id-block strong { color: var(--purple); font-weight: 700; }
+
+  .demographics {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 1px;
+    background: var(--rule);
+    border: 1px solid var(--rule);
+    margin-bottom: 36px;
+  }
+  .demo-cell { background: var(--paper); padding: 12px 16px; }
+  .demo-label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 9px;
+    text-transform: uppercase;
+    letter-spacing: 0.15em;
+    color: var(--purple);
+    margin-bottom: 4px;
+    font-weight: 700;
+  }
+  .demo-value {
+    font-family: 'Fraunces', serif;
+    font-size: 16px;
+    font-weight: 500;
+    color: var(--navy);
+  }
+
+  .tabs {
+    display: flex;
+    border-bottom: 1px solid var(--rule);
+    margin-bottom: 24px;
+    gap: 0;
+    overflow-x: auto;
+    flex-wrap: nowrap;
+  }
+  .tab {
+    padding: 12px 16px 14px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    cursor: pointer;
+    border-bottom: 2px solid transparent;
+    color: var(--ink-soft);
+    transition: all 0.15s;
+    white-space: nowrap;
+    font-weight: 500;
+  }
+  .tab:hover { color: var(--navy); }
+  .tab.active {
+    color: var(--purple);
+    border-bottom-color: var(--purple);
+    font-weight: 700;
+  }
+  .tab .count { margin-left: 5px; color: var(--rule); font-weight: 700; }
+  .tab.active .count { color: var(--purple-soft); }
+
+  .tab-panel { display: none; }
+  .tab-panel.active { display: block; }
+
+  .data-table { width: 100%; border-collapse: collapse; font-size: 13px; }
+  .data-table th {
+    text-align: left;
+    padding: 10px 12px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--paper);
+    background: var(--navy);
+    font-weight: 700;
+    position: sticky;
+    top: 0;
+    z-index: 1;
+  }
+  .data-table td {
+    padding: 10px 12px;
+    border-bottom: 1px solid var(--rule);
+    vertical-align: top;
+  }
+  .data-table tr:hover td { background: var(--purple-light); }
+
+  .code-chip {
+    display: inline-block;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    background: var(--code-bg);
+    color: var(--code-fg);
+    padding: 2px 6px;
+    margin-right: 6px;
+    letter-spacing: 0.02em;
+    font-weight: 500;
+  }
+  .code-system {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 9px;
+    color: var(--ink-soft);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+  }
+
+  .source-tag {
+    display: inline-block;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 9px;
+    padding: 1px 6px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+  }
+  .source-tag.ccda { background: var(--navy); color: var(--paper); }
+  .source-tag.fhir { background: var(--purple); color: var(--paper); }
+
+  .source-badge {
+    display: inline-block;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 9px;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    padding: 2px 6px;
+    font-weight: 700;
+  }
+  .source-ccda_xml { background: var(--navy); color: var(--paper); }
+  .source-html_fragment { background: var(--purple); color: var(--paper); }
+  .source-rtf_note { background: var(--purple-bold); color: var(--paper); }
+  .source-pdf { background: var(--ink); color: var(--paper); }
+
+  .doc-card {
+    background: var(--paper-warm);
+    border-left: 3px solid var(--purple);
+    padding: 18px 22px;
+    margin-bottom: 16px;
+    box-shadow: var(--shadow);
+  }
+  .doc-card.source-html_fragment { border-left-color: var(--purple); }
+  .doc-card.source-rtf_note { border-left-color: var(--purple-bold); }
+  .doc-card.source-pdf { border-left-color: var(--ink); }
+  .doc-card.source-ccda_xml { border-left-color: var(--navy); }
+
+  .doc-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    gap: 16px;
+    margin-bottom: 10px;
+    padding-bottom: 8px;
+    border-bottom: 1px solid var(--rule);
+  }
+  .doc-title-row { display: flex; gap: 10px; align-items: baseline; }
+  .doc-uuid {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    color: var(--ink-soft);
+  }
+  .doc-meta {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    color: var(--ink-soft);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+  }
+  .doc-body {
+    font-size: 13px;
+    line-height: 1.7;
+    color: var(--ink);
+    white-space: pre-wrap;
+    word-wrap: break-word;
+    max-height: 400px;
+    overflow-y: auto;
+    padding-right: 8px;
+    font-family: 'Inter Tight', sans-serif;
+  }
+  .doc-body::-webkit-scrollbar { width: 4px; }
+  .doc-body::-webkit-scrollbar-thumb { background: var(--purple-soft); }
+  .doc-body.expanded { max-height: none; }
+
+  .expand-link {
+    display: inline-block;
+    margin-top: 8px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    color: var(--purple);
+    cursor: pointer;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    font-weight: 700;
+  }
+  .expand-link:hover { color: var(--purple-bold); text-decoration: underline; }
+
+  .empty-tab {
+    padding: 60px 20px;
+    text-align: center;
+    color: var(--ink-soft);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.15em;
+  }
+
+  .doc-filter { display: flex; gap: 8px; margin-bottom: 20px; flex-wrap: wrap; }
+  .doc-filter-btn {
+    padding: 6px 12px;
+    background: var(--paper);
+    border: 1px solid var(--rule);
+    color: var(--ink-soft);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    cursor: pointer;
+    transition: all 0.15s;
+    font-weight: 500;
+  }
+  .doc-filter-btn:hover { border-color: var(--purple); color: var(--purple); }
+  .doc-filter-btn.active {
+    background: var(--purple);
+    color: var(--paper);
+    border-color: var(--purple);
+    font-weight: 700;
+  }
+
+  .table-wrap {
+    max-height: calc(100vh - 320px);
+    overflow: auto;
+    border: 1px solid var(--rule);
+  }
+  .table-wrap::-webkit-scrollbar { height: 8px; width: 8px; }
+  .table-wrap::-webkit-scrollbar-thumb { background: var(--purple-soft); border-radius: 4px; }
+
+  /* === EXPORT BUTTONS === */
+  .panel-toolbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0 0 12px;
+    margin-bottom: 4px;
+    border-bottom: 1px dashed var(--rule);
+  }
+  .panel-info {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--ink-soft);
+    font-weight: 500;
+  }
+  .panel-info strong {
+    color: var(--purple);
+    font-weight: 700;
+  }
+  .export-btn {
+    padding: 5px 12px;
+    background: var(--paper);
+    border: 1px solid var(--purple);
+    color: var(--purple);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    cursor: pointer;
+    transition: all 0.15s;
+    font-weight: 700;
+    border-radius: 0;
+  }
+  .export-btn:hover {
+    background: var(--purple);
+    color: var(--paper);
+  }
+  .export-btn:disabled {
+    border-color: var(--rule);
+    color: var(--ink-soft);
+    cursor: not-allowed;
+    opacity: 0.5;
+  }
+  .export-btn .icon {
+    margin-right: 4px;
+  }
+  .export-all-btn {
+    padding: 6px 14px;
+    background: var(--purple);
+    border: 1px solid var(--purple);
+    color: var(--paper);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    cursor: pointer;
+    transition: all 0.15s;
+    font-weight: 700;
+    margin-top: 8px;
+  }
+  .export-all-btn:hover { background: var(--purple-bold); border-color: var(--purple-bold); }
+</style>
+<script>
+  window.EMBEDDED_BUNDLE = {"metadata": {"generated_at": "2026-05-09T21:21:49.084838", "pipeline": "SMART on FHIR ETL", "total_patients": 1}, "patients": [{"patient_id": "demo-patient-001", "first_name": "Jane", "last_name": "Demo", "mrn": "MRN-DEMO-001", "dob": "1965-03-15", "gender": "female", "num_documents": 1}], "documents": [{"document_uuid": "demo-ccda-001", "source_file": "demo-ccda-001.xml", "source_format": "ccda_xml", "source_type": "ccda_xml", "patient_id": "demo-patient-001", "plain_text": "--- Problems ---\nActive problems for this patient include amyotrophic lateral sclerosis (G12.21, diagnosed May 2023) as the primary diagnosis. Secondary problems related to ALS progression include dysphagia (R13.10, onset September 2023) requiring dietary modifications, dysarthria (R47.1, onset August 2023) with progressive impact on communication, dyspnea (R06.00, onset November 2023) now requiring nocturnal BiPAP support, generalized fatigue (R53.83), and major depressive disorder (F32.9) being managed with medication and counseling. The disease course has been consistent with limb-onset ALS with progression over approximately 18 months.\n\n--- Medications ---\nDisease-modifying therapy includes riluzole 50 mg orally twice daily (started June 2023) and edaravone 60 mg IV daily on alternating 14-day cycles (started July 2023). Symptom-management medications: baclofen 10 mg three times daily for spasticity, trazodone 50 mg at bedtime for sleep and depression, tizanidine 4 mg three times daily as needed for additional spasticity, cholecalciferol (vitamin D3) 1000 IU daily, and lorazepam 0.5 mg every 6 hours as needed for anxiety and dyspnea. Patient reports good adherence to scheduled medications.\n\n--- Vital Signs ---\nMost recent vital signs from 15-Apr-2024 visit: blood pressure 122/78 mmHg, heart rate 76 bpm, respiratory rate 18, weight 58.2 kg (down from 64 kg three months ago - 9 percent loss), oxygen saturation 96 percent on room air, forced vital capacity 62 percent predicted (down from 78 percent three months ago).\n\n--- Allergies ---\nDrug allergies: penicillin (high severity, causes rash and hives, identified June 1985); sulfa medications (moderate severity, causes gastrointestinal upset, identified March 1992). Environmental allergy: latex (low severity, causes contact dermatitis, identified August 2010). No known food allergies.\n\n--- Immunizations ---\nInfluenza quadrivalent injectable, 0.5 mL IM left deltoid on 5-Oct-2023 (lot FLU2023-A1234). COVID-19 mRNA bivalent booster, 0.5 mL IM right deltoid on 15-Sep-2023 (lot COV2023-B7891). Pneumococcal conjugate PCV13, 0.5 mL IM left deltoid on 1-Jun-2023 (lot PNE2023-C4456). Tdap, 0.5 mL IM right deltoid on 15-Nov-2022 (lot TDP2022-D2278).\n\n--- Procedures ---\nDiagnostic procedures: electromyography on 25-Apr-2023 demonstrating widespread denervation consistent with motor neuron disease; MRI brain without contrast on 2-May-2023 demonstrating no structural lesion. Therapeutic procedures: BiPAP initiation on 1-Dec-2023 with IPAP 14, EPAP 6 for nocturnal hypoventilation; percutaneous endoscopic gastrostomy tube placement on 11-Jan-2024 without complication.\n\n--- Laboratory Results ---\nComprehensive metabolic panel (10-Apr-2024): sodium 139 mmol/L, potassium 4.1 mmol/L, chloride 102 mmol/L, CO2 26 mmol/L, BUN 14 mg/dL, creatinine 0.6 mg/dL, glucose 96 mg/dL. Hemoglobin 12.8 g/dL. TSH 2.1 mIU/L. 25-OH vitamin D 38 ng/mL. All values within normal limits or therapeutic targets.\n\n--- Encounters ---\nInitial neurology consultation 12-Apr-2023 for muscle weakness evaluation. First multidisciplinary ALS clinic visit 20-Aug-2023 following diagnosis. Inpatient hospitalization 10-Jan-2024 to 13-Jan-2024 for PEG tube placement. Most recent MDC follow-up 15-Apr-2024.\n\n--- Plan of Care ---\nMultidisciplinary ALS care plan with quarterly visits coordinating neurology, pulmonology, nutrition, physical therapy, occupational therapy, speech-language pathology, social work, and palliative care. Continue current disease-modifying therapy and symptom management. Patient goals: maintain functional independence as long as possible through adaptive equipment and home modifications; manage symptoms (spasticity, sialorrhea, dysphagia, fatigue) to optimize quality of life; complete advance care planning including MOLST and discussion of long-term ventilation preferences. Voice banking initiated. Palliative care team engaged for symptom management and family support."}], "medications": [{"patient_id": "demo-patient-001", "code": "9322", "code_system": "RxNorm", "display_name": "Riluzole", "all_codings": [{"code": "9322", "system_oid": "http://www.nlm.nih.gov/research/umls/rxnorm", "system_name": "RxNorm", "display": "Riluzole"}], "effective_date": "2023-06-01", "status": "active", "source": "fhir", "fhir_resource_type": "MedicationRequest", "effective_datetime": "2023-06-01", "authored_on": "2023-06-01", "start_date": "2023-06-01", "medication_subtype": "MedicationRequest"}, {"patient_id": "demo-patient-001", "code": "1924316", "code_system": "RxNorm", "display_name": "edaravone 30 MG in 100 ML Injection", "all_codings": [{"code": "1924316", "system_oid": "http://www.nlm.nih.gov/research/umls/rxnorm", "system_name": "RxNorm", "display": "edaravone 30 MG in 100 ML Injection"}], "effective_date": "2023-09-01", "status": "active", "source": "fhir", "fhir_resource_type": "MedicationRequest", "effective_datetime": "2023-09-01", "authored_on": "2023-09-01", "start_date": "2023-09-01", "medication_subtype": "MedicationRequest"}, {"patient_id": "demo-patient-001", "code": "1117", "code_system": "RxNorm", "display_name": "Baclofen", "all_codings": [{"code": "1117", "system_oid": "http://www.nlm.nih.gov/research/umls/rxnorm", "system_name": "RxNorm", "display": "Baclofen"}], "effective_date": "2023-09-01", "status": "active", "source": "fhir", "fhir_resource_type": "MedicationRequest", "effective_datetime": "2023-09-01", "authored_on": "2023-09-01", "start_date": "2023-09-01", "medication_subtype": "MedicationRequest"}, {"patient_id": "demo-patient-001", "code": "10355", "code_system": "RxNorm", "display_name": "Trazodone", "all_codings": [{"code": "10355", "system_oid": "http://www.nlm.nih.gov/research/umls/rxnorm", "system_name": "RxNorm", "display": "Trazodone"}], "effective_date": "2023-09-01", "status": "active", "source": "fhir", "fhir_resource_type": "MedicationRequest", "effective_datetime": "2023-09-01", "authored_on": "2023-09-01", "start_date": "2023-09-01", "medication_subtype": "MedicationRequest"}, {"patient_id": "demo-patient-001", "code": "313413", "code_system": "RxNorm", "display_name": "tizanidine 4 MG Oral Tablet", "all_codings": [{"code": "313413", "system_oid": "http://www.nlm.nih.gov/research/umls/rxnorm", "system_name": "RxNorm", "display": "tizanidine 4 MG Oral Tablet"}], "effective_date": "2023-09-01", "status": "active", "source": "fhir", "fhir_resource_type": "MedicationRequest", "effective_datetime": "2023-09-01", "authored_on": "2023-09-01", "start_date": "2023-09-01", "medication_subtype": "MedicationRequest"}, {"patient_id": "demo-patient-001", "code": "39937", "code_system": "RxNorm", "display_name": "Cholecalciferol", "all_codings": [{"code": "39937", "system_oid": "http://www.nlm.nih.gov/research/umls/rxnorm", "system_name": "RxNorm", "display": "Cholecalciferol"}], "effective_date": "2023-09-01", "status": "active", "source": "fhir", "fhir_resource_type": "MedicationRequest", "effective_datetime": "2023-09-01", "authored_on": "2023-09-01", "start_date": "2023-09-01", "medication_subtype": "MedicationRequest"}, {"patient_id": "demo-patient-001", "code": "6470", "code_system": "RxNorm", "display_name": "Lorazepam", "all_codings": [{"code": "6470", "system_oid": "http://www.nlm.nih.gov/research/umls/rxnorm", "system_name": "RxNorm", "display": "Lorazepam"}], "effective_date": "2023-09-01", "status": "active", "source": "fhir", "fhir_resource_type": "MedicationRequest", "effective_datetime": "2023-09-01", "authored_on": "2023-09-01", "start_date": "2023-09-01", "medication_subtype": "MedicationRequest"}], "problems": [{"patient_id": "demo-patient-001", "code": "86044005", "code_system": "SNOMED-CT", "display_name": "Amyotrophic lateral sclerosis", "all_codings": [{"code": "86044005", "system_oid": "http://snomed.info/sct", "system_name": "SNOMED-CT", "display": "Amyotrophic lateral sclerosis"}, {"code": "G12.21", "system_oid": "http://hl7.org/fhir/sid/icd-10-cm", "system_name": "ICD-10-CM", "display": "Amyotrophic lateral sclerosis"}], "effective_date": "2023-05-15", "clinical_status": "active", "source": "fhir", "effective_datetime": "2023-05-15", "onset_datetime": "2023-05-15", "status": "active"}, {"patient_id": "demo-patient-001", "code": "40739000", "code_system": "SNOMED-CT", "display_name": "Dysphagia", "all_codings": [{"code": "40739000", "system_oid": "http://snomed.info/sct", "system_name": "SNOMED-CT", "display": "Dysphagia"}, {"code": "R13.10", "system_oid": "http://hl7.org/fhir/sid/icd-10-cm", "system_name": "ICD-10-CM", "display": "Dysphagia, unspecified"}], "effective_date": "2023-09-01", "clinical_status": "active", "source": "fhir", "effective_datetime": "2023-09-01", "onset_datetime": "2023-09-01", "status": "active"}, {"patient_id": "demo-patient-001", "code": "267036007", "code_system": "SNOMED-CT", "display_name": "Dyspnea", "all_codings": [{"code": "267036007", "system_oid": "http://snomed.info/sct", "system_name": "SNOMED-CT", "display": "Dyspnea"}, {"code": "R06.00", "system_oid": "http://hl7.org/fhir/sid/icd-10-cm", "system_name": "ICD-10-CM", "display": "Dyspnea, unspecified"}], "effective_date": "2023-11-15", "clinical_status": "active", "source": "fhir", "effective_datetime": "2023-11-15", "onset_datetime": "2023-11-15", "status": "active"}, {"patient_id": "demo-patient-001", "code": "8011004", "code_system": "SNOMED-CT", "display_name": "Dysarthria", "all_codings": [{"code": "8011004", "system_oid": "http://snomed.info/sct", "system_name": "SNOMED-CT", "display": "Dysarthria"}, {"code": "R47.1", "system_oid": "http://hl7.org/fhir/sid/icd-10-cm", "system_name": "ICD-10-CM", "display": "Dysarthria and anarthria"}], "effective_date": "2023-08-01", "clinical_status": "active", "source": "fhir", "effective_datetime": "2023-08-01", "onset_datetime": "2023-08-01", "status": "active"}, {"patient_id": "demo-patient-001", "code": "84229001", "code_system": "SNOMED-CT", "display_name": "Fatigue", "all_codings": [{"code": "84229001", "system_oid": "http://snomed.info/sct", "system_name": "SNOMED-CT", "display": "Fatigue"}, {"code": "R53.83", "system_oid": "http://hl7.org/fhir/sid/icd-10-cm", "system_name": "ICD-10-CM", "display": "Other fatigue"}], "effective_date": "2023-06-01", "clinical_status": "active", "source": "fhir", "effective_datetime": "2023-06-01", "onset_datetime": "2023-06-01", "status": "active"}, {"patient_id": "demo-patient-001", "code": "35489007", "code_system": "SNOMED-CT", "display_name": "Depressive disorder", "all_codings": [{"code": "35489007", "system_oid": "http://snomed.info/sct", "system_name": "SNOMED-CT", "display": "Depressive disorder"}, {"code": "F32.9", "system_oid": "http://hl7.org/fhir/sid/icd-10-cm", "system_name": "ICD-10-CM", "display": "Major depressive disorder, single episode, unspecified"}], "effective_date": "2023-10-01", "clinical_status": "active", "source": "fhir", "effective_datetime": "2023-10-01", "onset_datetime": "2023-10-01", "status": "active"}], "labs": [{"patient_id": "demo-patient-001", "code": "2951-2", "code_system": "LOINC", "display_name": "Sodium [Moles/volume] in Serum or Plasma", "all_codings": [{"code": "2951-2", "system_oid": "http://loinc.org", "system_name": "LOINC", "display": "Sodium [Moles/volume] in Serum or Plasma"}], "value": 139, "unit": "mmol/L", "effective_date": "2024-04-10", "category": "laboratory", "source": "fhir", "effective_datetime": "2024-04-10"}, {"patient_id": "demo-patient-001", "code": "2823-3", "code_system": "LOINC", "display_name": "Potassium [Moles/volume] in Serum or Plasma", "all_codings": [{"code": "2823-3", "system_oid": "http://loinc.org", "system_name": "LOINC", "display": "Potassium [Moles/volume] in Serum or Plasma"}], "value": 4.1, "unit": "mmol/L", "effective_date": "2024-04-10", "category": "laboratory", "source": "fhir", "effective_datetime": "2024-04-10"}, {"patient_id": "demo-patient-001", "code": "2075-0", "code_system": "LOINC", "display_name": "Chloride [Moles/volume] in Serum or Plasma", "all_codings": [{"code": "2075-0", "system_oid": "http://loinc.org", "system_name": "LOINC", "display": "Chloride [Moles/volume] in Serum or Plasma"}], "value": 102, "unit": "mmol/L", "effective_date": "2024-04-10", "category": "laboratory", "source": "fhir", "effective_datetime": "2024-04-10"}, {"patient_id": "demo-patient-001", "code": "2028-9", "code_system": "LOINC", "display_name": "Carbon dioxide [Moles/volume] in Serum or Plasma", "all_codings": [{"code": "2028-9", "system_oid": "http://loinc.org", "system_name": "LOINC", "display": "Carbon dioxide [Moles/volume] in Serum or Plasma"}], "value": 26, "unit": "mmol/L", "effective_date": "2024-04-10", "category": "laboratory", "source": "fhir", "effective_datetime": "2024-04-10"}, {"patient_id": "demo-patient-001", "code": "3094-0", "code_system": "LOINC", "display_name": "Urea nitrogen [Mass/volume] in Serum or Plasma", "all_codings": [{"code": "3094-0", "system_oid": "http://loinc.org", "system_name": "LOINC", "display": "Urea nitrogen [Mass/volume] in Serum or Plasma"}], "value": 14, "unit": "mg/dL", "effective_date": "2024-04-10", "category": "laboratory", "source": "fhir", "effective_datetime": "2024-04-10"}, {"patient_id": "demo-patient-001", "code": "2160-0", "code_system": "LOINC", "display_name": "Creatinine [Mass/volume] in Serum or Plasma", "all_codings": [{"code": "2160-0", "system_oid": "http://loinc.org", "system_name": "LOINC", "display": "Creatinine [Mass/volume] in Serum or Plasma"}], "value": 0.6, "unit": "mg/dL", "effective_date": "2024-04-10", "category": "laboratory", "source": "fhir", "effective_datetime": "2024-04-10"}, {"patient_id": "demo-patient-001", "code": "2345-7", "code_system": "LOINC", "display_name": "Glucose [Mass/volume] in Serum or Plasma", "all_codings": [{"code": "2345-7", "system_oid": "http://loinc.org", "system_name": "LOINC", "display": "Glucose [Mass/volume] in Serum or Plasma"}], "value": 96, "unit": "mg/dL", "effective_date": "2024-04-10", "category": "laboratory", "source": "fhir", "effective_datetime": "2024-04-10"}, {"patient_id": "demo-patient-001", "code": "718-7", "code_system": "LOINC", "display_name": "Hemoglobin [Mass/volume] in Blood", "all_codings": [{"code": "718-7", "system_oid": "http://loinc.org", "system_name": "LOINC", "display": "Hemoglobin [Mass/volume] in Blood"}], "value": 12.8, "unit": "g/dL", "effective_date": "2024-04-10", "category": "laboratory", "source": "fhir", "effective_datetime": "2024-04-10"}, {"patient_id": "demo-patient-001", "code": "3016-3", "code_system": "LOINC", "display_name": "Thyrotropin [Units/volume] in Serum or Plasma", "all_codings": [{"code": "3016-3", "system_oid": "http://loinc.org", "system_name": "LOINC", "display": "Thyrotropin [Units/volume] in Serum or Plasma"}], "value": 2.1, "unit": "mIU/L", "effective_date": "2024-04-10", "category": "laboratory", "source": "fhir", "effective_datetime": "2024-04-10"}, {"patient_id": "demo-patient-001", "code": "1989-3", "code_system": "LOINC", "display_name": "Vitamin D 25-Hydroxy [Mass/volume] in Serum or Plasma", "all_codings": [{"code": "1989-3", "system_oid": "http://loinc.org", "system_name": "LOINC", "display": "Vitamin D 25-Hydroxy [Mass/volume] in Serum or Plasma"}], "value": 38, "unit": "ng/mL", "effective_date": "2024-04-10", "category": "laboratory", "source": "fhir", "effective_datetime": "2024-04-10"}], "vitals": [{"patient_id": "demo-patient-001", "code": "8480-6", "code_system": "LOINC", "display_name": "Systolic blood pressure", "all_codings": [{"code": "8480-6", "system_oid": "http://loinc.org", "system_name": "LOINC", "display": "Systolic blood pressure"}], "value": 122, "unit": "mm[Hg]", "effective_date": "2024-04-15", "category": "vital-signs", "source": "fhir", "effective_datetime": "2024-04-15"}, {"patient_id": "demo-patient-001", "code": "8462-4", "code_system": "LOINC", "display_name": "Diastolic blood pressure", "all_codings": [{"code": "8462-4", "system_oid": "http://loinc.org", "system_name": "LOINC", "display": "Diastolic blood pressure"}], "value": 78, "unit": "mm[Hg]", "effective_date": "2024-04-15", "category": "vital-signs", "source": "fhir", "effective_datetime": "2024-04-15"}, {"patient_id": "demo-patient-001", "code": "8867-4", "code_system": "LOINC", "display_name": "Heart rate", "all_codings": [{"code": "8867-4", "system_oid": "http://loinc.org", "system_name": "LOINC", "display": "Heart rate"}], "value": 76, "unit": "/min", "effective_date": "2024-04-15", "category": "vital-signs", "source": "fhir", "effective_datetime": "2024-04-15"}, {"patient_id": "demo-patient-001", "code": "9279-1", "code_system": "LOINC", "display_name": "Respiratory rate", "all_codings": [{"code": "9279-1", "system_oid": "http://loinc.org", "system_name": "LOINC", "display": "Respiratory rate"}], "value": 18, "unit": "/min", "effective_date": "2024-04-15", "category": "vital-signs", "source": "fhir", "effective_datetime": "2024-04-15"}, {"patient_id": "demo-patient-001", "code": "29463-7", "code_system": "LOINC", "display_name": "Body weight", "all_codings": [{"code": "29463-7", "system_oid": "http://loinc.org", "system_name": "LOINC", "display": "Body weight"}], "value": 58.2, "unit": "kg", "effective_date": "2024-04-15", "category": "vital-signs", "source": "fhir", "effective_datetime": "2024-04-15"}, {"patient_id": "demo-patient-001", "code": "59408-5", "code_system": "LOINC", "display_name": "Oxygen saturation in Arterial blood by Pulse oximetry", "all_codings": [{"code": "59408-5", "system_oid": "http://loinc.org", "system_name": "LOINC", "display": "Oxygen saturation in Arterial blood by Pulse oximetry"}], "value": 96, "unit": "%", "effective_date": "2024-04-15", "category": "vital-signs", "source": "fhir", "effective_datetime": "2024-04-15"}, {"patient_id": "demo-patient-001", "code": "19868-9", "code_system": "LOINC", "display_name": "FVC -- predicted", "all_codings": [{"code": "19868-9", "system_oid": "http://loinc.org", "system_name": "LOINC", "display": "FVC -- predicted"}], "value": 62, "unit": "%", "effective_date": "2024-04-15", "category": "vital-signs", "source": "fhir", "effective_datetime": "2024-04-15"}], "labs_vitals": [{"patient_id": "demo-patient-001", "code": "2951-2", "code_system": "LOINC", "display_name": "Sodium [Moles/volume] in Serum or Plasma", "all_codings": [{"code": "2951-2", "system_oid": "http://loinc.org", "system_name": "LOINC", "display": "Sodium [Moles/volume] in Serum or Plasma"}], "value": 139, "unit": "mmol/L", "effective_date": "2024-04-10", "category": "laboratory", "source": "fhir", "effective_datetime": "2024-04-10"}, {"patient_id": "demo-patient-001", "code": "2823-3", "code_system": "LOINC", "display_name": "Potassium [Moles/volume] in Serum or Plasma", "all_codings": [{"code": "2823-3", "system_oid": "http://loinc.org", "system_name": "LOINC", "display": "Potassium [Moles/volume] in Serum or Plasma"}], "value": 4.1, "unit": "mmol/L", "effective_date": "2024-04-10", "category": "laboratory", "source": "fhir", "effective_datetime": "2024-04-10"}, {"patient_id": "demo-patient-001", "code": "2075-0", "code_system": "LOINC", "display_name": "Chloride [Moles/volume] in Serum or Plasma", "all_codings": [{"code": "2075-0", "system_oid": "http://loinc.org", "system_name": "LOINC", "display": "Chloride [Moles/volume] in Serum or Plasma"}], "value": 102, "unit": "mmol/L", "effective_date": "2024-04-10", "category": "laboratory", "source": "fhir", "effective_datetime": "2024-04-10"}, {"patient_id": "demo-patient-001", "code": "2028-9", "code_system": "LOINC", "display_name": "Carbon dioxide [Moles/volume] in Serum or Plasma", "all_codings": [{"code": "2028-9", "system_oid": "http://loinc.org", "system_name": "LOINC", "display": "Carbon dioxide [Moles/volume] in Serum or Plasma"}], "value": 26, "unit": "mmol/L", "effective_date": "2024-04-10", "category": "laboratory", "source": "fhir", "effective_datetime": "2024-04-10"}, {"patient_id": "demo-patient-001", "code": "3094-0", "code_system": "LOINC", "display_name": "Urea nitrogen [Mass/volume] in Serum or Plasma", "all_codings": [{"code": "3094-0", "system_oid": "http://loinc.org", "system_name": "LOINC", "display": "Urea nitrogen [Mass/volume] in Serum or Plasma"}], "value": 14, "unit": "mg/dL", "effective_date": "2024-04-10", "category": "laboratory", "source": "fhir", "effective_datetime": "2024-04-10"}, {"patient_id": "demo-patient-001", "code": "2160-0", "code_system": "LOINC", "display_name": "Creatinine [Mass/volume] in Serum or Plasma", "all_codings": [{"code": "2160-0", "system_oid": "http://loinc.org", "system_name": "LOINC", "display": "Creatinine [Mass/volume] in Serum or Plasma"}], "value": 0.6, "unit": "mg/dL", "effective_date": "2024-04-10", "category": "laboratory", "source": "fhir", "effective_datetime": "2024-04-10"}, {"patient_id": "demo-patient-001", "code": "2345-7", "code_system": "LOINC", "display_name": "Glucose [Mass/volume] in Serum or Plasma", "all_codings": [{"code": "2345-7", "system_oid": "http://loinc.org", "system_name": "LOINC", "display": "Glucose [Mass/volume] in Serum or Plasma"}], "value": 96, "unit": "mg/dL", "effective_date": "2024-04-10", "category": "laboratory", "source": "fhir", "effective_datetime": "2024-04-10"}, {"patient_id": "demo-patient-001", "code": "718-7", "code_system": "LOINC", "display_name": "Hemoglobin [Mass/volume] in Blood", "all_codings": [{"code": "718-7", "system_oid": "http://loinc.org", "system_name": "LOINC", "display": "Hemoglobin [Mass/volume] in Blood"}], "value": 12.8, "unit": "g/dL", "effective_date": "2024-04-10", "category": "laboratory", "source": "fhir", "effective_datetime": "2024-04-10"}, {"patient_id": "demo-patient-001", "code": "3016-3", "code_system": "LOINC", "display_name": "Thyrotropin [Units/volume] in Serum or Plasma", "all_codings": [{"code": "3016-3", "system_oid": "http://loinc.org", "system_name": "LOINC", "display": "Thyrotropin [Units/volume] in Serum or Plasma"}], "value": 2.1, "unit": "mIU/L", "effective_date": "2024-04-10", "category": "laboratory", "source": "fhir", "effective_datetime": "2024-04-10"}, {"patient_id": "demo-patient-001", "code": "1989-3", "code_system": "LOINC", "display_name": "Vitamin D 25-Hydroxy [Mass/volume] in Serum or Plasma", "all_codings": [{"code": "1989-3", "system_oid": "http://loinc.org", "system_name": "LOINC", "display": "Vitamin D 25-Hydroxy [Mass/volume] in Serum or Plasma"}], "value": 38, "unit": "ng/mL", "effective_date": "2024-04-10", "category": "laboratory", "source": "fhir", "effective_datetime": "2024-04-10"}, {"patient_id": "demo-patient-001", "code": "8480-6", "code_system": "LOINC", "display_name": "Systolic blood pressure", "all_codings": [{"code": "8480-6", "system_oid": "http://loinc.org", "system_name": "LOINC", "display": "Systolic blood pressure"}], "value": 122, "unit": "mm[Hg]", "effective_date": "2024-04-15", "category": "vital-signs", "source": "fhir", "effective_datetime": "2024-04-15"}, {"patient_id": "demo-patient-001", "code": "8462-4", "code_system": "LOINC", "display_name": "Diastolic blood pressure", "all_codings": [{"code": "8462-4", "system_oid": "http://loinc.org", "system_name": "LOINC", "display": "Diastolic blood pressure"}], "value": 78, "unit": "mm[Hg]", "effective_date": "2024-04-15", "category": "vital-signs", "source": "fhir", "effective_datetime": "2024-04-15"}, {"patient_id": "demo-patient-001", "code": "8867-4", "code_system": "LOINC", "display_name": "Heart rate", "all_codings": [{"code": "8867-4", "system_oid": "http://loinc.org", "system_name": "LOINC", "display": "Heart rate"}], "value": 76, "unit": "/min", "effective_date": "2024-04-15", "category": "vital-signs", "source": "fhir", "effective_datetime": "2024-04-15"}, {"patient_id": "demo-patient-001", "code": "9279-1", "code_system": "LOINC", "display_name": "Respiratory rate", "all_codings": [{"code": "9279-1", "system_oid": "http://loinc.org", "system_name": "LOINC", "display": "Respiratory rate"}], "value": 18, "unit": "/min", "effective_date": "2024-04-15", "category": "vital-signs", "source": "fhir", "effective_datetime": "2024-04-15"}, {"patient_id": "demo-patient-001", "code": "29463-7", "code_system": "LOINC", "display_name": "Body weight", "all_codings": [{"code": "29463-7", "system_oid": "http://loinc.org", "system_name": "LOINC", "display": "Body weight"}], "value": 58.2, "unit": "kg", "effective_date": "2024-04-15", "category": "vital-signs", "source": "fhir", "effective_datetime": "2024-04-15"}, {"patient_id": "demo-patient-001", "code": "59408-5", "code_system": "LOINC", "display_name": "Oxygen saturation in Arterial blood by Pulse oximetry", "all_codings": [{"code": "59408-5", "system_oid": "http://loinc.org", "system_name": "LOINC", "display": "Oxygen saturation in Arterial blood by Pulse oximetry"}], "value": 96, "unit": "%", "effective_date": "2024-04-15", "category": "vital-signs", "source": "fhir", "effective_datetime": "2024-04-15"}, {"patient_id": "demo-patient-001", "code": "19868-9", "code_system": "LOINC", "display_name": "FVC -- predicted", "all_codings": [{"code": "19868-9", "system_oid": "http://loinc.org", "system_name": "LOINC", "display": "FVC -- predicted"}], "value": 62, "unit": "%", "effective_date": "2024-04-15", "category": "vital-signs", "source": "fhir", "effective_datetime": "2024-04-15"}], "notes": [{"section_title": "Problems", "narrative_text": "Active problems for this patient include amyotrophic lateral sclerosis (G12.21, diagnosed May 2023) as the primary diagnosis. Secondary problems related to ALS progression include dysphagia (R13.10, onset September 2023) requiring dietary modifications, dysarthria (R47.1, onset August 2023) with progressive impact on communication, dyspnea (R06.00, onset November 2023) now requiring nocturnal BiPAP support, generalized fatigue (R53.83), and major depressive disorder (F32.9) being managed with medication and counseling. The disease course has been consistent with limb-onset ALS with progression over approximately 18 months.", "character_count": 630, "source_file": "demo-ccda-001.xml", "source": "ccda", "patient_id": "demo-patient-001"}, {"section_title": "Medications", "narrative_text": "Disease-modifying therapy includes riluzole 50 mg orally twice daily (started June 2023) and edaravone 60 mg IV daily on alternating 14-day cycles (started July 2023). Symptom-management medications: baclofen 10 mg three times daily for spasticity, trazodone 50 mg at bedtime for sleep and depression, tizanidine 4 mg three times daily as needed for additional spasticity, cholecalciferol (vitamin D3) 1000 IU daily, and lorazepam 0.5 mg every 6 hours as needed for anxiety and dyspnea. Patient reports good adherence to scheduled medications.", "character_count": 543, "source_file": "demo-ccda-001.xml", "source": "ccda", "patient_id": "demo-patient-001"}, {"section_title": "Vital Signs", "narrative_text": "Most recent vital signs from 15-Apr-2024 visit: blood pressure 122/78 mmHg, heart rate 76 bpm, respiratory rate 18, weight 58.2 kg (down from 64 kg three months ago - 9 percent loss), oxygen saturation 96 percent on room air, forced vital capacity 62 percent predicted (down from 78 percent three months ago).", "character_count": 309, "source_file": "demo-ccda-001.xml", "source": "ccda", "patient_id": "demo-patient-001"}, {"section_title": "Allergies", "narrative_text": "Drug allergies: penicillin (high severity, causes rash and hives, identified June 1985); sulfa medications (moderate severity, causes gastrointestinal upset, identified March 1992). Environmental allergy: latex (low severity, causes contact dermatitis, identified August 2010). No known food allergies.", "character_count": 302, "source_file": "demo-ccda-001.xml", "source": "ccda", "patient_id": "demo-patient-001"}, {"section_title": "Immunizations", "narrative_text": "Influenza quadrivalent injectable, 0.5 mL IM left deltoid on 5-Oct-2023 (lot FLU2023-A1234). COVID-19 mRNA bivalent booster, 0.5 mL IM right deltoid on 15-Sep-2023 (lot COV2023-B7891). Pneumococcal conjugate PCV13, 0.5 mL IM left deltoid on 1-Jun-2023 (lot PNE2023-C4456). Tdap, 0.5 mL IM right deltoid on 15-Nov-2022 (lot TDP2022-D2278).", "character_count": 338, "source_file": "demo-ccda-001.xml", "source": "ccda", "patient_id": "demo-patient-001"}, {"section_title": "Procedures", "narrative_text": "Diagnostic procedures: electromyography on 25-Apr-2023 demonstrating widespread denervation consistent with motor neuron disease; MRI brain without contrast on 2-May-2023 demonstrating no structural lesion. Therapeutic procedures: BiPAP initiation on 1-Dec-2023 with IPAP 14, EPAP 6 for nocturnal hypoventilation; percutaneous endoscopic gastrostomy tube placement on 11-Jan-2024 without complication.", "character_count": 401, "source_file": "demo-ccda-001.xml", "source": "ccda", "patient_id": "demo-patient-001"}, {"section_title": "Laboratory Results", "narrative_text": "Comprehensive metabolic panel (10-Apr-2024): sodium 139 mmol/L, potassium 4.1 mmol/L, chloride 102 mmol/L, CO2 26 mmol/L, BUN 14 mg/dL, creatinine 0.6 mg/dL, glucose 96 mg/dL. Hemoglobin 12.8 g/dL. TSH 2.1 mIU/L. 25-OH vitamin D 38 ng/mL. All values within normal limits or therapeutic targets.", "character_count": 294, "source_file": "demo-ccda-001.xml", "source": "ccda", "patient_id": "demo-patient-001"}, {"section_title": "Encounters", "narrative_text": "Initial neurology consultation 12-Apr-2023 for muscle weakness evaluation. First multidisciplinary ALS clinic visit 20-Aug-2023 following diagnosis. Inpatient hospitalization 10-Jan-2024 to 13-Jan-2024 for PEG tube placement. Most recent MDC follow-up 15-Apr-2024.", "character_count": 264, "source_file": "demo-ccda-001.xml", "source": "ccda", "patient_id": "demo-patient-001"}, {"section_title": "Plan of Care", "narrative_text": "Multidisciplinary ALS care plan with quarterly visits coordinating neurology, pulmonology, nutrition, physical therapy, occupational therapy, speech-language pathology, social work, and palliative care. Continue current disease-modifying therapy and symptom management. Patient goals: maintain functional independence as long as possible through adaptive equipment and home modifications; manage symptoms (spasticity, sialorrhea, dysphagia, fatigue) to optimize quality of life; complete advance care planning including MOLST and discussion of long-term ventilation preferences. Voice banking initiated. Palliative care team engaged for symptom management and family support.", "character_count": 675, "source_file": "demo-ccda-001.xml", "source": "ccda", "patient_id": "demo-patient-001"}], "encounters": [{"patient_id": "demo-patient-001", "code": "AMB", "code_system": "FHIR encounter class", "display_name": "ambulatory", "type": "Consultation", "effective_date": "2023-04-12T09:00:00Z", "end_date": "2023-04-12T10:30:00Z", "status": "finished", "source": "fhir", "effective_datetime": "2023-04-12T09:00:00Z", "start_date": "2023-04-12T09:00:00Z", "visit_type": "Consultation", "visit_type_display": "ambulatory"}, {"patient_id": "demo-patient-001", "code": "AMB", "code_system": "FHIR encounter class", "display_name": "ambulatory", "type": "Follow-up encounter", "effective_date": "2023-08-20T09:00:00Z", "end_date": "2023-08-20T10:30:00Z", "status": "finished", "source": "fhir", "effective_datetime": "2023-08-20T09:00:00Z", "start_date": "2023-08-20T09:00:00Z", "visit_type": "Follow-up encounter", "visit_type_display": "ambulatory"}, {"patient_id": "demo-patient-001", "code": "IMP", "code_system": "FHIR encounter class", "display_name": "inpatient encounter", "type": "Hospital admission", "effective_date": "2024-01-10T09:00:00Z", "end_date": "2024-01-13T10:30:00Z", "status": "finished", "source": "fhir", "effective_datetime": "2024-01-10T09:00:00Z", "start_date": "2024-01-10T09:00:00Z", "visit_type": "Hospital admission", "visit_type_display": "inpatient encounter"}, {"patient_id": "demo-patient-001", "code": "AMB", "code_system": "FHIR encounter class", "display_name": "ambulatory", "type": "Follow-up encounter", "effective_date": "2024-04-15T09:00:00Z", "end_date": "2024-04-15T10:30:00Z", "status": "finished", "source": "fhir", "effective_datetime": "2024-04-15T09:00:00Z", "start_date": "2024-04-15T09:00:00Z", "visit_type": "Follow-up encounter", "visit_type_display": "ambulatory"}], "procedures": [{"patient_id": "demo-patient-001", "code": "95860", "code_system": "CPT-4", "display_name": "Needle electromyography; 1 extremity", "all_codings": [{"code": "401066007", "system_oid": "http://snomed.info/sct", "system_name": "SNOMED-CT", "display": "Electromyography"}, {"code": "95860", "system_oid": "http://www.ama-assn.org/go/cpt", "system_name": "CPT-4", "display": "Needle electromyography; 1 extremity"}], "effective_date": "2023-04-25", "status": "completed", "source": "fhir", "effective_datetime": "2023-04-25", "performed_datetime": "2023-04-25"}, {"patient_id": "demo-patient-001", "code": "70551", "code_system": "CPT-4", "display_name": "MRI brain without contrast material", "all_codings": [{"code": "113091000", "system_oid": "http://snomed.info/sct", "system_name": "SNOMED-CT", "display": "Magnetic resonance imaging"}, {"code": "70551", "system_oid": "http://www.ama-assn.org/go/cpt", "system_name": "CPT-4", "display": "MRI brain without contrast material"}], "effective_date": "2023-05-02", "status": "completed", "source": "fhir", "effective_datetime": "2023-05-02", "performed_datetime": "2023-05-02"}, {"patient_id": "demo-patient-001", "code": "43246", "code_system": "CPT-4", "display_name": "EGD with directed placement of percutaneous gastrostomy tube", "all_codings": [{"code": "76151005", "system_oid": "http://snomed.info/sct", "system_name": "SNOMED-CT", "display": "Percutaneous endoscopic gastrostomy"}, {"code": "43246", "system_oid": "http://www.ama-assn.org/go/cpt", "system_name": "CPT-4", "display": "EGD with directed placement of percutaneous gastrostomy tube"}], "effective_date": "2024-01-11", "status": "completed", "source": "fhir", "effective_datetime": "2024-01-11", "performed_datetime": "2024-01-11"}, {"patient_id": "demo-patient-001", "code": "94660", "code_system": "CPT-4", "display_name": "CPAP/BiPAP initiation and management", "all_codings": [{"code": "371077005", "system_oid": "http://snomed.info/sct", "system_name": "SNOMED-CT", "display": "Non-invasive ventilation initiation"}, {"code": "94660", "system_oid": "http://www.ama-assn.org/go/cpt", "system_name": "CPT-4", "display": "CPAP/BiPAP initiation and management"}], "effective_date": "2023-12-01", "status": "completed", "source": "fhir", "effective_datetime": "2023-12-01", "performed_datetime": "2023-12-01"}], "allergies": [{"patient_id": "demo-patient-001", "code": "7980", "code_system": "RxNorm", "display_name": "Penicillin G", "all_codings": [{"code": "7980", "system_oid": "http://www.nlm.nih.gov/research/umls/rxnorm", "system_name": "RxNorm", "display": "Penicillin G"}], "effective_date": "1985-06-01", "severity": "severe", "clinical_status": "active", "source": "fhir", "effective_datetime": "1985-06-01", "recorded_date": "1985-06-01", "allergen": "Penicillin G", "allergen_code": "7980", "allergen_system": "RxNorm"}, {"patient_id": "demo-patient-001", "code": "10180", "code_system": "RxNorm", "display_name": "Sulfa", "all_codings": [{"code": "10180", "system_oid": "http://www.nlm.nih.gov/research/umls/rxnorm", "system_name": "RxNorm", "display": "Sulfa"}], "effective_date": "1992-03-15", "severity": "moderate", "clinical_status": "active", "source": "fhir", "effective_datetime": "1992-03-15", "recorded_date": "1992-03-15", "allergen": "Sulfa", "allergen_code": "10180", "allergen_system": "RxNorm"}, {"patient_id": "demo-patient-001", "code": "111088007", "code_system": "SNOMED-CT", "display_name": "Latex", "all_codings": [{"code": "111088007", "system_oid": "http://snomed.info/sct", "system_name": "SNOMED-CT", "display": "Latex"}], "effective_date": "2010-08-01", "severity": "low", "clinical_status": "active", "source": "fhir", "effective_datetime": "2010-08-01", "recorded_date": "2010-08-01", "allergen": "Latex", "allergen_code": "111088007", "allergen_system": "SNOMED-CT"}], "immunizations": [{"patient_id": "demo-patient-001", "code": "150", "code_system": "CVX", "display_name": "Influenza, injectable, quadrivalent", "all_codings": [{"code": "150", "system_oid": "http://hl7.org/fhir/sid/cvx", "system_name": "CVX", "display": "Influenza, injectable, quadrivalent"}], "effective_date": "2023-10-05", "status": "completed", "source": "fhir", "effective_datetime": "2023-10-05", "recorded_date": "2023-10-05", "occurrence_datetime": "2023-10-05", "vaccine": "Influenza, injectable, quadrivalent", "vaccine_code": "150", "vaccine_system": "CVX"}, {"patient_id": "demo-patient-001", "code": "229", "code_system": "CVX", "display_name": "SARS-COV-2 (COVID-19) vaccine, mRNA, bivalent booster", "all_codings": [{"code": "229", "system_oid": "http://hl7.org/fhir/sid/cvx", "system_name": "CVX", "display": "SARS-COV-2 (COVID-19) vaccine, mRNA, bivalent booster"}], "effective_date": "2023-09-15", "status": "completed", "source": "fhir", "effective_datetime": "2023-09-15", "recorded_date": "2023-09-15", "occurrence_datetime": "2023-09-15", "vaccine": "SARS-COV-2 (COVID-19) vaccine, mRNA, bivalent booster", "vaccine_code": "229", "vaccine_system": "CVX"}, {"patient_id": "demo-patient-001", "code": "133", "code_system": "CVX", "display_name": "Pneumococcal conjugate PCV 13", "all_codings": [{"code": "133", "system_oid": "http://hl7.org/fhir/sid/cvx", "system_name": "CVX", "display": "Pneumococcal conjugate PCV 13"}], "effective_date": "2023-06-01", "status": "completed", "source": "fhir", "effective_datetime": "2023-06-01", "recorded_date": "2023-06-01", "occurrence_datetime": "2023-06-01", "vaccine": "Pneumococcal conjugate PCV 13", "vaccine_code": "133", "vaccine_system": "CVX"}, {"patient_id": "demo-patient-001", "code": "115", "code_system": "CVX", "display_name": "Tdap", "all_codings": [{"code": "115", "system_oid": "http://hl7.org/fhir/sid/cvx", "system_name": "CVX", "display": "Tdap"}], "effective_date": "2022-11-15", "status": "completed", "source": "fhir", "effective_datetime": "2022-11-15", "recorded_date": "2022-11-15", "occurrence_datetime": "2022-11-15", "vaccine": "Tdap", "vaccine_code": "115", "vaccine_system": "CVX"}], "careplans": [{"patient_id": "demo-patient-001", "title": "Multidisciplinary ALS care plan", "description": "Coordinated care across neurology, pulmonology, nutrition, PT/OT/SLP, social work, and palliative care. Visits every 3 months.", "status": "active", "effective_date": "2023-08-20", "source": "fhir", "effective_datetime": "2023-08-20"}, {"patient_id": "demo-patient-001", "title": "Palliative care consult", "description": "Palliative care team engaged for symptom management, advance care planning, and family support.", "status": "active", "effective_date": "2023-08-20", "source": "fhir", "effective_datetime": "2023-08-20"}, {"patient_id": "demo-patient-001", "title": "Communication strategies", "description": "Speech-language pathology to introduce alternative augmentative communication device. Voice banking initiated.", "status": "active", "effective_date": "2023-08-20", "source": "fhir", "effective_datetime": "2023-08-20"}], "diagnostic_reports": [{"patient_id": "demo-patient-001", "code": "11506-3", "code_system": "LOINC", "display_name": "Subsequent evaluation note", "all_codings": [{"code": "11506-3", "system_oid": "http://loinc.org", "system_name": "LOINC", "display": "Subsequent evaluation note"}], "status": "final", "effective_date": "2023-04-25", "conclusion": "Electromyography demonstrates widespread fibrillation potentials and positive sharp waves in cervical, thoracic, and lumbar paraspinal muscles. Motor unit potentials show large amplitude, long duration, and reduced recruitment patterns. Nerve conduction studies reveal preserved sensory responses with reduced motor amplitudes. Findings consistent with motor neuron disease.", "source": "fhir", "effective_datetime": "2023-04-25"}, {"patient_id": "demo-patient-001", "code": "30746-2", "code_system": "LOINC", "display_name": "Radiology report", "all_codings": [{"code": "30746-2", "system_oid": "http://loinc.org", "system_name": "LOINC", "display": "Radiology report"}], "status": "final", "effective_date": "2023-05-02", "conclusion": "No acute intracranial abnormality. Cortical and subcortical structures within normal limits. No evidence of structural lesion accounting for the patient's symptoms. Excludes mimics of motor neuron disease.", "source": "fhir", "effective_datetime": "2023-05-02"}, {"patient_id": "demo-patient-001", "code": "11502-2", "code_system": "LOINC", "display_name": "Laboratory report", "all_codings": [{"code": "11502-2", "system_oid": "http://loinc.org", "system_name": "LOINC", "display": "Laboratory report"}], "status": "final", "effective_date": "2023-12-01", "conclusion": "FVC 62% predicted (down from 78% three months ago). MIP -45 cm H2O. MEP +60 cm H2O. Findings consistent with progressive respiratory muscle weakness. NIV indicated.", "source": "fhir", "effective_datetime": "2023-12-01"}], "goals": [{"patient_id": "demo-patient-001", "description": "Maintain functional independence as long as possible through OT, adaptive equipment, and home modifications.", "status": "in-progress", "effective_date": "2023-08-20", "source": "fhir", "effective_datetime": "2023-08-20"}, {"patient_id": "demo-patient-001", "description": "Manage symptoms (spasticity, sialorrhea, dysphagia, fatigue) to optimize quality of life.", "status": "in-progress", "effective_date": "2023-08-20", "source": "fhir", "effective_datetime": "2023-08-20"}, {"patient_id": "demo-patient-001", "description": "Complete advance care planning including MOLST and discussion of long-term ventilation preferences.", "status": "in-progress", "effective_date": "2023-08-20", "source": "fhir", "effective_datetime": "2023-08-20"}], "document_references": [{"patient_id": "demo-patient-001", "type_display": "", "status": "current", "effective_date": "2024-04-15T10:00:00Z", "source": "fhir", "effective_datetime": "2024-04-15T10:00:00Z"}]};
+</script>
+</head>
+<body>
+
+<div class="app">
+  <aside class="sidebar">
+    <div class="sidebar-header">
+      <div class="brand">Registry <span class="als">Forge</span></div>
+      <div class="brand-sub">from raw EHR data to registry analytics</div>
+      <div class="brand-rule"></div>
+      <div class="stats" id="stats">
+        <div class="stat"><div class="stat-num">—</div><div class="stat-label">Patients</div></div>
+        <div class="stat"><div class="stat-num">—</div><div class="stat-label">Documents</div></div>
+        <div class="stat"><div class="stat-num">—</div><div class="stat-label">Records</div></div>
+      </div>
+    </div>
+    <div id="loader" class="upload-zone">
+      <label for="csv-input">▲ Load dashboard_data.json</label>
+      <input type="file" id="csv-input" accept=".json">
+      <div class="file-info" id="file-info">No data loaded</div>
+    </div>
+    <div class="search-box">
+      <div class="mode-toggle">
+        <button class="mode-btn active" data-mode="browse">Browse Patients</button>
+        <button class="mode-btn" data-mode="search">Keyword Search</button>
+      </div>
+      <input type="text" id="search" placeholder="Search by name, MRN, patient ID…">
+      <div class="filter-pills" id="filter-pills">
+        <span class="pill active" data-filter="all">All</span>
+        <span class="pill" data-filter="named">Named</span>
+        <span class="pill" data-filter="anonymous">Unnamed</span>
+      </div>
+      <button onclick="window._exportAllPatients()" id="export-list-btn"
+              style="margin-top: 12px; width: 100%; padding: 8px 12px;
+                     background: transparent; border: 1px solid var(--purple-soft);
+                     color: var(--purple-soft); font-family: 'JetBrains Mono', monospace;
+                     font-size: 10px; text-transform: uppercase; letter-spacing: 0.12em;
+                     cursor: pointer; font-weight: 700; transition: all 0.15s;"
+              onmouseover="this.style.background='var(--purple)'; this.style.color='var(--paper)'; this.style.borderColor='var(--purple)';"
+              onmouseout="this.style.background='transparent'; this.style.color='var(--purple-soft)'; this.style.borderColor='var(--purple-soft)';">
+        ▼ Export Patient List (CSV)
+      </button>
+    </div>
+    <div class="patient-list" id="patient-list">
+      <div class="empty-state">
+        Load <code style="color: var(--purple-soft); background: rgba(147,53,140,0.15); padding: 1px 5px;">dashboard_data.json</code><br>
+        from <code style="color: var(--purple-soft); background: rgba(147,53,140,0.15); padding: 1px 5px;">parsed_output/</code>
+      </div>
+    </div>
+  </aside>
+
+  <main class="main" id="main">
+    <div class="welcome">
+      <h1>ARC Study<br><em>Clinical Records</em></h1>
+      <div class="hr"></div>
+      <p>An interactive viewer for CCDA documents and FHIR data from ARC Study participants. Includes structured codes (ICD, RxNorm, CPT, LOINC, SNOMED), clinical narratives, and 13 FHIR resource categories. All data stays local — nothing is uploaded.</p>
+      <p style="margin-top: 30px;"><strong style="color: var(--navy);">Pipeline:</strong></p>
+      <ol>
+        <li><code>ccda_parser_v4.py</code> — extract from decoded CCDA files</li>
+        <li><code>fhir_parser.py</code> — extract from fhir_assembled JSON files</li>
+        <li><code>final_joiner_v3.py</code> — merge CCDA + FHIR by patient_id</li>
+        <li><code>enrich_display_names.py</code> — fill in LOINC labels (optional)</li>
+        <li>Click ▲ Load → choose <code>dashboard_data.json</code></li>
+      </ol>
+      <div class="tagline">Dedicated to curing ALS</div>
+    </div>
+  </main>
+</div>
+
+<script>
+const state = {
+  patients: [], documents: [],
+  encounters: [], problems: [], medications: [], procedures: [],
+  labs_vitals: [], notes: [],
+  allergies: [], immunizations: [], careplans: [],
+  diagnostic_reports: [], goals: [], care_teams: [], devices: [],
+  selectedPatientId: null, filter: 'all', search: '', docFilter: 'all',
+  mode: 'browse', keyword: '', searchHits: [],
+};
+
+document.getElementById('csv-input').addEventListener('change', handleFile);
+
+function loadBundleData(data) {
+  for (const key of Object.keys(state)) {
+    if (data[key] !== undefined) state[key] = data[key];
+  }
+  document.getElementById('file-info').textContent =
+    `${state.patients.length} pts · ${state.documents.length} docs`;
+  render();
+}
+
+async function handleFile(e) {
+  const file = e.target.files[0];
+  if (!file) return;
+  document.getElementById('file-info').textContent = `Loading ${file.name}…`;
+  const text = await file.text();
+  try { loadBundleData(JSON.parse(text)); }
+  catch (err) { document.getElementById('file-info').textContent = `Error: ${err.message}`; }
+}
+
+if (typeof window !== "undefined" && window.EMBEDDED_BUNDLE) {
+  setTimeout(() => loadBundleData(window.EMBEDDED_BUNDLE), 0);
+  const loader = document.getElementById('loader');
+  if (loader) loader.style.display = 'none';
+}
+
+function render() {
+  renderStats();
+  if (state.mode === 'search') {
+    renderKeywordSearch();
+  } else {
+    renderPatientList();
+    if (state.selectedPatientId) renderDetail();
+  }
+}
+
+function renderStats() {
+  const totalRecords = state.problems.length + state.labs_vitals.length + state.medications.length +
+                       state.procedures.length + state.allergies.length + state.immunizations.length +
+                       state.encounters.length + state.diagnostic_reports.length + state.careplans.length;
+  const fmtRecords = totalRecords > 9999 ? Math.round(totalRecords/1000)+'k' : totalRecords.toLocaleString();
+  document.getElementById('stats').innerHTML = `
+    <div class="stat"><div class="stat-num">${state.patients.length.toLocaleString()}</div><div class="stat-label">Patients</div></div>
+    <div class="stat"><div class="stat-num">${state.documents.length.toLocaleString()}</div><div class="stat-label">Docs</div></div>
+    <div class="stat"><div class="stat-num">${fmtRecords}</div><div class="stat-label">Records</div></div>
+  `;
+}
+
+function renderPatientList() {
+  const list = document.getElementById('patient-list');
+  let patients = [...state.patients];
+  if (state.filter === 'named') patients = patients.filter(p => p.first_name || p.last_name);
+  else if (state.filter === 'anonymous') patients = patients.filter(p => !p.first_name && !p.last_name);
+  if (state.search) {
+    const q = state.search.toLowerCase();
+    patients = patients.filter(p =>
+      (p.first_name || '').toLowerCase().includes(q) ||
+      (p.last_name  || '').toLowerCase().includes(q) ||
+      (p.mrn        || '').toLowerCase().includes(q) ||
+      (p.patient_id || '').toLowerCase().includes(q)
+    );
+  }
+  patients.sort((a, b) => {
+    const aHas = !!(a.last_name || a.first_name);
+    const bHas = !!(b.last_name || b.first_name);
+    if (aHas !== bHas) return aHas ? -1 : 1;
+    return (a.last_name || '').localeCompare(b.last_name || '');
+  });
+  if (patients.length === 0) { list.innerHTML = '<div class="empty-state">No patients match.</div>'; return; }
+  list.innerHTML = patients.slice(0, 5000).map(p => {
+    const hasName = !!(p.first_name || p.last_name);
+    const displayName = hasName
+      ? `${escapeHtml(p.last_name || '(?)')}, ${escapeHtml(p.first_name || '')}`
+      : 'Unnamed patient';
+    return `
+      <div class="patient-item ${p.patient_id === state.selectedPatientId ? 'active' : ''}" data-pid="${escapeHtml(p.patient_id)}">
+        <div class="patient-name${hasName ? '' : ' no-name'}">${displayName}</div>
+        <div class="patient-meta">
+          <span class="pid">${escapeHtml((p.patient_id || '').slice(0, 8))}…</span>
+          <span>${p.num_documents || 0} doc${p.num_documents === 1 ? '' : 's'}</span>
+        </div>
+      </div>
+    `;
+  }).join('');
+  list.querySelectorAll('.patient-item').forEach(el => {
+    el.addEventListener('click', () => {
+      state.selectedPatientId = el.dataset.pid;
+      state.docFilter = 'all';
+      render();
+    });
+  });
+}
+
+function filterByPatient(rows, pid) {
+  return rows.filter(r => r.patient_id === pid);
+}
+
+function panelToolbar(tabKey, count, label) {
+  const labelDisplay = label.replace(/_/g, ' ');
+  const disabled = count === 0;
+  return `
+    <div class="panel-toolbar">
+      <div class="panel-info">
+        <strong>${count.toLocaleString()}</strong> ${labelDisplay} record${count === 1 ? '' : 's'}
+      </div>
+      <button class="export-btn" onclick="window._exportTab('${tabKey}')" ${disabled ? 'disabled' : ''}>
+        <span class="icon">▼</span> Export CSV
+      </button>
+    </div>
+  `;
+}
+
+function resolveDisplayName(row) {
+  return row.display_name || row.text || row.code_display || row.allergen || row.vaccine ||
+         row.title || row.description || row.medication_reference || '';
+}
+
+function renderDetail() {
+  const main = document.getElementById('main');
+  const p = state.patients.find(x => x.patient_id === state.selectedPatientId);
+  if (!p) return;
+  const pid = p.patient_id;
+
+  const myDocs = filterByPatient(state.documents, pid);
+  const myEncounters = filterByPatient(state.encounters, pid);
+  const myProblems = filterByPatient(state.problems, pid);
+  const myMeds = filterByPatient(state.medications, pid);
+  const myProcs = filterByPatient(state.procedures, pid);
+  const myLabs = filterByPatient(state.labs_vitals, pid);
+  const myNotes = filterByPatient(state.notes, pid);
+  const myAllergies = filterByPatient(state.allergies, pid);
+  const myImmun = filterByPatient(state.immunizations, pid);
+  const myCareplans = filterByPatient(state.careplans, pid);
+  const myDxReports = filterByPatient(state.diagnostic_reports, pid);
+  const myGoals = filterByPatient(state.goals, pid);
+
+  const docCounts = {
+    all: myDocs.length,
+    ccda_xml: myDocs.filter(d => d.source_type === 'ccda_xml').length,
+    html_fragment: myDocs.filter(d => d.source_type === 'html_fragment').length,
+    rtf_note: myDocs.filter(d => d.source_type === 'rtf_note').length,
+    pdf: myDocs.filter(d => d.source_type === 'pdf').length,
+  };
+
+  let docsToShow = myDocs;
+  if (state.docFilter !== 'all') docsToShow = myDocs.filter(d => d.source_type === state.docFilter);
+  docsToShow.sort((a, b) => (b.document_date || '').localeCompare(a.document_date || ''));
+
+  const hasName = !!(p.first_name || p.last_name);
+  const headerHTML = hasName
+    ? `<div class="detail-name">${escapeHtml(p.first_name || '')} <em>${escapeHtml(p.last_name || '')}</em></div>`
+    : `<div class="detail-name no-name">Unnamed patient</div>`;
+
+  main.innerHTML = `
+    <div class="detail">
+      <div class="detail-header">
+        ${headerHTML}
+        <div class="detail-id-block">
+          MRN ${escapeHtml(p.mrn || '—')}<br>
+          PID ${escapeHtml((p.patient_id || '').slice(0, 12))}…<br>
+          ${p.num_documents || 0} document${p.num_documents === 1 ? '' : 's'}
+          <br>
+          <button class="export-all-btn" onclick="window._exportAllForPatient()">▼ Export full record</button>
+        </div>
+      </div>
+      <div class="demographics">
+        <div class="demo-cell"><div class="demo-label">DOB</div><div class="demo-value">${escapeHtml(p.dob || '—')}</div></div>
+        <div class="demo-cell"><div class="demo-label">Sex</div><div class="demo-value">${escapeHtml(p.gender || '—')}</div></div>
+        <div class="demo-cell"><div class="demo-label">Last doc</div><div class="demo-value">${escapeHtml(p.document_date || '—')}</div></div>
+        <div class="demo-cell"><div class="demo-label">Patient ID</div><div class="demo-value" style="font-family: 'JetBrains Mono', monospace; font-size: 11px;">${escapeHtml((p.patient_id || '').slice(0,12))}…</div></div>
+      </div>
+      <div class="tabs">
+        <div class="tab active" data-tab="documents">Docs<span class="count">${myDocs.length}</span></div>
+        <div class="tab" data-tab="encounters">Visits<span class="count">${myEncounters.length}</span></div>
+        <div class="tab" data-tab="problems">Problems<span class="count">${myProblems.length}</span></div>
+        <div class="tab" data-tab="medications">Meds<span class="count">${myMeds.length}</span></div>
+        <div class="tab" data-tab="procedures">Procs<span class="count">${myProcs.length}</span></div>
+        <div class="tab" data-tab="labs">Labs/Obs<span class="count">${myLabs.length}</span></div>
+        <div class="tab" data-tab="allergies">Allergies<span class="count">${myAllergies.length}</span></div>
+        <div class="tab" data-tab="immun">Vaccines<span class="count">${myImmun.length}</span></div>
+        <div class="tab" data-tab="careplans">CarePlans<span class="count">${myCareplans.length}</span></div>
+        <div class="tab" data-tab="dxreports">Reports<span class="count">${myDxReports.length}</span></div>
+        <div class="tab" data-tab="goals">Goals<span class="count">${myGoals.length}</span></div>
+        <div class="tab" data-tab="notes">Sections<span class="count">${myNotes.length}</span></div>
+      </div>
+      <div class="tab-panel active" data-panel="documents">
+        ${panelToolbar('documents', myDocs.length, 'documents')}
+        <div class="doc-filter">
+          <button class="doc-filter-btn ${state.docFilter==='all'?'active':''}" data-df="all">All ${docCounts.all}</button>
+          <button class="doc-filter-btn ${state.docFilter==='ccda_xml'?'active':''}" data-df="ccda_xml">CCDA ${docCounts.ccda_xml}</button>
+          <button class="doc-filter-btn ${state.docFilter==='html_fragment'?'active':''}" data-df="html_fragment">HTML ${docCounts.html_fragment}</button>
+          <button class="doc-filter-btn ${state.docFilter==='rtf_note'?'active':''}" data-df="rtf_note">RTF ${docCounts.rtf_note}</button>
+          <button class="doc-filter-btn ${state.docFilter==='pdf'?'active':''}" data-df="pdf">PDF ${docCounts.pdf}</button>
+        </div>
+        ${renderDocs(docsToShow)}
+      </div>
+      <div class="tab-panel" data-panel="encounters">${panelToolbar('encounters', myEncounters.length, 'encounters')}${renderTable(myEncounters, ['source','start_date','end_date','visit_date','visit_type','class','reason','location_or_provider','file'])}</div>
+      <div class="tab-panel" data-panel="problems">${panelToolbar('problems', myProblems.length, 'problems')}${renderTable(myProblems, ['source','onset_date','onset_datetime','display_name','code','code_system','code_system_name','clinical_status','status','severity','file'])}</div>
+      <div class="tab-panel" data-panel="medications">${panelToolbar('medications', myMeds.length, 'medications')}${renderTable(myMeds, ['source','start_date','end_date','authored_on','display_name','code','code_system','status','dose','dose_quantity','dose_unit','route','file'])}</div>
+      <div class="tab-panel" data-panel="procedures">${panelToolbar('procedures', myProcs.length, 'procedures')}${renderTable(myProcs, ['source','procedure_date','performed_datetime','display_name','code','code_system','code_system_name','status','category','file'])}</div>
+      <div class="tab-panel" data-panel="labs">${panelToolbar('labs', myLabs.length, 'labs_observations')}${renderTable(myLabs, ['source','observation_date','effective_datetime','display_name','code','value','unit','reference_low','reference_high','interpretation','status','file'])}</div>
+      <div class="tab-panel" data-panel="allergies">${panelToolbar('allergies', myAllergies.length, 'allergies')}${renderTable(myAllergies, ['recorded_date','allergen','allergen_code','category','criticality','clinical_status','reactions'])}</div>
+      <div class="tab-panel" data-panel="immun">${panelToolbar('immun', myImmun.length, 'immunizations')}${renderTable(myImmun, ['occurrence_datetime','vaccine','vaccine_code','status','site','route','dose_quantity','dose_unit'])}</div>
+      <div class="tab-panel" data-panel="careplans">${panelToolbar('careplans', myCareplans.length, 'care_plans')}${renderTable(myCareplans, ['period_start','period_end','status','title','categories','description','activities','note'])}</div>
+      <div class="tab-panel" data-panel="dxreports">${panelToolbar('dxreports', myDxReports.length, 'diagnostic_reports')}${renderTable(myDxReports, ['effective_datetime','issued','display_name','code','status','categories','conclusion'])}</div>
+      <div class="tab-panel" data-panel="goals">${panelToolbar('goals', myGoals.length, 'goals')}${renderTable(myGoals, ['start_date','target_due_date','description','lifecycle_status','priority','note'])}</div>
+      <div class="tab-panel" data-panel="notes">${panelToolbar('notes', myNotes.length, 'CCDA_section_narratives')}${renderNotes(myNotes)}</div>
+    </div>
+  `;
+
+  main.querySelectorAll('.tab').forEach(t => {
+    t.addEventListener('click', () => {
+      main.querySelectorAll('.tab').forEach(x => x.classList.remove('active'));
+      main.querySelectorAll('.tab-panel').forEach(x => x.classList.remove('active'));
+      t.classList.add('active');
+      main.querySelector(`[data-panel="${t.dataset.tab}"]`).classList.add('active');
+    });
+  });
+  main.querySelectorAll('.doc-filter-btn').forEach(b => {
+    b.addEventListener('click', () => { state.docFilter = b.dataset.df; renderDetail(); });
+  });
+  main.querySelectorAll('.expand-link').forEach(el => {
+    el.addEventListener('click', () => {
+      const body = el.previousElementSibling;
+      body.classList.toggle('expanded');
+      el.textContent = body.classList.contains('expanded') ? '▲ Collapse' : '▼ Show all';
+    });
+  });
+}
+
+function renderDocs(docs) {
+  if (docs.length === 0) return '<div class="empty-tab">— No documents of this type —</div>';
+  return docs.map(d => {
+    const text = d.plain_text || '';
+    const showExpand = text.length > 1500;
+    const sourceLabel = { ccda_xml: 'CCDA', html_fragment: 'HTML', rtf_note: 'RTF', pdf: 'PDF' }[d.source_type] || d.source_type;
+    return `
+      <div class="doc-card source-${d.source_type}">
+        <div class="doc-header">
+          <div class="doc-title-row">
+            <span class="source-badge source-${d.source_type}">${sourceLabel}</span>
+            <span class="doc-uuid">${escapeHtml((d.document_uuid || '').slice(0, 8))}…</span>
+          </div>
+          <div class="doc-meta">${d.document_date ? escapeHtml(d.document_date) + ' · ' : ''}${d.word_count || 0} words</div>
+        </div>
+        <div class="doc-body">${escapeHtml(text || '— No text content —')}</div>
+        ${showExpand ? '<div class="expand-link">▼ Show all</div>' : ''}
+      </div>
+    `;
+  }).join('');
+}
+
+function renderTable(rows, cols) {
+  if (rows.length === 0) return '<div class="empty-tab">— No records —</div>';
+  const presentCols = cols.filter(c => rows.some(r => {
+    if (c === 'display_name') return r[c] || resolveDisplayName(r);
+    return r[c];
+  }));
+  if (presentCols.length === 0) return '<div class="empty-tab">— No records —</div>';
+  return `
+    <div class="table-wrap">
+      <table class="data-table">
+        <thead><tr>${presentCols.map(c => `<th>${c.replace(/_/g, ' ')}</th>`).join('')}</tr></thead>
+        <tbody>
+          ${rows.map(r => `
+            <tr>${presentCols.map(c => {
+              let val = r[c] || '';
+              if (c === 'display_name' && !val) val = resolveDisplayName(r);
+              if (c === 'source' && val) return `<td><span class="source-tag ${val}">${escapeHtml(val)}</span></td>`;
+              if (c === 'code' && val) return `<td><span class="code-chip">${escapeHtml(val).slice(0, 24)}</span></td>`;
+              if (c === 'code_system' && val) return `<td><span class="code-system">${escapeHtml(val).slice(-30)}</span></td>`;
+              if (c === 'code_system_name' && val) return `<td><span class="code-system">${escapeHtml(val)}</span></td>`;
+              if (c === 'file') return `<td style="font-family: 'JetBrains Mono', monospace; font-size: 10px; color: var(--ink-soft);">${escapeHtml(val).slice(0, 16)}…</td>`;
+              if (c.includes('date') || c === 'effective_datetime' || c === 'occurrence_datetime' || c === 'period_start' || c === 'period_end') {
+                return `<td style="font-family: 'JetBrains Mono', monospace; font-size: 11px;">${escapeHtml(val).slice(0, 19)}</td>`;
+              }
+              return `<td>${escapeHtml(String(val).slice(0, 200))}</td>`;
+            }).join('')}</tr>
+          `).join('')}
+        </tbody>
+      </table>
+    </div>
+  `;
+}
+
+function renderNotes(notes) {
+  if (notes.length === 0) return '<div class="empty-tab">— No CCDA section narratives —</div>';
+  return notes.map(n => `
+    <div class="doc-card source-ccda_xml">
+      <div class="doc-header">
+        <div class="doc-title-row">
+          <span class="source-badge source-ccda_xml">CCDA</span>
+          <strong style="font-family: 'Fraunces', serif; font-size: 14px; color: var(--navy);">${escapeHtml(n.section_name || n.section_title || 'Untitled')}</strong>
+        </div>
+        <div class="doc-meta">${escapeHtml(n.section_code || '')} · ${(parseInt(n.character_count) || 0).toLocaleString()} chars</div>
+      </div>
+      <div class="doc-body">${escapeHtml(n.narrative_text || '')}</div>
+      ${(n.narrative_text || '').length > 1500 ? '<div class="expand-link">▼ Show all</div>' : ''}
+    </div>
+  `).join('');
+}
+
+function escapeHtml(s) {
+  return String(s == null ? '' : s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+}
+
+// === KEYWORD SEARCH ENGINE ===
+// Searches across all clinical text in the bundle and returns hits with snippets.
+// Each hit: {patient_id, patient_name, tab, date, file, snippet, full_text, code, display_name}
+function runKeywordSearch(keyword) {
+  if (!keyword || keyword.length < 2) return [];
+  const needle = keyword.toLowerCase().trim();
+  const hits = [];
+
+  // Build patient_id -> "First Last" lookup
+  const nameByPid = {};
+  const mrnByPid = {};
+  for (const p of state.patients) {
+    const fn = (p.first_name || '').trim();
+    const ln = (p.last_name || '').trim();
+    nameByPid[p.patient_id] = (fn + ' ' + ln).trim() || '(unnamed)';
+    mrnByPid[p.patient_id] = p.mrn || '';
+  }
+
+  // Helper: check if any of the searchable fields contains the needle, return the matched field+text
+  function findHit(row, fields) {
+    for (const f of fields) {
+      const v = row[f];
+      if (v && typeof v === 'string' && v.toLowerCase().includes(needle)) {
+        return { field: f, text: v };
+      }
+    }
+    return null;
+  }
+
+  // Helper: extract a snippet around the match
+  function makeSnippet(text, kw) {
+    if (!text) return '';
+    const lower = text.toLowerCase();
+    const idx = lower.indexOf(kw);
+    if (idx === -1) return text.slice(0, 200);
+    const ctxBefore = 80;
+    const ctxAfter = 120;
+    const start = Math.max(0, idx - ctxBefore);
+    const end = Math.min(text.length, idx + kw.length + ctxAfter);
+    let snip = text.slice(start, end);
+    if (start > 0) snip = '…' + snip;
+    if (end < text.length) snip = snip + '…';
+    return snip;
+  }
+
+  // Scan structured tabs
+  const scanConfigs = [
+    { bucket: 'problems',          tab: 'Problem',     dateField: ['onset_date', 'onset_datetime', 'recorded_date'], fields: ['display_name', 'code', 'note', 'severity', 'all_codes'] },
+    { bucket: 'medications',       tab: 'Medication',  dateField: ['start_date', 'authored_on', 'end_date'], fields: ['display_name', 'code', 'route', 'dose', 'note'] },
+    { bucket: 'procedures',        tab: 'Procedure',   dateField: ['procedure_date', 'performed_datetime'], fields: ['display_name', 'code', 'category', 'note'] },
+    { bucket: 'labs_vitals',       tab: 'Lab/Obs',     dateField: ['observation_date', 'effective_datetime'], fields: ['display_name', 'code', 'value', 'unit', 'interpretation', 'note'] },
+    { bucket: 'encounters',        tab: 'Visit',       dateField: ['start_date', 'visit_date'], fields: ['visit_type', 'reason', 'class', 'location_or_provider', 'note'] },
+    { bucket: 'allergies',         tab: 'Allergy',     dateField: ['recorded_date'], fields: ['allergen', 'allergen_code', 'category', 'reactions', 'note'] },
+    { bucket: 'immunizations',     tab: 'Vaccine',     dateField: ['occurrence_datetime'], fields: ['vaccine', 'vaccine_code', 'site', 'route'] },
+    { bucket: 'careplans',         tab: 'CarePlan',    dateField: ['period_start', 'period_end'], fields: ['title', 'categories', 'description', 'activities', 'note'] },
+    { bucket: 'diagnostic_reports',tab: 'Report',      dateField: ['effective_datetime', 'issued'], fields: ['display_name', 'code', 'categories', 'conclusion'] },
+    { bucket: 'goals',             tab: 'Goal',        dateField: ['start_date', 'target_due_date'], fields: ['description', 'priority', 'note'] },
+    { bucket: 'notes',             tab: 'Section',     dateField: ['effective_datetime'], fields: ['section_title', 'narrative_text'] },
+  ];
+
+  for (const cfg of scanConfigs) {
+    const rows = state[cfg.bucket] || [];
+    for (const row of rows) {
+      const m = findHit(row, cfg.fields);
+      if (!m) continue;
+      const pid = row.patient_id || '';
+      let date = '';
+      for (const df of cfg.dateField) {
+        if (row[df]) { date = row[df]; break; }
+      }
+      hits.push({
+        patient_id: pid,
+        patient_name: nameByPid[pid] || '(unknown)',
+        mrn: mrnByPid[pid] || '',
+        tab: cfg.tab,
+        bucket: cfg.bucket,
+        date: date,
+        file: row.file || row.source_file || '',
+        matched_field: m.field,
+        snippet: makeSnippet(m.text, needle),
+        full_text: m.text,
+        code: row.code || row.allergen_code || row.vaccine_code || '',
+        display_name: row.display_name || row.allergen || row.vaccine || row.title || row.description || '',
+        source: row.source || '',
+      });
+    }
+  }
+
+  // Scan documents (the big one — full plain_text)
+  for (const doc of state.documents || []) {
+    const txt = doc.plain_text || '';
+    if (!txt) continue;
+    if (txt.toLowerCase().includes(needle)) {
+      const pid = doc.patient_id || '';
+      hits.push({
+        patient_id: pid,
+        patient_name: nameByPid[pid] || '(unknown)',
+        mrn: mrnByPid[pid] || '',
+        tab: 'Document',
+        bucket: 'documents',
+        date: doc.document_date || '',
+        file: doc.file || doc.document_uuid || '',
+        matched_field: 'plain_text',
+        snippet: makeSnippet(txt, needle),
+        full_text: '',  // omit huge full text from each hit
+        code: doc.source_type || '',
+        display_name: '',
+        source: 'ccda',
+      });
+    }
+  }
+
+  return hits;
+}
+
+function highlightKeyword(text, kw) {
+  if (!text || !kw) return escapeHtml(text || '');
+  const escaped = escapeHtml(text);
+  const escapedKw = kw.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+  const re = new RegExp('(' + escapedKw + ')', 'gi');
+  return escaped.replace(re, '<mark>$1</mark>');
+}
+
+function renderKeywordSearch() {
+  const main = document.getElementById('main');
+  const list = document.getElementById('patient-list');
+  const kw = state.keyword.trim();
+
+  // Sidebar shows hint
+  if (!kw || kw.length < 2) {
+    list.innerHTML = `<div class="empty-state" style="padding:30px 20px;">Type at least 2 characters above to search across all patients and clinical text.</div>`;
+    main.innerHTML = `
+      <div class="welcome">
+        <h1>Keyword<br><em>Search</em></h1>
+        <div class="hr"></div>
+        <p>Search across <strong>all clinical text</strong> for any patient — including problems, medications, procedures, lab results, allergies, encounters, care plans, diagnostic reports, goals, and the full text of every clinical narrative document.</p>
+        <p style="margin-top: 24px;">Type a keyword in the sidebar (minimum 2 characters). Results show:</p>
+        <ol>
+          <li>The patient's name and ID</li>
+          <li>The category (Problem, Lab, Document, etc.)</li>
+          <li>A snippet of context with the keyword highlighted</li>
+          <li>The source filename so you can open the original document</li>
+          <li>The date of the record (when available)</li>
+        </ol>
+        <p style="margin-top: 24px;">Click any hit to jump to that patient. Use the <strong>Export hits</strong> button to download all results as CSV.</p>
+        <p style="margin-top: 24px; color: var(--purple); font-family: 'JetBrains Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.1em;">Try searching for: tracheostomy · edaravone · C9orf72 · ALSFRS · Mayo Clinic</p>
+      </div>
+    `;
+    return;
+  }
+
+  // Run the search (cached)
+  const hits = runKeywordSearch(kw);
+  state.searchHits = hits;
+
+  // Sidebar: show patient summary with hit counts
+  const byPatient = {};
+  for (const h of hits) {
+    const key = h.patient_id;
+    if (!byPatient[key]) {
+      byPatient[key] = { patient_name: h.patient_name, patient_id: h.patient_id, count: 0 };
+    }
+    byPatient[key].count++;
+  }
+  const patientsArr = Object.values(byPatient).sort((a, b) => b.count - a.count);
+  if (patientsArr.length === 0) {
+    list.innerHTML = `<div class="empty-state" style="padding:30px 20px;">No matches for <strong style="color:var(--purple);">"${escapeHtml(kw)}"</strong></div>`;
+  } else {
+    list.innerHTML = patientsArr.map(p => `
+      <div class="patient-row" onclick="window._scrollToPatient('${escapeHtml(p.patient_id)}')">
+        <div class="patient-name">${escapeHtml(p.patient_name)}</div>
+        <div class="patient-meta">${p.count} hit${p.count===1?'':'s'} · ${escapeHtml((p.patient_id || '').slice(0, 12))}…</div>
+      </div>
+    `).join('');
+  }
+
+  // Main pane: list of hits
+  const totalHits = hits.length;
+  const uniquePatients = patientsArr.length;
+  const tabBreakdown = {};
+  for (const h of hits) tabBreakdown[h.tab] = (tabBreakdown[h.tab] || 0) + 1;
+  const tabSummary = Object.entries(tabBreakdown).sort((a, b) => b[1] - a[1])
+    .map(([t, n]) => `${t}: ${n}`).join(' · ');
+
+  main.innerHTML = `
+    <div class="keyword-results-header">
+      <div class="keyword-stats">
+        <strong>${totalHits.toLocaleString()}</strong> hit${totalHits===1?'':'s'} for
+        <strong style="color:var(--purple);">"${escapeHtml(kw)}"</strong>
+        across <strong>${uniquePatients}</strong> patient${uniquePatients===1?'':'s'}
+        ${tabSummary ? '<br><span style="color:var(--ink-soft);font-size:10px;">' + escapeHtml(tabSummary) + '</span>' : ''}
+      </div>
+      <button class="export-btn" onclick="window._exportSearchHits()" ${totalHits === 0 ? 'disabled' : ''}>
+        <span class="icon">▼</span> Export hits
+      </button>
+    </div>
+    <div class="keyword-results" id="keyword-results">
+      ${hits.length === 0 ? `<div class="keyword-empty-state">No matches.</div>` :
+        hits.slice(0, 500).map((h, idx) => `
+          <div class="keyword-hit" id="hit-${idx}" data-pid="${escapeHtml(h.patient_id)}"
+               onclick="window._jumpToHit('${escapeHtml(h.patient_id)}', '${escapeHtml(h.bucket)}')">
+            <div class="keyword-hit-meta">
+              <span class="keyword-hit-tab">${escapeHtml(h.tab)}</span>
+              <span class="keyword-hit-patient">${escapeHtml(h.patient_name)}</span>
+              ${h.date ? `<span class="keyword-hit-date">${escapeHtml(h.date)}</span>` : ''}
+              ${h.code ? `<span style="color:var(--ink-soft);">code: ${escapeHtml(h.code)}</span>` : ''}
+              ${h.file ? `<span class="keyword-hit-file">${escapeHtml(h.file.length > 50 ? h.file.slice(0, 50) + '…' : h.file)}</span>` : ''}
+            </div>
+            <div class="keyword-hit-snippet">${highlightKeyword(h.snippet, kw)}</div>
+          </div>
+        `).join('')
+      }
+      ${hits.length > 500 ? `<div class="keyword-empty-state">Showing first 500 of ${hits.length.toLocaleString()} hits — refine your search to narrow further, or click <strong>Export hits</strong> to download all.</div>` : ''}
+    </div>
+  `;
+}
+
+// Switch back to browse mode and open this patient
+window._jumpToHit = function(pid, bucket) {
+  state.mode = 'browse';
+  state.selectedPatientId = pid;
+  // Reflect in UI
+  document.querySelectorAll('.mode-btn').forEach(b => b.classList.toggle('active', b.dataset.mode === 'browse'));
+  document.getElementById('search').value = '';
+  state.search = '';
+  state.keyword = '';
+  applyModeUI();
+  render();
+  // Try to scroll the relevant tab into view if possible
+  setTimeout(() => {
+    const tab = document.querySelector(`.tab[data-tab="${bucket === 'labs_vitals' ? 'labs' : bucket === 'diagnostic_reports' ? 'dxreports' : bucket === 'immunizations' ? 'immun' : bucket === 'allergies' ? 'allergies' : bucket === 'careplans' ? 'careplans' : bucket === 'goals' ? 'goals' : bucket === 'notes' ? 'notes' : bucket === 'documents' ? 'documents' : bucket}"]`);
+    if (tab) tab.click();
+  }, 50);
+};
+
+window._scrollToPatient = function(pid) {
+  // Just scroll first hit for that patient into view
+  const hits = document.querySelectorAll(`.keyword-hit[data-pid="${pid}"]`);
+  if (hits.length) hits[0].scrollIntoView({ behavior: 'smooth', block: 'center' });
+};
+
+window._exportSearchHits = function() {
+  const hits = state.searchHits || [];
+  if (!hits.length) { alert('No hits to export.'); return; }
+  // Reshape hits for CSV: drop full_text (too large)
+  const records = hits.map(h => ({
+    patient_id:    h.patient_id,
+    patient_name:  h.patient_name,
+    mrn:           h.mrn,
+    tab:           h.tab,
+    date:          h.date,
+    code:          h.code,
+    display_name:  h.display_name,
+    source_file:   h.file,
+    matched_field: h.matched_field,
+    snippet:       h.snippet,
+    source:        h.source,
+  }));
+  const safeKw = (state.keyword || 'search').replace(/[^\w]/g, '_').slice(0, 30);
+  const fname = `keyword_search_${safeKw}_${new Date().toISOString().slice(0,10)}.csv`;
+  downloadCSV(fname, recordsToCSV(records));
+};
+
+// Toggle mode UI elements based on state.mode
+function applyModeUI() {
+  const isSearch = state.mode === 'search';
+  const inp = document.getElementById('search');
+  const pills = document.getElementById('filter-pills');
+  const exp = document.getElementById('export-list-btn');
+
+  if (isSearch) {
+    inp.placeholder = 'Search keyword in all clinical text…';
+    if (pills) pills.style.display = 'none';
+    if (exp) exp.style.display = 'none';
+  } else {
+    inp.placeholder = 'Search by name, MRN, patient ID…';
+    if (pills) pills.style.display = '';
+    if (exp) exp.style.display = '';
+  }
+}
+
+// === CSV EXPORT UTILITIES ===
+function csvEscape(val) {
+  if (val == null) return '';
+  const s = String(val);
+  // RFC 4180: escape if contains comma, quote, newline, or carriage return
+  if (/[",\n\r]/.test(s)) {
+    return '"' + s.replace(/"/g, '""') + '"';
+  }
+  return s;
+}
+
+
+
+// Build a fast patient_id -> patient lookup, refreshed when bundle loads
+function _patientLookup() {
+  const idx = {};
+  for (const p of (state.patients || [])) idx[p.patient_id] = p;
+  return idx;
+}
+
+function recordsToCSV(records) {
+  if (!records || records.length === 0) return '';
+  // Enrich each row with patient demographics (first_name, last_name, mrn, dob)
+  // looked up by patient_id, so CSV exports show names not just UUIDs.
+  const pidx = _patientLookup();
+  const enriched = records.map(r => {
+    const p = pidx[r.patient_id] || {};
+    return {
+      first_name: p.first_name || '',
+      last_name:  p.last_name  || '',
+      mrn:        p.mrn        || '',
+      dob:        p.dob        || '',
+      ...r,
+    };
+  });
+  const keysSeen = new Set();
+  const keys = [];
+  for (const r of enriched) {
+    for (const k of Object.keys(r)) {
+      if (!keysSeen.has(k)) { keysSeen.add(k); keys.push(k); }
+    }
+  }
+  const lines = [keys.map(csvEscape).join(',')];
+  for (const r of enriched) {
+    lines.push(keys.map(k => csvEscape(r[k])).join(','));
+  }
+  return lines.join('\r\n');
+}
+
+function downloadCSV(filename, csvText) {
+  const blob = new Blob(['\ufeff' + csvText], { type: 'text/csv;charset=utf-8;' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = filename;
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  setTimeout(() => URL.revokeObjectURL(url), 100);
+}
+
+function safeFilenamePart(s) {
+  return String(s || 'unknown').replace(/[^\w\s-]/g, '').replace(/\s+/g, '_').slice(0, 40);
+}
+
+// Exposed globally so onclick handlers in rendered HTML can reach them
+window._exportTab = function(tabName) {
+  const p = state.patients.find(x => x.patient_id === state.selectedPatientId);
+  if (!p) return;
+  const filterFn = (rows) => rows.filter(r => r.patient_id === p.patient_id);
+  const dataMap = {
+    documents: filterFn(state.documents),
+    encounters: filterFn(state.encounters),
+    problems: filterFn(state.problems),
+    medications: filterFn(state.medications),
+    procedures: filterFn(state.procedures),
+    labs: filterFn(state.labs_vitals),
+    allergies: filterFn(state.allergies),
+    immun: filterFn(state.immunizations),
+    careplans: filterFn(state.careplans),
+    dxreports: filterFn(state.diagnostic_reports),
+    goals: filterFn(state.goals),
+    notes: filterFn(state.notes),
+  };
+  const records = dataMap[tabName] || [];
+  if (records.length === 0) { alert('No records to export.'); return; }
+  const namePart = safeFilenamePart(`${p.last_name || 'patient'}_${p.first_name || ''}`);
+  const idPart = (p.patient_id || '').slice(0, 8);
+  const fname = `${namePart}_${idPart}_${tabName}.csv`;
+  downloadCSV(fname, recordsToCSV(records));
+};
+
+window._exportAllForPatient = function() {
+  const p = state.patients.find(x => x.patient_id === state.selectedPatientId);
+  if (!p) return;
+  const pid = p.patient_id;
+  const filterFn = (rows) => rows.filter(r => r.patient_id === pid);
+
+  // Build a single CSV with a 'category' column showing which dataset each row came from
+  const categories = {
+    documents: filterFn(state.documents),
+    encounters: filterFn(state.encounters),
+    problems: filterFn(state.problems),
+    medications: filterFn(state.medications),
+    procedures: filterFn(state.procedures),
+    labs_observations: filterFn(state.labs_vitals),
+    allergies: filterFn(state.allergies),
+    immunizations: filterFn(state.immunizations),
+    careplans: filterFn(state.careplans),
+    diagnostic_reports: filterFn(state.diagnostic_reports),
+    goals: filterFn(state.goals),
+    notes: filterFn(state.notes),
+  };
+
+  // Tag each row with category, then concatenate
+  const all = [];
+  for (const [cat, records] of Object.entries(categories)) {
+    for (const r of records) {
+      all.push({ category: cat, ...r });
+    }
+  }
+  if (all.length === 0) { alert('No records to export.'); return; }
+
+  const namePart = safeFilenamePart(`${p.last_name || 'patient'}_${p.first_name || ''}`);
+  const idPart = (p.patient_id || '').slice(0, 8);
+  const fname = `${namePart}_${idPart}_full_record.csv`;
+  downloadCSV(fname, recordsToCSV(all));
+};
+
+window._exportAllPatients = function() {
+  // Cohort-wide demographic export
+  if (!state.patients || state.patients.length === 0) {
+    alert('No patient data loaded.');
+    return;
+  }
+  const fname = `cohort_patients_${new Date().toISOString().slice(0,10)}.csv`;
+  downloadCSV(fname, recordsToCSV(state.patients));
+};
+
+// === EVENT HANDLERS ===
+// Search input — behavior depends on current mode
+document.getElementById('search').addEventListener('input', (e) => {
+  const v = e.target.value;
+  if (state.mode === 'search') {
+    state.keyword = v;
+    renderKeywordSearch();
+  } else {
+    state.search = v;
+    renderPatientList();
+  }
+});
+
+// Browse-mode filter pills
+document.querySelectorAll('.pill').forEach(p => {
+  p.addEventListener('click', () => {
+    document.querySelectorAll('.pill').forEach(x => x.classList.remove('active'));
+    p.classList.add('active');
+    state.filter = p.dataset.filter;
+    renderPatientList();
+  });
+});
+
+// Mode-toggle buttons (Browse Patients / Keyword Search)
+document.querySelectorAll('.mode-btn').forEach(b => {
+  b.addEventListener('click', () => {
+    document.querySelectorAll('.mode-btn').forEach(x => x.classList.remove('active'));
+    b.classList.add('active');
+    state.mode = b.dataset.mode;
+    // Reset search input when switching modes
+    document.getElementById('search').value = '';
+    state.search = '';
+    state.keyword = '';
+    applyModeUI();
+    render();
+  });
+});
+
+applyModeUI();
+render();
+</script>
+</body>
+</html>

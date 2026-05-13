@@ -1,0 +1,722 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Synthetic demonstration cohort (220 patients)</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.0/chart.umd.min.js"></script>
+<style>
+:root {
+  --navy: #1e3a5f;
+  --purple: #4a148c;
+  --indigo: #3949ab;
+  --teal: #0f6e56;
+  --amber: #854f0b;
+  --bg: #faf9f6;
+  --card-bg: #ffffff;
+  --border: #e5e3dc;
+  --text: #2a2620;
+  --muted: #6b6862;
+  --header-grad: linear-gradient(135deg, #1e1633 0%, #2d1f4a 50%, #3949ab 100%);
+}
+* { box-sizing: border-box; }
+body {
+  margin: 0;
+  font-family: system-ui, "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  font-size: 14px;
+  line-height: 1.5;
+}
+header {
+  background: var(--header-grad);
+  color: #fff;
+  padding: 32px 40px 28px 40px;
+  border-bottom: 4px solid var(--purple);
+}
+header .eyebrow {
+  display: inline-block;
+  background: rgba(255,255,255,0.12);
+  border: 1px solid rgba(255,255,255,0.18);
+  border-radius: 999px;
+  padding: 4px 14px;
+  font-size: 11px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  margin-bottom: 12px;
+  color: #e8e0ff;
+}
+header h1 {
+  margin: 0 0 6px 0;
+  font-size: 28px;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+}
+header h1 .forge { color: #a3b5ff; }
+header .subtitle {
+  margin: 8px 0 0 0;
+  color: #d4cbf0;
+  font-size: 14px;
+}
+header .meta-strip {
+  margin-top: 18px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 18px;
+  font-size: 12px;
+  color: #b8aedb;
+}
+header .meta-strip b { color: #e8e0ff; font-weight: 600; }
+header .privacy-note {
+  margin-top: 14px;
+  padding: 10px 14px;
+  background: rgba(255,255,255,0.06);
+  border-left: 3px solid #fbbf24;
+  border-radius: 4px;
+  font-size: 12px;
+  color: #ece4ff;
+}
+
+nav.tabs {
+  background: #fff;
+  border-bottom: 1px solid var(--border);
+  padding: 0 40px;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  display: flex;
+  gap: 4px;
+  overflow-x: auto;
+}
+nav.tabs button {
+  background: none;
+  border: none;
+  padding: 14px 18px;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--muted);
+  cursor: pointer;
+  border-bottom: 3px solid transparent;
+  transition: all 150ms;
+  white-space: nowrap;
+}
+nav.tabs button:hover { color: var(--text); background: rgba(0,0,0,0.02); }
+nav.tabs button.active {
+  color: var(--purple);
+  border-bottom-color: var(--purple);
+}
+
+main { padding: 28px 40px 60px 40px; }
+section.panel { display: none; }
+section.panel.active { display: block; }
+
+h2.section-h {
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--navy);
+  margin: 0 0 8px 0;
+}
+p.section-desc {
+  color: var(--muted);
+  margin: 0 0 24px 0;
+  font-size: 13px;
+  max-width: 800px;
+}
+
+.cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 16px;
+  margin-bottom: 28px;
+}
+.card {
+  background: var(--card-bg);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 18px 20px;
+}
+.card .label {
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--muted);
+  margin-bottom: 8px;
+}
+.card .value {
+  font-size: 26px;
+  font-weight: 700;
+  color: var(--purple);
+  line-height: 1.1;
+}
+.card .sub {
+  font-size: 12px;
+  color: var(--muted);
+  margin-top: 4px;
+}
+
+.chart-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+  margin-bottom: 24px;
+}
+.chart-row.full { grid-template-columns: 1fr; }
+.chart-box {
+  background: var(--card-bg);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 18px 20px;
+}
+.chart-box h3 {
+  margin: 0 0 4px 0;
+  font-size: 14px;
+  color: var(--navy);
+  font-weight: 600;
+}
+.chart-box .chart-desc {
+  font-size: 12px;
+  color: var(--muted);
+  margin-bottom: 14px;
+}
+.chart-canvas-wrap { position: relative; height: 280px; }
+
+table.dt {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+  background: var(--card-bg);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  overflow: hidden;
+}
+table.dt th {
+  background: #f3f1ec;
+  text-align: left;
+  padding: 10px 12px;
+  font-weight: 600;
+  color: var(--navy);
+  border-bottom: 1px solid var(--border);
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+table.dt td {
+  padding: 9px 12px;
+  border-bottom: 1px solid var(--border);
+  color: var(--text);
+}
+table.dt tr:last-child td { border-bottom: none; }
+table.dt tr:hover td { background: #faf8f3; }
+table.dt code {
+  background: #f3f1ec;
+  padding: 2px 5px;
+  border-radius: 3px;
+  font-size: 12px;
+  color: var(--purple);
+  font-family: "SF Mono", Menlo, Consolas, monospace;
+}
+.suppress { color: #999; font-style: italic; }
+.als-tag {
+  display: inline-block;
+  background: #ede9f8;
+  color: var(--purple);
+  padding: 2px 8px;
+  border-radius: 999px;
+  font-size: 11px;
+  font-weight: 600;
+  margin-right: 4px;
+  margin-bottom: 3px;
+}
+
+.search-bar {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 14px;
+  align-items: center;
+}
+.search-bar input {
+  flex: 1;
+  padding: 9px 14px;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  font-size: 13px;
+  background: #fff;
+}
+.search-bar select {
+  padding: 9px 12px;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  font-size: 13px;
+  background: #fff;
+}
+
+footer {
+  padding: 24px 40px;
+  text-align: center;
+  font-size: 11px;
+  color: var(--muted);
+  border-top: 1px solid var(--border);
+  background: #fff;
+}
+footer a { color: var(--purple); text-decoration: none; }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="eyebrow">Registry Forge · cohort EDA report</div>
+  <h1>Synthetic demonstration cohort (220 patients) — <span class="forge">cohort exploration</span></h1>
+  <div class="subtitle">Aggregate views of the codes and coverage exported through Registry Forge. No PHI is included; identifiers are pseudonymized and dates are aggregated.</div>
+  <div class="meta-strip">
+    <span><b>Generated</b> 2026-05-11</span>
+    <span><b>Patients</b> 220</span>
+    <span><b>Categories</b> 2</span>
+    <span><b>k-anonymity threshold</b> 5</span>
+  </div>
+  <div class="privacy-note">
+    <b>Privacy protections applied:</b> patient identifiers replaced with synthetic IDs (PT-NNNN); dates of birth converted to 10-year age bands (90+ collapsed per HIPAA Safe Harbor); observation period shown as duration only; cross-tab cells with N&lt;5 suppressed as "&lt;5"; no free-text content included; per-patient codes/diagnoses not shown.
+  </div>
+</header>
+
+<nav class="tabs">
+  <button class="active" data-tab="cohort">Cohort</button>
+  <button data-tab="volume">Data volume</button>
+  <button data-tab="coverage">Coverage</button>
+  <button data-tab="trends">Trends</button>
+  <button data-tab="vocab">Vocabularies</button>
+  <button data-tab="als">ALS signal</button>
+  <button data-tab="codes">Top codes</button>
+  <button data-tab="patients">Patients</button>
+</nav>
+
+<main>
+
+<section class="panel active" id="cohort">
+  <h2 class="section-h">Cohort overview</h2>
+  <p class="section-desc">Demographics of the 220 patient(s) in the bundle. Distributions are shown only where group size is at least 5; smaller groups are aggregated as "Other".</p>
+  <div class="cards" id="cohort-cards"></div>
+  <div class="chart-row">
+    <div class="chart-box">
+      <h3>Sex distribution</h3>
+      <div class="chart-desc">Proportion of cohort by reported sex.</div>
+      <div class="chart-canvas-wrap"><canvas id="chart-sex"></canvas></div>
+    </div>
+    <div class="chart-box">
+      <h3>Age band (at report generation date)</h3>
+      <div class="chart-desc">10-year age bands; ages over 89 collapsed per HIPAA Safe Harbor.</div>
+      <div class="chart-canvas-wrap"><canvas id="chart-age"></canvas></div>
+    </div>
+  </div>
+  <div class="chart-row">
+    <div class="chart-box">
+      <h3>Race</h3>
+      <div class="chart-desc">Self-reported race; categories below k-anonymity threshold collapsed.</div>
+      <div class="chart-canvas-wrap"><canvas id="chart-race"></canvas></div>
+    </div>
+    <div class="chart-box">
+      <h3>Ethnicity</h3>
+      <div class="chart-desc">Self-reported ethnicity; categories below k-anonymity threshold collapsed.</div>
+      <div class="chart-canvas-wrap"><canvas id="chart-eth"></canvas></div>
+    </div>
+  </div>
+</section>
+
+<section class="panel" id="volume">
+  <h2 class="section-h">Data volume</h2>
+  <p class="section-desc">What's in the bundle, by clinical category.</p>
+  <div class="chart-row">
+    <div class="chart-box">
+      <h3>Total records per category</h3>
+      <div class="chart-desc">Number of records the pipeline extracted, by bundle category.</div>
+      <div class="chart-canvas-wrap"><canvas id="chart-cat-records"></canvas></div>
+    </div>
+    <div class="chart-box">
+      <h3>Unique codes per category</h3>
+      <div class="chart-desc">Distinct (vocabulary, code) pairs appearing in each category.</div>
+      <div class="chart-canvas-wrap"><canvas id="chart-cat-codes"></canvas></div>
+    </div>
+  </div>
+  <div class="chart-row">
+    <div class="chart-box">
+      <h3>Records per patient (distribution)</h3>
+      <div class="chart-desc">Histogram of total records (any category) per patient.</div>
+      <div class="chart-canvas-wrap"><canvas id="chart-rpp"></canvas></div>
+    </div>
+    <div class="chart-box">
+      <h3>Source format breakdown</h3>
+      <div class="chart-desc">Where in the original SMART on FHIR pull each record came from.</div>
+      <div class="chart-canvas-wrap"><canvas id="chart-format"></canvas></div>
+    </div>
+  </div>
+</section>
+
+<section class="panel" id="coverage">
+  <h2 class="section-h">Observation period</h2>
+  <p class="section-desc">Per-patient duration from earliest to latest dated record. Reported as years; absolute dates are never shown.</p>
+  <div class="cards" id="coverage-cards"></div>
+  <div class="chart-row">
+    <div class="chart-box">
+      <h3>Observation period bands</h3>
+      <div class="chart-desc">Patients grouped by length of observed history.</div>
+      <div class="chart-canvas-wrap"><canvas id="chart-obs-bands"></canvas></div>
+    </div>
+    <div class="chart-box">
+      <h3>Distribution (years)</h3>
+      <div class="chart-desc">Continuous distribution of observation period across the cohort.</div>
+      <div class="chart-canvas-wrap"><canvas id="chart-obs-dist"></canvas></div>
+    </div>
+  </div>
+</section>
+
+<section class="panel" id="trends">
+  <h2 class="section-h">Activity over time</h2>
+  <p class="section-desc">Records per year, stacked by clinical category. Year-level aggregation only — exact dates are not preserved.</p>
+  <div class="chart-row full">
+    <div class="chart-box">
+      <h3>Records by year and category</h3>
+      <div class="chart-desc">Stacked bars show the volume of each clinical category recorded per calendar year.</div>
+      <div class="chart-canvas-wrap" style="height: 360px;"><canvas id="chart-trends"></canvas></div>
+    </div>
+  </div>
+</section>
+
+<section class="panel" id="vocab">
+  <h2 class="section-h">Vocabulary distribution</h2>
+  <p class="section-desc">Which coding systems carry the volume across all categories.</p>
+  <div class="chart-row full">
+    <div class="chart-box">
+      <h3>Records by vocabulary</h3>
+      <div class="chart-desc">Coding system used (each record can contribute to multiple via translations).</div>
+      <div class="chart-canvas-wrap" style="height: 320px;"><canvas id="chart-vocab"></canvas></div>
+    </div>
+  </div>
+</section>
+
+<section class="panel" id="als">
+  <h2 class="section-h">ALS-specific markers</h2>
+  <p class="section-desc">Patients with at least one motor-neuron-disease-spectrum diagnosis code, ALSFRS-R / FVC observation, or ALS-directed medication. Counts below k-anonymity threshold are suppressed.</p>
+  <div class="cards" id="als-cards"></div>
+  <div class="chart-row full">
+    <div class="chart-box">
+      <h3>Patients per marker type</h3>
+      <div class="chart-desc">Each patient may have multiple marker types; counts sum to more than the patient total.</div>
+      <div class="chart-canvas-wrap"><canvas id="chart-als"></canvas></div>
+    </div>
+  </div>
+</section>
+
+<section class="panel" id="codes">
+  <h2 class="section-h">Top codes by vocabulary</h2>
+  <p class="section-desc">Top 25 codes per vocabulary, ranked by total references. Patient counts below k-anonymity threshold are suppressed.</p>
+  <div class="search-bar">
+    <input type="text" id="code-search" placeholder="Search code, vocabulary, or display name…">
+    <select id="code-vocab-filter">
+      <option value="">All vocabularies</option>
+    </select>
+  </div>
+  <table class="dt" id="codes-table">
+    <thead>
+      <tr>
+        <th>Vocabulary</th><th>Code</th><th>Display name</th>
+        <th>Category</th><th style="text-align:right">Records</th>
+        <th style="text-align:right">Patients</th>
+      </tr>
+    </thead>
+    <tbody></tbody>
+  </table>
+</section>
+
+<section class="panel" id="patients">
+  <h2 class="section-h">Per-patient summary</h2>
+  <p class="section-desc">One row per patient using pseudonymized identifiers. Diagnostic codes are not shown per patient to prevent re-identification of rare disease cases; record counts are also banded into ranges.</p>
+  <div class="search-bar">
+    <input type="text" id="pt-search" placeholder="Search by PT ID or band…">
+    <select id="pt-sex-filter">
+      <option value="">All sexes</option>
+    </select>
+  </div>
+  <table class="dt" id="patients-table">
+    <thead>
+      <tr>
+        <th>Synthetic ID</th><th>Sex</th><th>Age band</th>
+        <th>Race</th><th>Ethnicity</th>
+        <th>Observation</th><th>Records</th>
+        <th>ALS markers</th>
+      </tr>
+    </thead>
+    <tbody></tbody>
+  </table>
+</section>
+
+</main>
+
+<footer>
+  Generated by <a href="https://github.com/BoyceLab/RegistryForge">Registry Forge</a> · cohort_eda.py module
+  · Synthetic identifiers, banded ages, suppressed small cells per HIPAA Safe Harbor guidance
+</footer>
+
+<script>
+const DATA = {"meta": {"generated": "2026-05-11", "n_patients": 220, "k_anonymity": 5, "categories_present": ["medications", "problems"]}, "cohort": {"sex": {"Male": 112, "Female": 108}, "age_bands": {"<20": 0, "20-29": 0, "40-49": 32, "50-59": 76, "60-69": 69, "70-79": 30, "80-89": 9, "Unknown": 0}, "race": {"White": 200, "Black or African American": 10, "Asian": 7, "Other (<5 each)": 3}, "ethnicity": {"Not Hispanic or Latino": 200, "Unknown": 8, "Hispanic or Latino": 12}}, "data_volume": {"records_per_category": {"problems": 220, "medications": 1802}, "unique_codes_per_category": {"problems": 2}, "records_per_patient": [3, 3, 3, 4, 4, 4, 5, 5, 5, 5, 5, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 11, 11, 11, 11, 11, 11, 11, 11, 11, 11, 11, 11, 11, 11, 11, 11, 11, 11, 11, 11, 11, 11, 11, 11, 11, 11, 11, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 14, 14, 14, 14, 14, 14, 16, 18]}, "coverage": {"obs_years_list": [0.6, 0.62, 0.93, 0.95, 0.97, 1.08, 1.09, 1.16, 1.18, 1.21, 1.22, 1.22, 1.22, 1.23, 1.25, 1.25, 1.28, 1.3, 1.31, 1.31, 1.32, 1.33, 1.34, 1.37, 1.37, 1.39, 1.43, 1.47, 1.48, 1.5, 1.5, 1.51, 1.52, 1.53, 1.53, 1.56, 1.57, 1.57, 1.57, 1.59, 1.6, 1.6, 1.61, 1.61, 1.62, 1.62, 1.62, 1.62, 1.62, 1.63, 1.64, 1.64, 1.65, 1.68, 1.68, 1.68, 1.68, 1.68, 1.69, 1.7, 1.7, 1.71, 1.72, 1.72, 1.73, 1.74, 1.75, 1.75, 1.76, 1.76, 1.76, 1.77, 1.77, 1.77, 1.78, 1.79, 1.79, 1.79, 1.79, 1.79, 1.79, 1.8, 1.81, 1.81, 1.81, 1.81, 1.82, 1.82, 1.83, 1.83, 1.84, 1.85, 1.86, 1.87, 1.88, 1.89, 1.89, 1.9, 1.91, 1.91, 1.91, 1.92, 1.92, 1.93, 1.94, 1.94, 1.95, 1.95, 1.95, 1.95, 1.96, 1.96, 1.97, 1.97, 1.97, 1.97, 1.98, 1.98, 1.98, 1.98, 1.99, 2.0, 2.0, 2.0, 2.0, 2.01, 2.02, 2.02, 2.03, 2.03, 2.04, 2.04, 2.06, 2.06, 2.06, 2.06, 2.07, 2.07, 2.08, 2.08, 2.08, 2.09, 2.09, 2.09, 2.09, 2.1, 2.1, 2.11, 2.11, 2.11, 2.12, 2.12, 2.12, 2.12, 2.12, 2.12, 2.13, 2.13, 2.14, 2.15, 2.15, 2.15, 2.16, 2.16, 2.17, 2.17, 2.17, 2.18, 2.18, 2.18, 2.19, 2.19, 2.19, 2.19, 2.19, 2.19, 2.2, 2.2, 2.2, 2.2, 2.2, 2.21, 2.24, 2.24, 2.24, 2.25, 2.25, 2.25, 2.28, 2.29, 2.29, 2.3, 2.31, 2.31, 2.31, 2.32, 2.32, 2.32, 2.33, 2.33, 2.34, 2.35, 2.35, 2.35, 2.36, 2.37, 2.37, 2.38, 2.39, 2.39, 2.39, 2.4, 2.4, 2.41, 2.41, 2.42, 2.45, 2.45, 2.45, 2.47], "obs_bands": {"<1 year": 5, "1-2 years": 116, "2-5 years": 99, "5-10 years": 0, "10-20 years": 0, "20+ years": 0, "Unknown": 0}, "median_obs_years": 1.96}, "trends": {"years": [2018, 2019, 2020, 2021, 2022, 2023, 2024, 2025], "by_category": {"problems": [0, 50, 40, 47, 43, 40, 0, 0], "medications": [73, 262, 371, 337, 391, 248, 103, 17]}}, "vocabularies": {"ICD-10-CM": 220, "SNOMED-CT": 220}, "top_codes": {"ICD-10-CM": [{"code": "G12.21", "display": "ALS", "category": "problems", "raw_vocab": "", "n_records": 220, "n_patients_safe": 220}], "SNOMED-CT": [{"code": "86044005", "display": "Amyotrophic lateral sclerosis", "category": "problems", "raw_vocab": "", "n_records": 220, "n_patients_safe": 220}]}, "als_signal": {"n_with_any_marker_safe": 220, "n_with_any_marker_pct": 100.0, "markers": {"Amyotrophic lateral sclerosis": 220}}, "format_breakdown": {"Unknown": 2022}, "patients_table": [{"id": "PT-0001", "sex": "Male", "age_band": "50-59", "race": "White", "ethnicity": "Not Hispanic or Latino", "obs_band": "2-5 years", "record_band": "10-49", "total_records": 12, "als_markers": 1}, {"id": "PT-0002", "sex": "Female", "age_band": "40-49", "race": "White", "ethnicity": "Not Hispanic or Latino", "obs_band": "1-2 years", "record_band": "1-9", "total_records": 7, "als_markers": 1}, {"id": "PT-0003", "sex": "Male", "age_band": "60-69", "race": "White", "ethnicity": "Not Hispanic or Latino", "obs_band": "1-2 years", "record_band": "1-9", "total_records": 6, "als_markers": 1}, {"id": "PT-0004", "sex": "Male", "age_band": "60-69", "race": "White", "ethnicity": "Not Hispanic or Latino", "obs_band": "2-5 years", "record_band": "10-49", "total_records": 10, "als_markers": 1}, {"id": "PT-0005", "sex": "Male", "age_band": "50-59", "race": "White", "ethnicity": "Not Hispanic or Latino", "obs_band": "1-2 years", "record_band": "1-9", "total_records": 6, "als_markers": 1}, {"id": "PT-0006", "sex": "Female", "age_band": "80-89", "race": "White", "ethnicity": "Not Hispanic or Latino", "obs_band": "2-5 years", "record_band": "10-49", "total_records": 14, "als_markers": 1}, {"id": "PT-0007", "sex": "Male", "age_band": "50-59", "race": "White", "ethnicity": "Not Hispanic or Latino", "obs_band": "1-2 years", "record_band": "1-9", "total_records": 7, "als_markers": 1}, {"id": "PT-0008", "sex": "Female", "age_band": "60-69", "race": "White", "ethnicity": "Not Hispanic or Latino", "obs_band": "1-2 years", "record_band": "10-49", "total_records": 12, "als_markers": 1}, {"id": "PT-0009", "sex": "Female", "age_band": "60-69", "race": "White", "ethnicity": "Not Hispanic or Latino", "obs_band": "1-2 years", "record_band": "1-9", "total_records": 7, "als_markers": 1}, {"id": "PT-0010", "sex": "Male", "age_band": "60-69", "race": "Other", "ethnicity": "Not Hispanic or Latino", "obs_band": "2-5 years", "record_band": "1-9", "total_records": 9, "als_markers": 1}, {"id": "PT-0011", "sex": "Male", "age_band": "40-49", "race": "White", "ethnicity": "Not Hispanic or Latino", "obs_band": "2-5 years", "record_band": "10-49", "total_records": 11, "als_markers": 1}, {"id": "PT-0012", "sex": "Male", "age_band": "80-89", "race": "White", "ethnicity": "Not Hispanic or Latino", "obs_band": "1-2 years", "record_band": "10-49", "total_records": 16, "als_markers": 1}, {"id": "PT-0013", "sex": "Male", "age_band": "50-59", "race": "White", "ethnicity": "Unknown", "obs_band": "2-5 years", "record_band": "1-9", "total_records": 7, "als_markers": 1}, {"id": "PT-0014", "sex": "Female", "age_band": "50-59", "race": "White", "ethnicity": "Not Hispanic or Latino", "obs_band": "<1 year", "record_band": "1-9", "total_records": 7, "als_markers": 1}, {"id": "PT-0015", "sex": "Female", "age_band": "70-79", "race": "White", "ethnicity": "Not Hispanic or Latino", "obs_band": "1-2 years", "record_band": "10-49", "total_records": 11, "als_markers": 1}, {"id": "PT-0016", "sex": "Female", "age_band": "50-59", "race": "White", "ethnicity": "Not Hispanic or Latino", "obs_band": "1-2 years", "record_band": "1-9", "total_records": 9, "als_markers": 1}, {"id": "PT-0017", "sex": "Female", "age_band": "50-59", "race": "White", "ethnicity": "Not Hispanic or Latino", "obs_band": "1-2 years", "record_band": "1-9", "total_records": 9, "als_markers": 1}, {"id": "PT-0018", "sex": "Male", "age_band": "60-69", "race": "White", "ethnicity": "Not Hispanic or Latino", "obs_band": "1-2 years", "record_band": "10-49", "total_records": 11, "als_markers": 1}, {"id": "PT-0019", "sex": "Male", "age_band": "60-69", "race": "White", "ethnicity": "Not Hispanic or Latino", "obs_band": "1-2 years", "record_band": "1-9", "total_records": 5, "als_markers": 1}, {"id": "PT-0020", "sex": "Female", "age_band": "50-59", "race": "White", "ethnicity": "Not Hispanic or Latino", "obs_band": "2-5 years", "record_band": "10-49", "total_records": 10, "als_markers": 1}, {"id": "PT-0021", "sex": "Male", "age_band": "50-59", "race": "White", "ethnicity": "Not Hispanic or Latino", "obs_band": "2-5 years", "record_band": "10-49", "total_records": 11, "als_markers": 1}, {"id": "PT-0022", "sex": "Female", "age_band": "70-79", "race": "Black or African American", "ethnicity": "Hispanic or Latino", "obs_band": "2-5 years", "record_band": "10-49", "total_records": 11, "als_markers": 1}, {"id": "PT-0023", "sex": "Female", "age_band": "60-69", "race": "White", "ethnicity": "Not Hispanic or Latino", "obs_band": "2-5 years", "record_band": "10-49", "total_records": 10, "als_markers": 1}, {"id": "PT-0024", "sex": "Male", "age_band": "70-79", "race": "White", "ethnicity": "Not Hispanic or Latino", "obs_band": "1-2 years", "record_band": "10-49", "total_records": 10, "als_markers": 1}, {"id": "PT-0025", "sex": "Male", "age_band": "60-69", "race": "White", "ethnicity": "Not Hispanic or Latino", "obs_band": "1-2 years", "record_band": "1-9", "total_records": 9, "als_markers": 1}, {"id": "PT-0026", "sex": "Male", "age_band": "60-69", "race": "White", "ethnicity": "Not Hispanic or Latino", "obs_band": "2-5 years", "record_band": "10-49", "total_records": 10, "als_markers": 1}, {"id": "PT-0027", "sex": "Female", "age_band": "50-59", "race": "White", "ethnicity": "Not Hispanic or Latino", "obs_band": "1-2 years", "record_band": "1-9", "total_records": 4, "als_markers": 1}, {"id": "PT-0028", "sex": "Male", "age_band": "40-49", "race": "White", "ethnicity": "Not Hispanic or Latino", "obs_band": "1-2 years", "record_band": "1-9", "total_records": 6, "als_markers": 1}, {"id": "PT-0029", "sex": "Male", "age_band": "60-69", "race": "White", "ethnicity": "Not Hispanic or Latino", "obs_band": "1-2 years", "record_band": "10-49", "total_records": 12, "als_markers": 1}, {"id": "PT-0030", "sex": "Male", "age_band": "50-59", "race": "White", "ethnicity": "Not Hispanic or Latino", "obs_band": "2-5 years", "record_band": "10-49", "total_records": 11, "als_markers": 1}, {"id": "PT-0031", "sex": "Male", "age_band": "50-59", "race": "White", "ethnicity": "Not Hispanic or Latino", "obs_band": "2-5 years", "record_band": "1-9", "total_records": 8, "als_markers": 1}, {"id": "PT-0032", "sex": "Male", "age_band": "40-49", "race": "White", "ethnicity": "Not Hispanic or Latino", "obs_band": "1-2 years", "record_band": "10-49", "total_records": 10, "als_markers": 1}, {"id": "PT-0033", "sex": "Female", "age_band": "50-59", "race": "White", "ethnicity": "Not Hispanic or Latino", "obs_band": "1-2 years", "record_band": "1-9", "total_records": 8, "als_markers": 1}, {"id": "PT-0034", "sex": "Female", "age_band": "50-59", "race": "White", "ethnicity": "Not Hispanic or Latino", "obs_band": "1-2 years", "record_band": "1-9", "total_records": 6, "als_markers": 1}, {"id": "PT-0035", "sex": "Female", "age_band": "50-59", "race": "White", "ethnicity": "Not Hispanic or Latino", "obs_band": "1-2 years", "record_band": "10-49", "total_records": 10, "als_markers": 1}, {"id": "PT-0036", "sex": "Female", "age_band": "50-59", "race": "White", "ethnicity": "Not Hispanic or Latino", "obs_band": "1-2 years", "record_band": "1-9", "total_records": 7, "als_markers": 1}, {"id": "PT-0037", "sex": "Male", "age_band": "50-59", "race": "White", "ethnicity": "Not Hispanic or Latino", "obs_band": "1-2 years", "record_band": "1-9", "total_records": 5, "als_markers": 1}, {"id": "PT-0038", "sex": "Female", "age_band": "90+", "race": "White", "ethnicity": "Not Hispanic or Latino", "obs_band": "1-2 years", "record_band": "10-49", "total_records": 13, "als_markers": 1}, {"id": "PT-0039", "sex": "Male", "age_band": "60-69", "race": "White", "ethnicity": "Not Hispanic or Latino", "obs_band": "1-2 years", "record_band": "1-9", "total_records": 8, "als_markers": 1}, {"id": "PT-0040", "sex": "Female", "age_band": "60-69", "race": "White", "ethnicity": "Not Hispanic or Latino", "obs_band": "2-5 years", "record_band": "10-49", "total_records": 10, "als_markers": 1}, {"id": "PT-0041", "sex": "Female", "age_band": "60-69", "race": "Asian", "ethnicity": "Not Hispanic or Latino", "obs_band": "1-2 years", "record_band": "1-9", "total_records": 6, "als_markers": 1}, {"id": "PT-0042", "sex": "Male", "age_band": "50-59", "race": "White", "ethnicity": "Not Hispanic or Latino", "obs_band": "1-2 years", "record_band": "10-49", "total_records": 10, "als_markers": 1}, {"id": "PT-0043", "sex": "Male", "age_band": "60-69", "race": "White", "ethnicity": "Not Hispanic or Latino", "obs_band": "1-2 years", "record_band": "1-9", "total_records": 5, "als_markers": 1}, {"id": "PT-0044", "sex": "Female", "age_band": "50-59", "race": "White", "ethnicity": "Not Hispanic or Latino", "obs_band": "2-5 years", "record_band": "1-9", "total_records": 9, "als_markers": 1}, {"id": "PT-0045", "sex": "Male", "age_band": "40-49", "race": "White", "ethnicity": "Not Hispanic or Latino", "obs_band": "1-2 years", "record_band": "1-9", "total_records": 8, "als_markers": 1}, {"id": "PT-0046", "sex": "Male", "age_band": "40-49", "race": "White", "ethnicity": "Not Hispanic or Latino", "obs_band": "<1 year", "record_band": "1-9", "total_records": 4, "als_markers": 1}, {"id": "PT-0047", "sex": "Female", "age_band": "40-49", "race": "White", "ethnicity": "Not Hispanic or Latino", "obs_band": "1-2 years", "record_band": "1-9", "total_records": 3, "als_markers": 1}, {"id": "PT-0048", "sex": "Male", "age_band": "70-79", "race": "White", "ethnicity": "Hispanic or Latino", "obs_band": "2-5 years", "record_band": "10-49", "total_records": 12, "als_markers": 1}, {"id": "PT-0049", "sex": "Female", "age_band": "70-79", "race": "White", "ethnicity": "Not Hispanic or Latino", "obs_band": "2-5 years", "record_band": "10-49", "total_records": 11, "als_markers": 1}, {"id": "PT-0050", "sex": "Female", "age_band": "70-79", "race": "White", "ethnicity": "Hispanic or Latino", "obs_band": "<1 year", "record_band": "10-49", "total_records": 10, "als_markers": 1}, {"id": "PT-0051", "sex": "Male", "age_band": "50-59", "race": "White", "ethnicity": "Not Hispanic or Latino", "obs_band": "2-5 years", "record_band": "1-9", "total_records": 8, "als_markers": 1}, {"id": "PT-0052", "sex": "Female", "age_band": "40-49", "race": "White", "ethnicity": "Not Hispanic or Latino", "obs_band": "1-2 years", "record_band": "1-9", "total_records": 8, "als_markers": 1}, {"id": "PT-0053", "sex": "Female", "age_band": "50-59", "race": "White", "ethnicity": "Not Hispanic or Latino", "obs_band": "2-5 years", "record_band": "1-9", "total_records": 9, "als_markers": 1}, {"id": "PT-0054", "sex": "Male", "age_band": "50-59", "race": "White", "ethnicity": "Not Hispanic or Latino", "obs_band": "2-5 years", "record_band": "10-49", "total_records": 13, "als_markers": 1}, {"id": "PT-0055", "sex": "Male", "age_band": "60-69", "race": "White", "ethnicity": "Not Hispanic or Latino", "obs_band": "1-2 years", "record_band": "10-49", "total_records": 11, "als_markers": 1}, {"id": "PT-0056", "sex": "Female", "age_band": "40-49", "race": "White", "ethnicity": "Not Hispanic or Latino", "obs_band": "1-2 years", "record_band": "1-9", "total_records": 6, "als_markers": 1}, {"id": "PT-0057", "sex": "Male", "age_band": "80-89", "race": "White", "ethnicity": "Not Hispanic or Latino", "obs_band": "2-5 years", "record_band": "10-49", "total_records": 13, "als_markers": 1}, {"id": "PT-0058", "sex": "Male", "age_band": "50-59", "race": "White", "ethnicity": "Not Hispanic or Latino", "obs_band": "1-2 years", "record_band": "1-9", "total_records": 9, "als_markers": 1}, {"id": "PT-0059", "sex": "Female", "age_band": "50-59", "race": "White", "ethnicity": "Not Hispanic or Latino", "obs_band": "2-5 years", "record_band": "10-49", "total_records": 13, "als_markers": 1}, {"id": "PT-0060", "sex": "Male", "age_band": "60-69", "race": "White", "ethnicity": "Not Hispanic or Latino", "obs_band": "2-5 years", "record_band": "10-49", "total_records": 14, "als_markers": 1}, {"id": "PT-0061", "sex": "Female", "age_band": "50-59", "race": "White", "ethnicity": "Not Hispanic or Latino", "obs_band": "2-5 years", "record_band": "10-49", "total_records": 11, "als_markers": 1}, {"id": "PT-0062", "sex": "Male", "age_band": "60-69", "race": "Black or African American", "ethnicity": "Hispanic or Latino", "obs_band": "2-5 years", "record_band": "10-49", "total_records": 14, "als_markers": 1}, {"id": "PT-0063", "sex": "Male", "age_band": "40-49", "race": "White", "ethnicity": "Not Hispanic or Latino", "obs_band": "1-2 years", "record_band": "1-9", "total_records": 3, "als_markers": 1}, {"id": "PT-0064", "sex": "Female", "age_band": "50-59", "race": "White", "ethnicity": "Not Hispanic or Latino", "obs_band": "2-5 years", "record_band": "1-9", "total_records": 9, "als_markers": 1}, {"id": "PT-0065", "sex": "Female", "age_band": "60-69", "race": "White", "ethnicity": "Not Hispanic or Latino", "obs_band": "1-2 years", "record_band": "1-9", "total_records": 6, "als_markers": 1}, {"id": "PT-0066", "sex": "Female", "age_band": "60-69", "race": "White", "ethnicity": "Not Hispanic or Latino", "obs_band": "1-2 years", "record_band": "10-49", "total_records": 10, "als_markers": 1}, {"id": "PT-0067", "sex": "Male", "age_band": "60-69", "race": "White", "ethnicity": "Not Hispanic or Latino", "obs_band": "2-5 years", "record_band": "10-49", "total_records": 10, "als_markers": 1}, {"id": "PT-0068", "sex": "Female", "age_band": "50-59", "race": "White", "ethnicity": "Not Hispanic or Latino", "obs_band": "1-2 years", "record_band": "10-49", "total_records": 11, "als_markers": 1}, {"id": "PT-0069", "sex": "Female", "age_band": "40-49", "race": "White", "ethnicity": "Not Hispanic or Latino", "obs_band": "1-2 years", "record_band": "10-49", "total_records": 10, "als_markers": 1}, {"id": "PT-0070", "sex": "Female", "age_band": "60-69", "race": "White", "ethnicity": "Not Hispanic or Latino", "obs_band": "2-5 years", "record_band": "1-9", "total_records": 9, "als_markers": 1}, {"id": "PT-0071", "sex": "Male", "age_band": "60-69", "race": "White", "ethnicity": "Not Hispanic or Latino", "obs_band": "1-2 years", "record_band": "10-49", "total_records": 11, "als_markers": 1}, {"id": "PT-0072", "sex": "Male", "age_band": "60-69", "race": "White", "ethnicity": "Not Hispanic or Latino", "obs_band": "2-5 years", "record_band": "10-49", "total_records": 10, "als_markers": 1}, {"id": "PT-0073", "sex": "Female", "age_band": "80-89", "race": "White", "ethnicity": "Not Hispanic or Latino", "obs_band": "1-2 years", "record_band": "10-49", "total_records": 13, "als_markers": 1}, {"id": "PT-0074", "sex": "Male", "age_band": "40-49", "race": "White", "ethnicity": "Not Hispanic or Latino", "obs_band": "2-5 years", "record_band": "1-9", "total_records": 9, "als_markers": 1}, {"id": "PT-0075", "sex": "Male", "age_band": "50-59", "race": "White", "ethnicity": "Not Hispanic or Latino", "obs_band": "2-5 years", "record_band": "1-9", "total_records": 6, "als_markers": 1}, {"id": "PT-0076", "sex": "Female", "age_band": "70-79", "race": "White", "ethnicity": "Not Hispanic or Latino", "obs_band": "1-2 years", "record_band": "1-9", "total_records": 6, "als_markers": 1}, {"id": "PT-0077", "sex": "Female", "age_band": "60-69", "race": "White", "ethnicity": "Not Hispanic or Latino", "obs_band": "1-2 years", "record_band": "1-9", "total_records": 6, "als_markers": 1}, {"id": "PT-0078", "sex": "Female", "age_band": "70-79", "race": "White", "ethnicity": "Not Hispanic or Latino", "obs_band": "2-5 years", "record_band": "10-49", "total_records": 12, "als_markers": 1}, {"id": "PT-0079", "sex": "Male", "age_band": "50-59", "race": "White", "ethnicity": "Not Hispanic or Latino", "obs_band": "1-2 years", "record_band": "1-9", "total_records": 9, "als_markers": 1}, {"id": "PT-0080", "sex": "Male", "age_band": "50-59", "race": "White", "ethnicity": "Not Hispanic or Latino", "obs_band": "1-2 years", "record_band": "1-9", "total_records": 8, "als_markers": 1}, {"id": "PT-0081", "sex": "Female", "age_band": "70-79", "race": "White", "ethnicity": "Not Hispanic or Latino", "obs_band": "2-5 years", "record_band": "10-49", "total_records": 11, "als_markers": 1}, {"id": "PT-0082", "sex": "Female", "age_band": "50-59", "race": "White", "ethnicity": "Not Hispanic or Latino", "obs_band": "1-2 years", "record_band": "1-9", "total_records": 6, "als_markers": 1}, {"id": "PT-0083", "sex": "Male", "age_band": "50-59", "race": "White", "ethnicity": "Not Hispanic or Latino", "obs_band": "2-5 years", "record_band": "10-49", "total_records": 10, "als_markers": 1}, {"id": "PT-0084", "sex": "Female", "age_band": "50-59", "race": "White", "ethnicity": "Not Hispanic or Latino", "obs_band": "2-5 years", "record_band": "1-9", "total_records": 7, "als_markers": 1}, {"id": "PT-0085", "sex": "Female", "age_band": "60-69", "race": "White", "ethnicity": "Not Hispanic or Latino", "obs_band": "1-2 years", "record_band": "10-49", "total_records": 11, "als_markers": 1}, {"id": "PT-0086", "sex": "Female", "age_band": "40-49", "race": "White", "ethnicity": "Not Hispanic or Latino", "obs_band": "1-2 years", "record_band": "1-9", "total_records": 8, "als_markers": 1}, {"id": "PT-0087", "sex": "Female", "age_band": "50-59", "race": "White", "ethnicity": "Unknown", "obs_band": "2-5 years", "record_band": "10-49", "total_records": 12, "als_markers": 1}, {"id": "PT-0088", "sex": "Female", "age_band": "70-79", "race": "White", "ethnicity": "Not Hispanic or Latino", "obs_band": "1-2 years", "record_band": "1-9", "total_records": 5, "als_markers": 1}, {"id": "PT-0089", "sex": "Female", "age_band": "40-49", "race": "White", "ethnicity": "Not Hispanic or Latino", "obs_band": "2-5 years", "record_band": "1-9", "total_records": 8, "als_markers": 1}, {"id": "PT-0090", "sex": "Male", "age_band": "40-49", "race": "Black or African American", "ethnicity": "Not Hispanic or Latino", "obs_band": "1-2 years", "record_band": "1-9", "total_records": 9, "als_markers": 1}, {"id": "PT-0091", "sex": "Female", "age_band": "60-69", "race": "White", "ethnicity": "Not Hispanic or Latino", "obs_band": "2-5 years", "record_band": "1-9", "total_records": 8, "als_markers": 1}, {"id": "PT-0092", "sex": "Male", "age_band": "50-59", "race": "White", "ethnicity": "Not Hispanic or Latino", "obs_band": "2-5 years", "record_band": "10-49", "total_records": 12, "als_markers": 1}, {"id": "PT-0093", "sex": "Female", "age_band": "40-49", "race": "Black or African American", "ethnicity": "Not Hispanic or Latino", "obs_band": "2-5 years", "record_band": "10-49", "total_records": 12, "als_markers": 1}, {"id": "PT-0094", "sex": "Female", "age_band": "50-59", "race": "White", "ethnicity": "Not Hispanic or Latino", "obs_band": "1-2 years", "record_band": "1-9", "total_records": 8, "als_markers": 1}, {"id": "PT-0095", "sex": "Male", "age_band": "60-69", "race": "White", "ethnicity": "Not Hispanic or Latino", "obs_band": "1-2 years", "record_band": "10-49", "total_records": 13, "als_markers": 1}, {"id": "PT-0096", "sex": "Female", "age_band": "80-89", "race": "White", "ethnicity": "Not Hispanic or Latino", "obs_band": "2-5 years", "record_band": "1-9", "total_records": 8, "als_markers": 1}, {"id": "PT-0097", "sex": "Male", "age_band": "70-79", "race": "White", "ethnicity": "Not Hispanic or Latino", "obs_band": "1-2 years", "record_band": "10-49", "total_records": 12, "als_markers": 1}, {"id": "PT-0098", "sex": "Female", "age_band": "50-59", "race": "White", "ethnicity": "Not Hispanic or Latino", "obs_band": "1-2 years", "record_band": "1-9", "total_records": 8, "als_markers": 1}, {"id": "PT-0099", "sex": "Female", "age_band": "30-39", "race": "White", "ethnicity": "Not Hispanic or Latino", "obs_band": "1-2 years", "record_band": "1-9", "total_records": 7, "als_markers": 1}, {"id": "PT-0100", "sex": "Female", "age_band": "60-69", "race": "White", "ethnicity": "Not Hispanic or Latino", "obs_band": "1-2 years", "record_band": "10-49", "total_records": 12, "als_markers": 1}, {"id": "PT-0101", "sex": "Male", "age_band": "60-69", "race": "Black or African American", "ethnicity": "Not Hispanic or Latino", "obs_band": "1-2 years", "record_band": "1-9", "total_records": 8, "als_markers": 1}, {"id": "PT-0102", "sex": "Female", "age_band": "80-89", "race": "White", "ethnicity": "Not Hispanic or Latino", "obs_band": "2-5 years", "record_band": "10-49", "total_records": 13, "als_markers": 1}, {"id": "PT-0103", "sex": "Female", "age_band": "50-59", "race": "White", "ethnicity": "Not Hispanic or Latino", "obs_band": "1-2 years", "record_band": "1-9", "total_records": 6, "als_markers": 1}, {"id": "PT-0104", "sex": "Male", "age_band": "30-39", "race": "White", "ethnicity": "Not Hispanic or Latino", "obs_band": "2-5 years", "record_band": "1-9", "total_records": 6, "als_markers": 1}, {"id": "PT-0105", "sex": "Female", "age_band": "50-59", "race": "White", "ethnicity": "Not Hispanic or Latino", "obs_band": "1-2 years", "record_band": "1-9", "total_records": 6, "als_markers": 1}, {"id": "PT-0106", "sex": "Female", "age_band": "50-59", "race": "White", "ethnicity": "Not Hispanic or Latino", "obs_band": "1-2 years", "record_band": "1-9", "total_records": 6, "als_markers": 1}, {"id": "PT-0107", "sex": "Female", "age_band": "50-59", "race": "White", "ethnicity": "Not Hispanic or Latino", "obs_band": "1-2 years", "record_band": "1-9", "total_records": 9, "als_markers": 1}, {"id": "PT-0108", "sex": "Female", "age_band": "50-59", "race": "Asian", "ethnicity": "Not Hispanic or Latino", "obs_band": "2-5 years", "record_band": "1-9", "total_records": 8, "als_markers": 1}, {"id": "PT-0109", "sex": "Female", "age_band": "50-59", "race": "White", "ethnicity": "Not Hispanic or Latino", "obs_band": "2-5 years", "record_band": "10-49", "total_records": 11, "als_markers": 1}, {"id": "PT-0110", "sex": "Male", "age_band": "60-69", "race": "White", "ethnicity": "Not Hispanic or Latino", "obs_band": "2-5 years", "record_band": "10-49", "total_records": 10, "als_markers": 1}, {"id": "PT-0111", "sex": "Male", "age_band": "50-59", "race": "White", "ethnicity": "Not Hispanic or Latino", "obs_band": "1-2 years", "record_band": "1-9", "total_records": 8, "als_markers": 1}, {"id": "PT-0112", "sex": "Male", "age_band": "50-59", "race": "White", "ethnicity": "Not Hispanic or Latino", "obs_band": "2-5 years", "record_band": "10-49", "total_records": 10, "als_markers": 1}, {"id": "PT-0113", "sex": "Male", "age_band": "60-69", "race": "White", "ethnicity": "Not Hispanic or Latino", "obs_band": "2-5 years", "record_band": "10-49", "total_records": 12, "als_markers": 1}, {"id": "PT-0114", "sex": "Male", "age_band": "50-59", "race": "White", "ethnicity": "Unknown", "obs_band": "2-5 years", "record_band": "10-49", "total_records": 11, "als_markers": 1}, {"id": "PT-0115", "sex": "Female", "age_band": "40-49", "race": "White", "ethnicity": "Not Hispanic or Latino", "obs_band": "<1 year", "record_band": "1-9", "total_records": 4, "als_markers": 1}, {"id": "PT-0116", "sex": "Male", "age_band": "40-49", "race": "White", "ethnicity": "Not Hispanic or Latino", "obs_band": "1-2 years", "record_band": "10-49", "total_records": 10, "als_markers": 1}, {"id": "PT-0117", "sex": "Female", "age_band": "70-79", "race": "White", "ethnicity": "Not Hispanic or Latino", "obs_band": "2-5 years", "record_band": "10-49", "total_records": 13, "als_markers": 1}, {"id": "PT-0118", "sex": "Female", "age_band": "70-79", "race": "White", "ethnicity": "Not Hispanic or Latino", "obs_band": "2-5 years", "record_band": "10-49", "total_records": 11, "als_markers": 1}, {"id": "PT-0119", "sex": "Female", "age_band": "50-59", "race": "White", "ethnicity": "Not Hispanic or Latino", "obs_band": "2-5 years", "record_band": "10-49", "total_records": 11, "als_markers": 1}, {"id": "PT-0120", "sex": "Male", "age_band": "50-59", "race": "White", "ethnicity": "Not Hispanic or Latino", "obs_band": "1-2 years", "record_band": "1-9", "total_records": 8, "als_markers": 1}, {"id": "PT-0121", "sex": "Female", "age_band": "60-69", "race": "Black or African American", "ethnicity": "Not Hispanic or Latino", "obs_band": "1-2 years", "record_band": "1-9", "total_records": 6, "als_markers": 1}, {"id": "PT-0122", "sex": "Male", "age_band": "60-69", "race": "White", "ethnicity": "Not Hispanic or Latino", "obs_band": "2-5 years", "record_band": "10-49", "total_records": 10, "als_markers": 1}, {"id": "PT-0123", "sex": "Female", "age_band": "70-79", "race": "White", "ethnicity": "Not Hispanic or Latino", "obs_band": "2-5 years", "record_band": "10-49", "total_records": 11, "als_markers": 1}, {"id": "PT-0124", "sex": "Male", "age_band": "70-79", "race": "White", "ethnicity": "Not Hispanic or Latino", "obs_band": "1-2 years", "record_band": "1-9", "total_records": 9, "als_markers": 1}, {"id": "PT-0125", "sex": "Male", "age_band": "40-49", "race": "White", "ethnicity": "Hispanic or Latino", "obs_band": "1-2 years", "record_band": "1-9", "total_records": 8, "als_markers": 1}, {"id": "PT-0126", "sex": "Male", "age_band": "70-79", "race": "White", "ethnicity": "Not Hispanic or Latino", "obs_band": "1-2 years", "record_band": "1-9", "total_records": 9, "als_markers": 1}, {"id": "PT-0127", "sex": "Male", "age_band": "60-69", "race": "Asian", "ethnicity": "Not Hispanic or Latino", "obs_band": "1-2 years", "record_band": "1-9", "total_records": 8, "als_markers": 1}, {"id": "PT-0128", "sex": "Female", "age_band": "60-69", "race": "Black or African American", "ethnicity": "Not Hispanic or Latino", "obs_band": "1-2 years", "record_band": "1-9", "total_records": 9, "als_markers": 1}, {"id": "PT-0129", "sex": "Female", "age_band": "70-79", "race": "White", "ethnicity": "Not Hispanic or Latino", "obs_band": "2-5 years", "record_band": "10-49", "total_records": 10, "als_markers": 1}, {"id": "PT-0130", "sex": "Male", "age_band": "60-69", "race": "White", "ethnicity": "Not Hispanic or Latino", "obs_band": "2-5 years", "record_band": "10-49", "total_records": 10, "als_markers": 1}, {"id": "PT-0131", "sex": "Female", "age_band": "60-69", "race": "White", "ethnicity": "Hispanic or Latino", "obs_band": "2-5 years", "record_band": "10-49", "total_records": 12, "als_markers": 1}, {"id": "PT-0132", "sex": "Male", "age_band": "60-69", "race": "White", "ethnicity": "Not Hispanic or Latino", "obs_band": "1-2 years", "record_band": "1-9", "total_records": 6, "als_markers": 1}, {"id": "PT-0133", "sex": "Female", "age_band": "60-69", "race": "White", "ethnicity": "Not Hispanic or Latino", "obs_band": "1-2 years", "record_band": "10-49", "total_records": 10, "als_markers": 1}, {"id": "PT-0134", "sex": "Male", "age_band": "50-59", "race": "White", "ethnicity": "Unknown", "obs_band": "1-2 years", "record_band": "1-9", "total_records": 8, "als_markers": 1}, {"id": "PT-0135", "sex": "Male", "age_band": "50-59", "race": "White", "ethnicity": "Not Hispanic or Latino", "obs_band": "2-5 years", "record_band": "10-49", "total_records": 10, "als_markers": 1}, {"id": "PT-0136", "sex": "Male", "age_band": "40-49", "race": "White", "ethnicity": "Not Hispanic or Latino", "obs_band": "2-5 years", "record_band": "1-9", "total_records": 9, "als_markers": 1}, {"id": "PT-0137", "sex": "Female", "age_band": "70-79", "race": "White", "ethnicity": "Not Hispanic or Latino", "obs_band": "2-5 years", "record_band": "1-9", "total_records": 8, "als_markers": 1}, {"id": "PT-0138", "sex": "Male", "age_band": "50-59", "race": "White", "ethnicity": "Not Hispanic or Latino", "obs_band": "1-2 years", "record_band": "10-49", "total_records": 11, "als_markers": 1}, {"id": "PT-0139", "sex": "Male", "age_band": "60-69", "race": "Asian", "ethnicity": "Not Hispanic or Latino", "obs_band": "2-5 years", "record_band": "10-49", "total_records": 13, "als_markers": 1}, {"id": "PT-0140", "sex": "Male", "age_band": "50-59", "race": "Asian", "ethnicity": "Not Hispanic or Latino", "obs_band": "2-5 years", "record_band": "1-9", "total_records": 9, "als_markers": 1}, {"id": "PT-0141", "sex": "Male", "age_band": "50-59", "race": "White", "ethnicity": "Not Hispanic or Latino", "obs_band": "2-5 years", "record_band": "1-9", "total_records": 8, "als_markers": 1}, {"id": "PT-0142", "sex": "Male", "age_band": "50-59", "race": "White", "ethnicity": "Not Hispanic or Latino", "obs_band": "1-2 years", "record_band": "10-49", "total_records": 13, "als_markers": 1}, {"id": "PT-0143", "sex": "Female", "age_band": "60-69", "race": "White", "ethnicity": "Not Hispanic or Latino", "obs_band": "2-5 years", "record_band": "10-49", "total_records": 10, "als_markers": 1}, {"id": "PT-0144", "sex": "Male", "age_band": "50-59", "race": "White", "ethnicity": "Not Hispanic or Latino", "obs_band": "2-5 years", "record_band": "10-49", "total_records": 10, "als_markers": 1}, {"id": "PT-0145", "sex": "Female", "age_band": "60-69", "race": "White", "ethnicity": "Not Hispanic or Latino", "obs_band": "1-2 years", "record_band": "1-9", "total_records": 8, "als_markers": 1}, {"id": "PT-0146", "sex": "Male", "age_band": "60-69", "race": "White", "ethnicity": "Not Hispanic or Latino", "obs_band": "1-2 years", "record_band": "1-9", "total_records": 8, "als_markers": 1}, {"id": "PT-0147", "sex": "Male", "age_band": "60-69", "race": "White", "ethnicity": "Hispanic or Latino", "obs_band": "2-5 years", "record_band": "1-9", "total_records": 8, "als_markers": 1}, {"id": "PT-0148", "sex": "Female", "age_band": "60-69", "race": "White", "ethnicity": "Not Hispanic or Latino", "obs_band": "1-2 years", "record_band": "1-9", "total_records": 9, "als_markers": 1}, {"id": "PT-0149", "sex": "Female", "age_band": "70-79", "race": "White", "ethnicity": "Not Hispanic or Latino", "obs_band": "1-2 years", "record_band": "10-49", "total_records": 12, "als_markers": 1}, {"id": "PT-0150", "sex": "Male", "age_band": "50-59", "race": "White", "ethnicity": "Not Hispanic or Latino", "obs_band": "1-2 years", "record_band": "1-9", "total_records": 8, "als_markers": 1}, {"id": "PT-0151", "sex": "Male", "age_band": "40-49", "race": "White", "ethnicity": "Not Hispanic or Latino", "obs_band": "1-2 years", "record_band": "1-9", "total_records": 6, "als_markers": 1}, {"id": "PT-0152", "sex": "Male", "age_band": "50-59", "race": "White", "ethnicity": "Not Hispanic or Latino", "obs_band": "1-2 years", "record_band": "1-9", "total_records": 6, "als_markers": 1}, {"id": "PT-0153", "sex": "Female", "age_band": "50-59", "race": "White", "ethnicity": "Unknown", "obs_band": "1-2 years", "record_band": "1-9", "total_records": 5, "als_markers": 1}, {"id": "PT-0154", "sex": "Male", "age_band": "60-69", "race": "White", "ethnicity": "Not Hispanic or Latino", "obs_band": "2-5 years", "record_band": "10-49", "total_records": 12, "als_markers": 1}, {"id": "PT-0155", "sex": "Female", "age_band": "50-59", "race": "White", "ethnicity": "Not Hispanic or Latino", "obs_band": "2-5 years", "record_band": "1-9", "total_records": 9, "als_markers": 1}, {"id": "PT-0156", "sex": "Male", "age_band": "40-49", "race": "White", "ethnicity": "Not Hispanic or Latino", "obs_band": "1-2 years", "record_band": "1-9", "total_records": 6, "als_markers": 1}, {"id": "PT-0157", "sex": "Female", "age_band": "60-69", "race": "White", "ethnicity": "Not Hispanic or Latino", "obs_band": "2-5 years", "record_band": "10-49", "total_records": 11, "als_markers": 1}, {"id": "PT-0158", "sex": "Male", "age_band": "70-79", "race": "White", "ethnicity": "Not Hispanic or Latino", "obs_band": "1-2 years", "record_band": "10-49", "total_records": 14, "als_markers": 1}, {"id": "PT-0159", "sex": "Female", "age_band": "50-59", "race": "Asian", "ethnicity": "Not Hispanic or Latino", "obs_band": "1-2 years", "record_band": "10-49", "total_records": 11, "als_markers": 1}, {"id": "PT-0160", "sex": "Female", "age_band": "60-69", "race": "White", "ethnicity": "Not Hispanic or Latino", "obs_band": "2-5 years", "record_band": "10-49", "total_records": 11, "als_markers": 1}, {"id": "PT-0161", "sex": "Male", "age_band": "70-79", "race": "White", "ethnicity": "Not Hispanic or Latino", "obs_band": "2-5 years", "record_band": "10-49", "total_records": 12, "als_markers": 1}, {"id": "PT-0162", "sex": "Male", "age_band": "70-79", "race": "White", "ethnicity": "Not Hispanic or Latino", "obs_band": "1-2 years", "record_band": "10-49", "total_records": 10, "als_markers": 1}, {"id": "PT-0163", "sex": "Male", "age_band": "60-69", "race": "White", "ethnicity": "Not Hispanic or Latino", "obs_band": "2-5 years", "record_band": "10-49", "total_records": 14, "als_markers": 1}, {"id": "PT-0164", "sex": "Male", "age_band": "70-79", "race": "White", "ethnicity": "Not Hispanic or Latino", "obs_band": "2-5 years", "record_band": "1-9", "total_records": 7, "als_markers": 1}, {"id": "PT-0165", "sex": "Female", "age_band": "60-69", "race": "White", "ethnicity": "Not Hispanic or Latino", "obs_band": "2-5 years", "record_band": "1-9", "total_records": 9, "als_markers": 1}, {"id": "PT-0166", "sex": "Female", "age_band": "50-59", "race": "White", "ethnicity": "Not Hispanic or Latino", "obs_band": "2-5 years", "record_band": "10-49", "total_records": 11, "als_markers": 1}, {"id": "PT-0167", "sex": "Male", "age_band": "50-59", "race": "White", "ethnicity": "Not Hispanic or Latino", "obs_band": "1-2 years", "record_band": "1-9", "total_records": 8, "als_markers": 1}, {"id": "PT-0168", "sex": "Female", "age_band": "60-69", "race": "White", "ethnicity": "Hispanic or Latino", "obs_band": "2-5 years", "record_band": "1-9", "total_records": 8, "als_markers": 1}, {"id": "PT-0169", "sex": "Male", "age_band": "30-39", "race": "Black or African American", "ethnicity": "Not Hispanic or Latino", "obs_band": "2-5 years", "record_band": "1-9", "total_records": 9, "als_markers": 1}, {"id": "PT-0170", "sex": "Male", "age_band": "60-69", "race": "White", "ethnicity": "Not Hispanic or Latino", "obs_band": "1-2 years", "record_band": "1-9", "total_records": 7, "als_markers": 1}, {"id": "PT-0171", "sex": "Female", "age_band": "60-69", "race": "Other", "ethnicity": "Not Hispanic or Latino", "obs_band": "2-5 years", "record_band": "10-49", "total_records": 10, "als_markers": 1}, {"id": "PT-0172", "sex": "Female", "age_band": "50-59", "race": "White", "ethnicity": "Not Hispanic or Latino", "obs_band": "1-2 years", "record_band": "1-9", "total_records": 7, "als_markers": 1}, {"id": "PT-0173", "sex": "Male", "age_band": "70-79", "race": "White", "ethnicity": "Hispanic or Latino", "obs_band": "2-5 years", "record_band": "1-9", "total_records": 9, "als_markers": 1}, {"id": "PT-0174", "sex": "Male", "age_band": "60-69", "race": "White", "ethnicity": "Not Hispanic or Latino", "obs_band": "2-5 years", "record_band": "10-49", "total_records": 11, "als_markers": 1}, {"id": "PT-0175", "sex": "Male", "age_band": "40-49", "race": "White", "ethnicity": "Not Hispanic or Latino", "obs_band": "1-2 years", "record_band": "1-9", "total_records": 3, "als_markers": 1}, {"id": "PT-0176", "sex": "Female", "age_band": "60-69", "race": "White", "ethnicity": "Not Hispanic or Latino", "obs_band": "2-5 years", "record_band": "10-49", "total_records": 10, "als_markers": 1}, {"id": "PT-0177", "sex": "Female", "age_band": "50-59", "race": "White", "ethnicity": "Not Hispanic or Latino", "obs_band": "1-2 years", "record_band": "1-9", "total_records": 6, "als_markers": 1}, {"id": "PT-0178", "sex": "Male", "age_band": "60-69", "race": "White", "ethnicity": "Not Hispanic or Latino", "obs_band": "1-2 years", "record_band": "10-49", "total_records": 10, "als_markers": 1}, {"id": "PT-0179", "sex": "Male", "age_band": "50-59", "race": "White", "ethnicity": "Unknown", "obs_band": "2-5 years", "record_band": "1-9", "total_records": 9, "als_markers": 1}, {"id": "PT-0180", "sex": "Male", "age_band": "40-49", "race": "White", "ethnicity": "Not Hispanic or Latino", "obs_band": "2-5 years", "record_band": "1-9", "total_records": 9, "als_markers": 1}, {"id": "PT-0181", "sex": "Male", "age_band": "40-49", "race": "White", "ethnicity": "Not Hispanic or Latino", "obs_band": "1-2 years", "record_band": "1-9", "total_records": 9, "als_markers": 1}, {"id": "PT-0182", "sex": "Male", "age_band": "60-69", "race": "White", "ethnicity": "Not Hispanic or Latino", "obs_band": "2-5 years", "record_band": "1-9", "total_records": 9, "als_markers": 1}, {"id": "PT-0183", "sex": "Female", "age_band": "80-89", "race": "White", "ethnicity": "Not Hispanic or Latino", "obs_band": "2-5 years", "record_band": "10-49", "total_records": 12, "als_markers": 1}, {"id": "PT-0184", "sex": "Female", "age_band": "70-79", "race": "White", "ethnicity": "Not Hispanic or Latino", "obs_band": "1-2 years", "record_band": "1-9", "total_records": 6, "als_markers": 1}, {"id": "PT-0185", "sex": "Female", "age_band": "70-79", "race": "White", "ethnicity": "Not Hispanic or Latino", "obs_band": "1-2 years", "record_band": "1-9", "total_records": 7, "als_markers": 1}, {"id": "PT-0186", "sex": "Male", "age_band": "40-49", "race": "White", "ethnicity": "Not Hispanic or Latino", "obs_band": "1-2 years", "record_band": "1-9", "total_records": 8, "als_markers": 1}, {"id": "PT-0187", "sex": "Male", "age_band": "40-49", "race": "White", "ethnicity": "Not Hispanic or Latino", "obs_band": "2-5 years", "record_band": "10-49", "total_records": 10, "als_markers": 1}, {"id": "PT-0188", "sex": "Female", "age_band": "60-69", "race": "White", "ethnicity": "Not Hispanic or Latino", "obs_band": "1-2 years", "record_band": "1-9", "total_records": 8, "als_markers": 1}, {"id": "PT-0189", "sex": "Male", "age_band": "60-69", "race": "White", "ethnicity": "Hispanic or Latino", "obs_band": "1-2 years", "record_band": "10-49", "total_records": 14, "als_markers": 1}, {"id": "PT-0190", "sex": "Male", "age_band": "70-79", "race": "White", "ethnicity": "Not Hispanic or Latino", "obs_band": "2-5 years", "record_band": "10-49", "total_records": 11, "als_markers": 1}, {"id": "PT-0191", "sex": "Male", "age_band": "50-59", "race": "White", "ethnicity": "Not Hispanic or Latino", "obs_band": "1-2 years", "record_band": "1-9", "total_records": 8, "als_markers": 1}, {"id": "PT-0192", "sex": "Male", "age_band": "60-69", "race": "White", "ethnicity": "Not Hispanic or Latino", "obs_band": "1-2 years", "record_band": "1-9", "total_records": 7, "als_markers": 1}, {"id": "PT-0193", "sex": "Female", "age_band": "60-69", "race": "White", "ethnicity": "Not Hispanic or Latino", "obs_band": "1-2 years", "record_band": "1-9", "total_records": 7, "als_markers": 1}, {"id": "PT-0194", "sex": "Female", "age_band": "50-59", "race": "White", "ethnicity": "Not Hispanic or Latino", "obs_band": "2-5 years", "record_band": "10-49", "total_records": 10, "als_markers": 1}, {"id": "PT-0195", "sex": "Male", "age_band": "50-59", "race": "White", "ethnicity": "Not Hispanic or Latino", "obs_band": "1-2 years", "record_band": "10-49", "total_records": 10, "als_markers": 1}, {"id": "PT-0196", "sex": "Male", "age_band": "60-69", "race": "White", "ethnicity": "Not Hispanic or Latino", "obs_band": "2-5 years", "record_band": "1-9", "total_records": 9, "als_markers": 1}, {"id": "PT-0197", "sex": "Female", "age_band": "40-49", "race": "White", "ethnicity": "Not Hispanic or Latino", "obs_band": "2-5 years", "record_band": "10-49", "total_records": 11, "als_markers": 1}, {"id": "PT-0198", "sex": "Male", "age_band": "60-69", "race": "White", "ethnicity": "Not Hispanic or Latino", "obs_band": "<1 year", "record_band": "1-9", "total_records": 7, "als_markers": 1}, {"id": "PT-0199", "sex": "Male", "age_band": "70-79", "race": "Black or African American", "ethnicity": "Hispanic or Latino", "obs_band": "2-5 years", "record_band": "10-49", "total_records": 18, "als_markers": 1}, {"id": "PT-0200", "sex": "Female", "age_band": "50-59", "race": "White", "ethnicity": "Not Hispanic or Latino", "obs_band": "1-2 years", "record_band": "1-9", "total_records": 8, "als_markers": 1}, {"id": "PT-0201", "sex": "Female", "age_band": "70-79", "race": "White", "ethnicity": "Not Hispanic or Latino", "obs_band": "2-5 years", "record_band": "10-49", "total_records": 12, "als_markers": 1}, {"id": "PT-0202", "sex": "Male", "age_band": "60-69", "race": "White", "ethnicity": "Not Hispanic or Latino", "obs_band": "1-2 years", "record_band": "10-49", "total_records": 10, "als_markers": 1}, {"id": "PT-0203", "sex": "Female", "age_band": "50-59", "race": "White", "ethnicity": "Not Hispanic or Latino", "obs_band": "1-2 years", "record_band": "1-9", "total_records": 7, "als_markers": 1}, {"id": "PT-0204", "sex": "Male", "age_band": "50-59", "race": "White", "ethnicity": "Not Hispanic or Latino", "obs_band": "1-2 years", "record_band": "10-49", "total_records": 10, "als_markers": 1}, {"id": "PT-0205", "sex": "Male", "age_band": "50-59", "race": "White", "ethnicity": "Not Hispanic or Latino", "obs_band": "2-5 years", "record_band": "1-9", "total_records": 9, "als_markers": 1}, {"id": "PT-0206", "sex": "Female", "age_band": "60-69", "race": "Black or African American", "ethnicity": "Not Hispanic or Latino", "obs_band": "2-5 years", "record_band": "1-9", "total_records": 8, "als_markers": 1}, {"id": "PT-0207", "sex": "Female", "age_band": "40-49", "race": "White", "ethnicity": "Not Hispanic or Latino", "obs_band": "1-2 years", "record_band": "1-9", "total_records": 8, "als_markers": 1}, {"id": "PT-0208", "sex": "Male", "age_band": "50-59", "race": "Other", "ethnicity": "Not Hispanic or Latino", "obs_band": "2-5 years", "record_band": "10-49", "total_records": 10, "als_markers": 1}, {"id": "PT-0209", "sex": "Female", "age_band": "70-79", "race": "White", "ethnicity": "Not Hispanic or Latino", "obs_band": "2-5 years", "record_band": "10-49", "total_records": 13, "als_markers": 1}, {"id": "PT-0210", "sex": "Female", "age_band": "40-49", "race": "White", "ethnicity": "Unknown", "obs_band": "2-5 years", "record_band": "10-49", "total_records": 11, "als_markers": 1}, {"id": "PT-0211", "sex": "Female", "age_band": "50-59", "race": "White", "ethnicity": "Unknown", "obs_band": "1-2 years", "record_band": "10-49", "total_records": 10, "als_markers": 1}, {"id": "PT-0212", "sex": "Female", "age_band": "50-59", "race": "White", "ethnicity": "Not Hispanic or Latino", "obs_band": "2-5 years", "record_band": "10-49", "total_records": 10, "als_markers": 1}, {"id": "PT-0213", "sex": "Male", "age_band": "50-59", "race": "White", "ethnicity": "Hispanic or Latino", "obs_band": "1-2 years", "record_band": "1-9", "total_records": 9, "als_markers": 1}, {"id": "PT-0214", "sex": "Female", "age_band": "40-49", "race": "White", "ethnicity": "Not Hispanic or Latino", "obs_band": "1-2 years", "record_band": "1-9", "total_records": 7, "als_markers": 1}, {"id": "PT-0215", "sex": "Male", "age_band": "80-89", "race": "White", "ethnicity": "Not Hispanic or Latino", "obs_band": "1-2 years", "record_band": "1-9", "total_records": 9, "als_markers": 1}, {"id": "PT-0216", "sex": "Female", "age_band": "60-69", "race": "White", "ethnicity": "Not Hispanic or Latino", "obs_band": "1-2 years", "record_band": "1-9", "total_records": 6, "als_markers": 1}, {"id": "PT-0217", "sex": "Female", "age_band": "80-89", "race": "Asian", "ethnicity": "Not Hispanic or Latino", "obs_band": "2-5 years", "record_band": "1-9", "total_records": 8, "als_markers": 1}, {"id": "PT-0218", "sex": "Male", "age_band": "40-49", "race": "White", "ethnicity": "Not Hispanic or Latino", "obs_band": "1-2 years", "record_band": "1-9", "total_records": 8, "als_markers": 1}, {"id": "PT-0219", "sex": "Female", "age_band": "60-69", "race": "White", "ethnicity": "Not Hispanic or Latino", "obs_band": "1-2 years", "record_band": "10-49", "total_records": 10, "als_markers": 1}, {"id": "PT-0220", "sex": "Female", "age_band": "60-69", "race": "White", "ethnicity": "Not Hispanic or Latino", "obs_band": "1-2 years", "record_band": "10-49", "total_records": 10, "als_markers": 1}]};
+
+// --- Tab switching
+document.querySelectorAll('nav.tabs button').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('nav.tabs button').forEach(b => b.classList.remove('active'));
+    document.querySelectorAll('section.panel').forEach(p => p.classList.remove('active'));
+    btn.classList.add('active');
+    document.getElementById(btn.dataset.tab).classList.add('active');
+  });
+});
+
+// --- Chart.js defaults
+Chart.defaults.font.family = 'system-ui, "Segoe UI", "Helvetica Neue", Arial, sans-serif';
+Chart.defaults.color = '#2a2620';
+Chart.defaults.borderColor = '#e5e3dc';
+
+const PALETTE = ['#4a148c','#3949ab','#0f6e56','#854f0b','#1e3a5f',
+                  '#7b1fa2','#5e35b1','#039be5','#00897b','#43a047',
+                  '#fb8c00','#e53935','#8e24aa','#6d4c41','#546e7a'];
+
+function makeBar(canvasId, labels, values, color, horizontal=false) {
+  const ctx = document.getElementById(canvasId);
+  if (!ctx) return;
+  new Chart(ctx, {
+    type: 'bar',
+    data: {
+      labels,
+      datasets: [{ data: values, backgroundColor: color || PALETTE[0], borderRadius: 4, borderSkipped: false }]
+    },
+    options: {
+      indexAxis: horizontal ? 'y' : 'x',
+      responsive: true, maintainAspectRatio: false,
+      plugins: { legend: { display: false } },
+      scales: {
+        x: { grid: { display: !horizontal, color: '#f0eee7' }, ticks: { font: { size: 11 } } },
+        y: { grid: { display: horizontal, color: '#f0eee7' }, ticks: { font: { size: 11 } }, beginAtZero: true }
+      }
+    }
+  });
+}
+
+function makeDonut(canvasId, labels, values) {
+  const ctx = document.getElementById(canvasId);
+  if (!ctx) return;
+  new Chart(ctx, {
+    type: 'doughnut',
+    data: {
+      labels,
+      datasets: [{ data: values, backgroundColor: PALETTE, borderWidth: 2, borderColor: '#fff' }]
+    },
+    options: {
+      responsive: true, maintainAspectRatio: false,
+      plugins: { legend: { position: 'bottom', labels: { font: { size: 11 }, padding: 12 } } },
+      cutout: '60%'
+    }
+  });
+}
+
+function makeStackedBar(canvasId, labels, datasets) {
+  const ctx = document.getElementById(canvasId);
+  if (!ctx) return;
+  new Chart(ctx, {
+    type: 'bar',
+    data: { labels, datasets: datasets.map((d, i) => ({ ...d, backgroundColor: PALETTE[i % PALETTE.length], borderWidth: 0 })) },
+    options: {
+      responsive: true, maintainAspectRatio: false,
+      plugins: { legend: { position: 'bottom', labels: { font: { size: 11 }, padding: 8, boxWidth: 12 } } },
+      scales: {
+        x: { stacked: true, grid: { display: false } },
+        y: { stacked: true, beginAtZero: true, grid: { color: '#f0eee7' } }
+      }
+    }
+  });
+}
+
+function fmtN(n) { return n === null ? '<' + DATA.meta.k_anonymity : n.toLocaleString(); }
+function suppressed(v) { return v === null ? '<span class="suppress">&lt;' + DATA.meta.k_anonymity + '</span>' : v.toLocaleString(); }
+
+// === COHORT TAB ===
+function renderCohortCards() {
+  const target = document.getElementById('cohort-cards');
+  const sex = DATA.cohort.sex || {};
+  const total = DATA.meta.n_patients;
+  const female = sex['Female'] || 0;
+  const female_pct = total ? Math.round(100 * female / total) : 0;
+  const medianObs = DATA.coverage.median_obs_years;
+  target.innerHTML = `
+    <div class="card"><div class="label">Total patients</div><div class="value">${total.toLocaleString()}</div></div>
+    <div class="card"><div class="label">Female</div><div class="value">${female_pct}%</div><div class="sub">${suppressed(sex['Female'])} of ${total}</div></div>
+    <div class="card"><div class="label">Categories present</div><div class="value">${DATA.meta.categories_present.length}</div><div class="sub">${DATA.meta.categories_present.join(', ')}</div></div>
+    <div class="card"><div class="label">Median observation</div><div class="value">${medianObs !== null ? medianObs + 'y' : '—'}</div></div>
+  `;
+}
+renderCohortCards();
+makeDonut('chart-sex', Object.keys(DATA.cohort.sex), Object.values(DATA.cohort.sex));
+makeBar('chart-age', Object.keys(DATA.cohort.age_bands), Object.values(DATA.cohort.age_bands), '#3949ab');
+makeBar('chart-race', Object.keys(DATA.cohort.race), Object.values(DATA.cohort.race), '#0f6e56', true);
+makeBar('chart-eth', Object.keys(DATA.cohort.ethnicity), Object.values(DATA.cohort.ethnicity), '#854f0b', true);
+
+// === DATA VOLUME TAB ===
+makeBar('chart-cat-records', Object.keys(DATA.data_volume.records_per_category),
+        Object.values(DATA.data_volume.records_per_category), '#4a148c');
+makeBar('chart-cat-codes', Object.keys(DATA.data_volume.unique_codes_per_category),
+        Object.values(DATA.data_volume.unique_codes_per_category), '#3949ab');
+// Records-per-patient histogram (bin into deciles)
+(function() {
+  const vals = DATA.data_volume.records_per_patient;
+  if (!vals.length) return;
+  const max = Math.max(...vals);
+  const bins = 10;
+  const step = Math.ceil(max / bins) || 1;
+  const labels = [], counts = [];
+  for (let i = 0; i < bins; i++) {
+    labels.push(`${i*step}-${(i+1)*step-1}`);
+    counts.push(vals.filter(v => v >= i*step && v < (i+1)*step).length);
+  }
+  makeBar('chart-rpp', labels, counts, '#0f6e56');
+})();
+makeDonut('chart-format', Object.keys(DATA.format_breakdown), Object.values(DATA.format_breakdown));
+
+// === COVERAGE TAB ===
+function renderCoverageCards() {
+  const obs = DATA.coverage.obs_years_list;
+  const med = DATA.coverage.median_obs_years;
+  const target = document.getElementById('coverage-cards');
+  target.innerHTML = `
+    <div class="card"><div class="label">Patients with ≥2 dated records</div><div class="value">${obs.length}</div></div>
+    <div class="card"><div class="label">Median observation</div><div class="value">${med !== null ? med + 'y' : '—'}</div></div>
+    <div class="card"><div class="label">Max observation</div><div class="value">${obs.length ? obs[obs.length-1] + 'y' : '—'}</div></div>
+    <div class="card"><div class="label">Min observation</div><div class="value">${obs.length ? obs[0] + 'y' : '—'}</div></div>
+  `;
+}
+renderCoverageCards();
+makeBar('chart-obs-bands', Object.keys(DATA.coverage.obs_bands), Object.values(DATA.coverage.obs_bands), '#4a148c');
+// Distribution histogram of obs_years
+(function() {
+  const vals = DATA.coverage.obs_years_list;
+  if (!vals.length) { return; }
+  const max = Math.max(...vals, 1);
+  const bins = 10;
+  const step = max / bins;
+  const labels = [], counts = [];
+  for (let i = 0; i < bins; i++) {
+    labels.push(`${(i*step).toFixed(1)}-${((i+1)*step).toFixed(1)}y`);
+    counts.push(vals.filter(v => v >= i*step && v < (i+1)*step).length);
+  }
+  makeBar('chart-obs-dist', labels, counts, '#3949ab');
+})();
+
+// === TRENDS TAB ===
+(function() {
+  const t = DATA.trends;
+  if (!t.years.length) return;
+  const datasets = Object.entries(t.by_category).map(([cat, vals]) => ({
+    label: cat, data: vals
+  }));
+  makeStackedBar('chart-trends', t.years, datasets);
+})();
+
+// === VOCAB TAB ===
+makeBar('chart-vocab', Object.keys(DATA.vocabularies), Object.values(DATA.vocabularies), '#4a148c', true);
+
+// === ALS TAB ===
+function renderAlsCards() {
+  const target = document.getElementById('als-cards');
+  const ev = DATA.als_signal;
+  target.innerHTML = `
+    <div class="card"><div class="label">Patients with any ALS marker</div><div class="value">${suppressed(ev.n_with_any_marker_safe)}</div><div class="sub">${ev.n_with_any_marker_pct}% of cohort</div></div>
+    <div class="card"><div class="label">Distinct marker types</div><div class="value">${Object.keys(ev.markers).length}</div></div>
+  `;
+}
+renderAlsCards();
+(function() {
+  const m = DATA.als_signal.markers;
+  if (!Object.keys(m).length) return;
+  // Suppress nulls in chart by replacing with 0 but labeling as <k
+  const labels = [], vals = [];
+  for (const [k, v] of Object.entries(m)) {
+    labels.push(v === null ? `${k} (<${DATA.meta.k_anonymity})` : k);
+    vals.push(v === null ? 0 : v);
+  }
+  makeBar('chart-als', labels, vals, '#4a148c', true);
+})();
+
+// === TOP CODES TAB ===
+(function() {
+  const tbody = document.querySelector('#codes-table tbody');
+  const filter = document.getElementById('code-vocab-filter');
+  const search = document.getElementById('code-search');
+  const allRows = [];
+  for (const [vocab, codes] of Object.entries(DATA.top_codes)) {
+    const opt = document.createElement('option');
+    opt.value = vocab; opt.textContent = vocab;
+    filter.appendChild(opt);
+    for (const c of codes) {
+      allRows.push({vocab, ...c});
+    }
+  }
+  function render() {
+    const f = filter.value, s = search.value.toLowerCase();
+    tbody.innerHTML = '';
+    for (const r of allRows) {
+      if (f && r.vocab !== f) continue;
+      const hay = (r.vocab + ' ' + r.code + ' ' + r.display).toLowerCase();
+      if (s && !hay.includes(s)) continue;
+      const tr = document.createElement('tr');
+      const rawHint = r.raw_vocab ? `<div style="font-size:10px;color:#999;font-family:monospace;margin-top:2px">${r.raw_vocab}</div>` : '';
+      tr.innerHTML = `
+        <td><b>${r.vocab}</b>${rawHint}</td>
+        <td><code>${r.code}</code></td>
+        <td>${r.display}</td>
+        <td>${r.category}</td>
+        <td style="text-align:right">${r.n_records.toLocaleString()}</td>
+        <td style="text-align:right">${suppressed(r.n_patients_safe)}</td>
+      `;
+      tbody.appendChild(tr);
+    }
+  }
+  filter.addEventListener('change', render);
+  search.addEventListener('input', render);
+  render();
+})();
+
+// === PATIENTS TAB ===
+(function() {
+  const tbody = document.querySelector('#patients-table tbody');
+  const sexFilter = document.getElementById('pt-sex-filter');
+  const search = document.getElementById('pt-search');
+  const rows = DATA.patients_table;
+  const sexes = new Set(rows.map(r => r.sex));
+  for (const sx of sexes) {
+    const o = document.createElement('option'); o.value = sx; o.textContent = sx;
+    sexFilter.appendChild(o);
+  }
+  function render() {
+    const f = sexFilter.value, s = search.value.toLowerCase();
+    tbody.innerHTML = '';
+    for (const r of rows) {
+      if (f && r.sex !== f) continue;
+      const hay = (r.id + ' ' + r.age_band + ' ' + r.obs_band + ' ' + r.record_band).toLowerCase();
+      if (s && !hay.includes(s)) continue;
+      const tr = document.createElement('tr');
+      tr.innerHTML = `
+        <td><code>${r.id}</code></td>
+        <td>${r.sex}</td>
+        <td>${r.age_band}</td>
+        <td>${r.race}</td>
+        <td>${r.ethnicity}</td>
+        <td>${r.obs_band}</td>
+        <td>${r.record_band}</td>
+        <td>${r.als_markers > 0 ? '<span class="als-tag">' + r.als_markers + ' markers</span>' : '—'}</td>
+      `;
+      tbody.appendChild(tr);
+    }
+  }
+  sexFilter.addEventListener('change', render);
+  search.addEventListener('input', render);
+  render();
+})();
+</script>
+
+</body>
+</html>

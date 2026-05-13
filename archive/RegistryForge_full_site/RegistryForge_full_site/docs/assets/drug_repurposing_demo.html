@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html><head><meta charset="utf-8"><title>Drug repurposing — Synthetic demonstration cohort</title>
+<style>
+body{font-family:system-ui,-webkit-system-font,"Segoe UI",Arial,sans-serif;margin:0;padding:0;background:#faf9f6;color:#1e1633}
+header{background:#1e1633;color:#fff;padding:24px 32px}
+header h1{margin:0;font-size:22px}
+header .sub{color:#a3b5ff;font-size:13px;margin-top:4px;font-style:italic}
+.priv{background:#2a1c3f;color:#fbbf24;padding:8px 16px;font-size:12px;margin:0 32px;border:1px solid #fbbf24;border-radius:4px}
+main{padding:24px 32px;max-width:1100px;margin:0 auto}
+.card{background:white;border:1px solid #e5e3dc;border-radius:6px;padding:16px;margin-bottom:16px}
+.card h2{margin:0 0 8px;color:#1e3a5f;font-size:14px;text-transform:uppercase;letter-spacing:0.5px}
+.card h2 small{font-weight:normal;text-transform:none;letter-spacing:normal;color:#6b6862;margin-left:8px;font-size:12px}
+table{width:100%;border-collapse:collapse;font-size:12px}
+th{background:#f3f1ec;text-align:left;padding:6px 8px;color:#1e3a5f;font-weight:600;border-bottom:2px solid #e5e3dc}
+td{padding:6px 8px;border-bottom:1px solid #f3f1ec}
+tr:hover{background:#fafafa}
+.metric{display:inline-block;margin-right:24px}
+.metric .val{font-size:24px;font-weight:bold;color:#4a148c;display:block}
+.metric .lbl{font-size:10px;color:#6b6862;text-transform:uppercase;letter-spacing:0.5px}
+.protective{color:#0f6e56;font-weight:bold}
+.harmful{color:#854f0b;font-weight:bold}
+.note{font-size:11px;color:#6b6862;margin-top:8px;font-style:italic}
+.atc-group{margin-top:16px;padding:12px;background:#f7f5f0;border-radius:4px}
+.atc-group h3{margin:0 0 8px;color:#3949ab;font-size:12px;text-transform:uppercase}
+</style></head>
+<body>
+<header>
+  <h1>Registry Forge — Drug repurposing analysis</h1>
+  <div class="sub">Synthetic demonstration cohort · 2026-05-12 21:51 UTC</div>
+</header>
+<div class="priv"><b>Privacy:</b> Patient identifiers pseudonymized · ages banded · dates given as time-from-cohort-entry only · k-anonymity threshold 2 applied to medication-level summaries.</div>
+<main>
+<div class="card">
+  <h2>Cohort overview</h2>
+  <span class="metric"><span class="val">80</span><span class="lbl">Patients in motor neuron disease cohort</span></span>
+  <span class="metric"><span class="val">0</span><span class="lbl">Deaths observed</span></span>
+  <span class="metric"><span class="val">2</span><span class="lbl">Medications meeting min-5 threshold</span></span>
+  <span class="metric"><span class="val">1</span><span class="lbl">ATC classes represented</span></span>
+  <div class="note">Cohort defined by ICD-10-CM G12.21 / G12.20 / G12.22 / G12.23 / G12.29 / ICD-9-CM 335.20-29 / SNOMED 86044005 / Mondo MONDO:0004976 / MONDO:0019056 in problems[]. Exposure criteria adapted from Reimer 2026.</div>
+</div>
+
+<div class="card">
+  <h2>ALS clinical-interest medications <small style="font-weight:normal;color:#6b6862">&middot; always shown, regardless of min-exposed threshold &middot; k-anonymized at k=2</small></h2>
+  <p style="font-size:12px;color:#6b6862;margin:-4px 0 12px 0;">
+    The five medications below have particular relevance to ALS clinical care and research:
+    the three FDA-approved disease-modifying therapies, the FDA-approved-for-PBA combination
+    commonly used off-label in ALS care, and the briefly-approved combination withdrawn after
+    confirmatory trial failure. Presence and year-range are reported regardless of whether the
+    medication meets the standard min-exposed threshold; counts are k-anonymized (values
+    below k=&nbsp;2 reported as &ldquo;&lt; 2&rdquo;).
+  </p>
+  <table>
+    <tr>
+      <th>Medication</th>
+      <th>FDA status</th>
+      <th style="text-align:center;">Cohort presence</th>
+      <th style="text-align:right;">Unique patients</th>
+      <th style="text-align:center;">Year range</th>
+      <th style="text-align:right;">Records</th>
+    </tr>
+    <tr><td><b>Riluzole</b><br><small style="color:#6b6862;">Rilutek, Tiglutik, Exservan &middot; ATC N07XX02</small></td><td><span style="display:inline-block;background:#dff0e7;color:#0f6e56;padding:2px 8px;border-radius:3px;font-size:11px;font-weight:600;">FDA-approved</span><br><small style="color:#6b6862;font-style:italic">FDA-approved for ALS (1995)</small></td><td style="text-align:center;"><span style="display:inline-block;background:#f5f3ea;color:#6b6862;padding:2px 8px;border-radius:3px;font-size:11px;font-weight:600;">Not observed</span></td><td style="text-align:right;"><span style="font-size:18px;font-weight:600;color:#4a148c;font-variant-numeric:tabular-nums;">0</span></td><td style="text-align:center;"><span style="font-size:13px;color:#1e3a5f;font-variant-numeric:tabular-nums;">—</span></td><td style="text-align:right;font-variant-numeric:tabular-nums;color:#6b6862;">0</td></tr><tr><td><b>Edaravone</b><br><small style="color:#6b6862;">Radicava, Radicava ORS &middot; ATC N07XX14</small></td><td><span style="display:inline-block;background:#dff0e7;color:#0f6e56;padding:2px 8px;border-radius:3px;font-size:11px;font-weight:600;">FDA-approved</span><br><small style="color:#6b6862;font-style:italic">FDA-approved for ALS (2017)</small></td><td style="text-align:center;"><span style="display:inline-block;background:#f5f3ea;color:#6b6862;padding:2px 8px;border-radius:3px;font-size:11px;font-weight:600;">Not observed</span></td><td style="text-align:right;"><span style="font-size:18px;font-weight:600;color:#4a148c;font-variant-numeric:tabular-nums;">0</span></td><td style="text-align:center;"><span style="font-size:13px;color:#1e3a5f;font-variant-numeric:tabular-nums;">—</span></td><td style="text-align:right;font-variant-numeric:tabular-nums;color:#6b6862;">0</td></tr><tr><td><b>Tofersen</b><br><small style="color:#6b6862;">Qalsody &middot; ATC N07XX17</small></td><td><span style="display:inline-block;background:#dff0e7;color:#0f6e56;padding:2px 8px;border-radius:3px;font-size:11px;font-weight:600;">FDA-approved</span><br><small style="color:#6b6862;font-style:italic">FDA-approved for SOD1 ALS (2023, accelerated)</small></td><td style="text-align:center;"><span style="display:inline-block;background:#f5f3ea;color:#6b6862;padding:2px 8px;border-radius:3px;font-size:11px;font-weight:600;">Not observed</span></td><td style="text-align:right;"><span style="font-size:18px;font-weight:600;color:#4a148c;font-variant-numeric:tabular-nums;">0</span></td><td style="text-align:center;"><span style="font-size:13px;color:#1e3a5f;font-variant-numeric:tabular-nums;">—</span></td><td style="text-align:right;font-variant-numeric:tabular-nums;color:#6b6862;">0</td></tr><tr><td><b>Dextromethorphan-quinidine</b><br><small style="color:#6b6862;">Nuedexta &middot; ATC N07XX59</small></td><td><span style="display:inline-block;background:#fff1d6;color:#854f0b;padding:2px 8px;border-radius:3px;font-size:11px;font-weight:600;">Off-label-of-interest</span><br><small style="color:#6b6862;font-style:italic">FDA-approved for PBA; off-label-of-interest in ALS</small></td><td style="text-align:center;"><span style="display:inline-block;background:#f5f3ea;color:#6b6862;padding:2px 8px;border-radius:3px;font-size:11px;font-weight:600;">Not observed</span></td><td style="text-align:right;"><span style="font-size:18px;font-weight:600;color:#4a148c;font-variant-numeric:tabular-nums;">0</span></td><td style="text-align:center;"><span style="font-size:13px;color:#1e3a5f;font-variant-numeric:tabular-nums;">—</span></td><td style="text-align:right;font-variant-numeric:tabular-nums;color:#6b6862;">0</td></tr><tr><td><b>Sodium phenylbutyrate-taurursodiol</b><br><small style="color:#6b6862;">Relyvrio, Albrioza &middot; ATC —</small></td><td><span style="display:inline-block;background:#f4d9d6;color:#8c1d18;padding:2px 8px;border-radius:3px;font-size:11px;font-weight:600;">Withdrawn</span><br><small style="color:#6b6862;font-style:italic">FDA-approved for ALS 2022; withdrawn 2024 after PHOENIX</small></td><td style="text-align:center;"><span style="display:inline-block;background:#f5f3ea;color:#6b6862;padding:2px 8px;border-radius:3px;font-size:11px;font-weight:600;">Not observed</span></td><td style="text-align:right;"><span style="font-size:18px;font-weight:600;color:#4a148c;font-variant-numeric:tabular-nums;">0</span></td><td style="text-align:center;"><span style="font-size:13px;color:#1e3a5f;font-variant-numeric:tabular-nums;">—</span></td><td style="text-align:right;font-variant-numeric:tabular-nums;color:#6b6862;">0</td></tr>
+  </table>
+</div>
+
+<div class="card">
+  <h2>Medication summary <small>· grouped by ATC class · k=≥2 for "n_exposed"</small></h2>
+  <div class="atc-group">
+<h3>Other nervous system drugs (motor neuron disease)</h3>
+<table>
+<tr><th>Medication</th><th>n exposed</th><th>n unexposed</th><th>deaths (exp)</th><th>deaths (unexp)</th><th>median surv (exp)</th><th>median surv (unexp)</th><th>direction</th></tr>
+<tr><td><b>edaravone</b><br><small style="color:#6b6862">N07XX14</small></td><td>6</td><td>74</td><td>0</td><td>0</td><td>15.4y</td><td>9.9y</td><td><span class="protective">↑ exposed longer</span></td></tr><tr><td><b>riluzole</b><br><small style="color:#6b6862">N07XX02</small></td><td>65</td><td>15</td><td>0</td><td>0</td><td>9.9y</td><td>9.9y</td><td></td></tr>
+</table></div>
+</div>
+
+<div class="card">
+  <h2>Methodology and limitations</h2>
+  <p style="font-size:12px;line-height:1.55">
+  This module produces the cohort assembly and exposure assignment described in Reimer et al. <i>Lancet Digital Health</i> 2026. <b>It does not run the propensity score matching or the Cox proportional hazards analysis</b>; those steps require dedicated tools (<code>lifelines</code>, <code>statsmodels</code>) and per-cohort tuning of caliper widths, immortal-time bias correction, and covariate balance assessment. The cohort dataset emitted by this module (<code>drug_repurposing_cohort.csv</code>) is the input to those tools.
+  </p>
+  <p style="font-size:12px;line-height:1.55">
+  Limitations of this analysis at any stage: small-cohort statistical power, inadequate covariate adjustment for known and unknown confounders, indication bias (a patient prescribed a PDE5 inhibitor may by virtue of that indication be healthier than average), immortal-time bias if exposure timing is mishandled, accuracy of EHR-coded motor-neuron-disease diagnosis, and lack of dose-response information in the bundle. Treat outputs as hypothesis-generating; prospective randomized trials remain the gold standard.
+  </p>
+  <p style="font-size:12px;line-height:1.55">
+  Cure ID intake export: produces one row per exposed (patient, medication) for submission to the FDA / NCATS-NIH / Critical Path Institute CURE Drug Repurposing Collaboratory Treatment Registry. Banded fields and pseudonymized identifiers comply with the registry's PII-free expectations.
+  </p>
+</div>
+</main></body></html>
