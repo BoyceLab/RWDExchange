@@ -213,6 +213,81 @@ input[type=number]{-moz-appearance:textfield}
 .empty-title{font-family:var(--ui);font-size:13px;font-weight:700;color:var(--text2)}
 .empty-desc{font-size:12px;color:var(--text3);margin-top:4px}
 
+/* RICH EMPTY STATE WITH DEMO ANIMATION */
+.empty-state-rich{padding:30px 32px 34px}
+.empty-state-rich .empty-title{font-size:14px;color:var(--text);margin-bottom:6px}
+.empty-state-rich .empty-desc{max-width:440px;margin:0 auto 20px;font-size:13px;line-height:1.6}
+.btn-large-cta{font-size:12px;padding:13px 30px;background:var(--teal);color:#fff;border-radius:10px;display:inline-flex;text-decoration:none}
+.btn-large-cta:hover{background:var(--teal2);transform:translateY(-1px);box-shadow:0 6px 20px rgba(8,130,166,.35)}
+.empty-hint{font-family:var(--mono);font-size:10px;color:var(--text3);margin-top:14px;letter-spacing:.02em}
+
+.demo-animation{position:relative;width:320px;height:180px;margin:0 auto 24px;
+  background:linear-gradient(180deg,#fcfeff 0%,#f3f8fc 100%);
+  border:1px solid var(--border);border-radius:12px;overflow:hidden;
+  box-shadow:0 2px 10px rgba(12,30,46,.06),inset 0 1px 0 rgba(255,255,255,.5)}
+.demo-animation::before{content:'';position:absolute;inset:0 0 auto 0;height:20px;
+  background:linear-gradient(180deg,#eef4fa,#e6eef6);border-bottom:1px solid var(--border)}
+.da-dots{position:absolute;top:7px;left:9px;display:flex;gap:4px;z-index:2}
+.da-dots span{width:6px;height:6px;border-radius:50%;background:#c8d6e3}
+.da-dots span:nth-child(1){background:#f0b9bb}
+.da-dots span:nth-child(2){background:#f0d9a8}
+.da-dots span:nth-child(3){background:#a8d9b8}
+.da-url{position:absolute;top:5px;left:50%;transform:translateX(-50%);
+  font-family:var(--mono);font-size:9px;color:var(--text3);
+  background:#fff;border-radius:3px;padding:1px 14px;z-index:2}
+.da-rows{position:absolute;top:30px;left:14px;right:14px;display:flex;flex-direction:column;gap:6px}
+.da-row{display:flex;align-items:center;gap:8px;height:22px;background:#fff;
+  border:1px solid var(--border);border-radius:5px;padding:0 8px;
+  opacity:0;transform:translateY(6px);animation:da-row-in 8s infinite}
+.da-row:nth-child(1){animation-delay:0s}
+.da-row:nth-child(2){animation-delay:.18s}
+.da-row:nth-child(3){animation-delay:.36s}
+.da-row-text{flex:1;font-family:var(--mono);font-size:9px;color:var(--text);font-weight:500;text-align:left;overflow:hidden;white-space:nowrap;text-overflow:ellipsis}
+.da-row-pill{font-family:var(--mono);font-size:8px;font-weight:700;padding:2px 6px;border-radius:3px;border:1px solid;letter-spacing:.03em;white-space:nowrap}
+.da-pill-hi{background:rgba(24,148,74,.12);color:var(--green);border-color:rgba(24,148,74,.3)}
+.da-pill-lo{background:rgba(212,32,32,.12);color:var(--red);border-color:rgba(212,32,32,.3)}
+.da-button{position:absolute;bottom:14px;left:50%;font-family:var(--ui);font-size:9px;font-weight:700;
+  letter-spacing:.1em;background:var(--teal);color:#fff;padding:6px 14px;border-radius:5px;
+  text-transform:uppercase;z-index:2;animation:da-btn 8s infinite}
+.da-ripple{position:absolute;bottom:-10px;left:50%;width:50px;height:50px;margin-left:-25px;
+  border-radius:50%;background:var(--teal);opacity:0;pointer-events:none;animation:da-ripple 8s infinite}
+.da-cursor{position:absolute;top:0;left:0;width:16px;height:16px;pointer-events:none;z-index:3;
+  filter:drop-shadow(0 1px 3px rgba(0,0,0,.3));animation:da-cur 8s infinite cubic-bezier(.5,0,.3,1)}
+
+@keyframes da-cur{
+  0%       {transform:translate(248px,8px) scale(.6);opacity:0}
+  6%       {transform:translate(248px,8px) scale(1);opacity:1}
+  28%      {transform:translate(148px,128px) scale(1);opacity:1}
+  34%,38%  {transform:translate(148px,128px) scale(.82);opacity:1}
+  44%      {transform:translate(148px,128px) scale(1);opacity:1}
+  52%      {transform:translate(148px,128px) scale(1);opacity:0}
+  100%     {transform:translate(148px,128px) scale(1);opacity:0}
+}
+@keyframes da-btn{
+  0%,30%,46%,100% {transform:translateX(-50%) scale(1);background:var(--teal);box-shadow:none}
+  34%,38%         {transform:translateX(-50%) scale(.94);background:var(--teal2);box-shadow:0 0 0 4px rgba(8,130,166,.18)}
+}
+@keyframes da-ripple{
+  0%,33%   {opacity:0;transform:translateX(-50%) scale(0)}
+  36%      {opacity:.35;transform:translateX(-50%) scale(.4)}
+  46%      {opacity:0;transform:translateX(-50%) scale(1.8)}
+  100%     {opacity:0;transform:translateX(-50%) scale(1.8)}
+}
+@keyframes da-row-in{
+  0%,40%   {opacity:0;transform:translateY(6px)}
+  48%      {opacity:1;transform:translateY(0)}
+  82%      {opacity:1;transform:translateY(0)}
+  90%      {opacity:0;transform:translateY(-3px)}
+  100%     {opacity:0;transform:translateY(-3px)}
+}
+.demo-animation:hover .da-row,.demo-animation:hover .da-cursor,
+.demo-animation:hover .da-button,.demo-animation:hover .da-ripple{animation-play-state:paused}
+@media(prefers-reduced-motion:reduce){
+  .da-row{opacity:1;transform:none;animation:none}
+  .da-cursor,.da-ripple{display:none}
+  .da-button{animation:none}
+}
+
 /* REF BOX */
 .ref-box{background:var(--teal-lt);border-left:3px solid var(--teal);border-radius:0 var(--radius) var(--radius) 0;padding:13px 16px;margin-bottom:14px}
 .ref-box.pu{background:rgba(116,48,216,.06);border-left-color:var(--purple)}
@@ -383,7 +458,24 @@ code{background:var(--bg2);padding:2px 6px;border-radius:4px;font-family:var(--m
   </div>
   <div class="card">
     <div class="card-title">Assessed Variables</div>
-    <div id="varEmpty" class="empty-state"><div class="empty-icon">📋</div><div class="empty-title">No variables yet</div><div class="empty-desc">Use the form above to add your first variable.</div></div>
+    <div id="varEmpty" class="empty-state empty-state-rich">
+      <div class="demo-animation" aria-hidden="true">
+        <div class="da-dots"><span></span><span></span><span></span></div>
+        <div class="da-url">RWDExchange · demo</div>
+        <div class="da-rows">
+          <div class="da-row"><span class="da-row-text">ALSFRS-R Total Score</span><span class="da-row-pill da-pill-hi">5/6</span></div>
+          <div class="da-row"><span class="da-row-text">Age at Symptom Onset</span><span class="da-row-pill da-pill-hi">6/6</span></div>
+          <div class="da-row"><span class="da-row-text">VC % Predicted</span><span class="da-row-pill da-pill-lo">2/6</span></div>
+        </div>
+        <div class="da-ripple"></div>
+        <div class="da-button">▶ Open Demo</div>
+        <svg class="da-cursor" viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg"><path d="M 2 1 L 2 13 L 5.5 10 L 7.5 14.5 L 9.5 13.5 L 7.5 9 L 12 9 Z" fill="#fff" stroke="#0c1e2e" stroke-width=".9" stroke-linejoin="round"/></svg>
+      </div>
+      <div class="empty-title">New to RWDExchange?</div>
+      <div class="empty-desc">Open the demo to see the tool pre-loaded with a hypothetical ALS external comparator study — or add your first variable using the form above.</div>
+      <a href="demo.html" class="btn btn-large-cta">▶ Open the Demo →</a>
+      <div class="empty-hint">Demo data is synthetic · everything runs locally in your browser</div>
+    </div>
     <div class="table-wrap"><table class="var-table" id="varTable" style="display:none">
       <thead><tr><th>#</th><th>Trial Variable</th><th>RWD Variable</th><th>Category</th><th>Score</th><th>Progress</th><th>Verdict</th><th></th></tr></thead>
       <tbody id="varTBody"></tbody>
