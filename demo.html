@@ -1,0 +1,506 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>RWDExchange — Demo</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=Syne:wght@400;600;700;800&family=IBM+Plex+Sans:ital,wght@0,300;0,400;0,500;0,600;1,300&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg:#f0f5fb; --bg2:#e6eef7; --bg3:#f7fafc; --card:#ffffff;
+  --border:#dce7f0; --border2:#b8cfe0;
+  --teal:#0882a6; --teal2:#0ba5cd; --teal-dim:rgba(8,130,166,0.09); --teal-lt:#e0f2f9;
+  --gold:#a85c08; --gold-dim:rgba(168,92,8,0.09);
+  --purple:#7430d8; --purple-dim:rgba(116,48,216,0.09);
+  --red:#d42020; --green:#18944a; --yellow:#b87c08;
+  --text:#0c1e2e; --text2:#3a5878; --text3:#7898b6;
+  --shadow:0 1px 3px rgba(12,30,46,0.07),0 4px 18px rgba(12,30,46,0.07);
+  --shadow-sm:0 1px 3px rgba(12,30,46,0.07);
+  --mono:'IBM Plex Mono',monospace; --sans:'IBM Plex Sans',sans-serif;
+  --display:'Playfair Display',serif; --ui:'Syne',sans-serif; --radius:10px;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{background:var(--bg);color:var(--text);font-family:var(--sans);line-height:1.6;min-height:100vh}
+body::before{content:'';position:fixed;inset:0;z-index:0;background-image:radial-gradient(circle,rgba(8,130,166,0.06) 1px,transparent 1px);background-size:36px 36px;pointer-events:none}
+
+/* DEMO BANNER */
+.demo-banner{position:relative;z-index:100;background:linear-gradient(135deg,#fff8e6,#fffbf0);
+  border-bottom:2px solid rgba(168,92,8,.25);padding:10px 48px;
+  display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap}
+.demo-banner-text{display:flex;align-items:center;gap:10px}
+.demo-pill{font-family:var(--mono);font-size:9px;font-weight:700;letter-spacing:.12em;
+  background:var(--gold-dim);border:1px solid rgba(168,92,8,.35);color:var(--gold);
+  padding:3px 9px;border-radius:20px;white-space:nowrap}
+.demo-msg{font-size:12px;color:var(--text2)}
+.demo-msg strong{color:var(--text)}
+.demo-actions{display:flex;gap:8px;align-items:center}
+
+header{position:relative;z-index:10;padding:28px 48px 22px;background:linear-gradient(135deg,#eaf5fb 0%,#f0f5fb 60%,#f3f7fb 100%);border-bottom:1px solid var(--border);box-shadow:var(--shadow-sm)}
+.header-inner{max-width:1280px;margin:0 auto;display:flex;align-items:flex-end;justify-content:space-between;gap:20px;flex-wrap:wrap}
+.logo-eyebrow{font-family:var(--mono);font-size:10px;letter-spacing:.2em;color:var(--teal);text-transform:uppercase;margin-bottom:5px}
+h1{font-family:var(--display);font-size:clamp(1.8rem,3.5vw,2.6rem);font-weight:900;line-height:1.05;background:linear-gradient(135deg,#0c1e2e 30%,var(--teal2) 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.tagline{font-size:12px;font-weight:300;color:var(--text2);max-width:460px;margin-top:5px}
+.header-right{display:flex;flex-direction:column;align-items:flex-end;gap:8px}
+.header-actions{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.version-badge{font-family:var(--mono);font-size:10px;color:var(--teal);background:var(--teal-dim);border:1px solid rgba(8,130,166,.25);padding:3px 10px;border-radius:20px;letter-spacing:.1em}
+
+nav{position:sticky;top:0;z-index:50;background:#fff;border-bottom:1px solid var(--border);box-shadow:0 1px 4px rgba(12,30,46,.06)}
+.nav-inner{max-width:1280px;margin:0 auto;display:flex;overflow-x:auto;scrollbar-width:none}
+.nav-inner::-webkit-scrollbar{display:none}
+.tab-btn{font-family:var(--ui);font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--text3);background:none;border:none;cursor:pointer;padding:15px 20px;white-space:nowrap;position:relative;transition:color .2s}
+.tab-btn::after{content:'';position:absolute;bottom:0;left:20px;right:20px;height:2px;background:var(--teal);transform:scaleX(0);transform-origin:left;transition:transform .25s ease}
+.tab-btn:hover{color:var(--text2)} .tab-btn.active{color:var(--teal)} .tab-btn.active::after{transform:scaleX(1)}
+.tab-badge{display:inline-flex;align-items:center;justify-content:center;font-size:9px;font-weight:800;background:var(--teal-dim);color:var(--teal);border-radius:10px;padding:1px 6px;margin-left:5px;min-width:16px}
+.tab-new{font-size:8px;background:var(--gold-dim);color:var(--gold);border:1px solid rgba(168,92,8,.3);border-radius:10px;padding:1px 6px;margin-left:5px}
+.tab-btn[data-tab="gray"] .tab-badge{background:var(--purple-dim);color:var(--purple)}
+
+main{position:relative;z-index:1;max-width:1280px;margin:0 auto;padding:36px 48px 80px}
+.tab-panel{display:none;animation:fadeIn .3s ease} .tab-panel.active{display:block}
+@keyframes fadeIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+.section-header{margin-bottom:28px}
+.section-eyebrow{font-family:var(--mono);font-size:10px;letter-spacing:.2em;color:var(--teal);text-transform:uppercase;margin-bottom:6px}
+.section-title{font-family:var(--display);font-size:1.7rem;font-weight:700;color:var(--text)}
+.section-desc{font-size:13px;color:var(--text2);margin-top:6px;max-width:640px}
+.card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:24px;margin-bottom:20px;box-shadow:var(--shadow)}
+.card-title{font-family:var(--ui);font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--teal);margin-bottom:18px;display:flex;align-items:center;gap:10px}
+.card-title::after{content:'';flex:1;height:1px;background:var(--border)}
+.card-title.purple{color:var(--purple)} .card-title.gold{color:var(--gold)}
+.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.form-grid.cols-3{grid-template-columns:1fr 1fr 1fr} .full-width{grid-column:1/-1}
+.field{display:flex;flex-direction:column;gap:5px}
+label{font-family:var(--ui);font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--text3)}
+input[type=text],input[type=number],input[type=date],select,textarea{background:var(--bg3);border:1px solid var(--border);border-radius:8px;color:var(--text);font-family:var(--sans);font-size:13px;padding:9px 12px;width:100%;transition:border-color .2s,box-shadow .2s;outline:none;appearance:none}
+input:focus,select:focus,textarea:focus{border-color:var(--teal);box-shadow:0 0 0 3px var(--teal-dim)}
+input::placeholder,textarea::placeholder{color:var(--text3)}
+textarea{resize:vertical;min-height:70px}
+input[type=number]{-moz-appearance:textfield}
+.coll-hdr{display:flex;align-items:center;justify-content:space-between;cursor:pointer;user-select:none;padding:13px 0;border-top:1px solid var(--border);margin-top:4px}
+.coll-label{font-family:var(--ui);font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--text3)}
+.coll-arrow{font-size:10px;color:var(--text3);transition:transform .2s} .coll-hdr.open .coll-arrow{transform:rotate(180deg)}
+.coll-body{display:none;padding-top:14px} .coll-body.open{display:block}
+.radio-group{display:flex;gap:7px;flex-wrap:wrap}
+.radio-option{display:none}
+.radio-label{font-family:var(--ui);font-size:10px;font-weight:700;letter-spacing:.07em;color:var(--text2);background:var(--bg3);border:1px solid var(--border);border-radius:5px;padding:5px 12px;cursor:pointer;transition:all .15s;user-select:none}
+.radio-option:checked+.radio-label{background:var(--teal-dim);border-color:rgba(8,130,166,.4);color:var(--teal)}
+.btn{font-family:var(--ui);font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;border:none;border-radius:8px;cursor:pointer;padding:10px 18px;transition:all .18s;display:inline-flex;align-items:center;gap:6px}
+.btn-primary{background:var(--teal);color:#fff} .btn-primary:hover{background:var(--teal2);transform:translateY(-1px);box-shadow:0 4px 16px rgba(8,130,166,.3)}
+.btn-secondary{background:transparent;border:1px solid var(--border2);color:var(--text2)} .btn-secondary:hover{border-color:var(--teal);color:var(--teal)}
+.btn-purple{background:var(--purple);color:#fff} .btn-purple:hover{filter:brightness(1.1);transform:translateY(-1px)}
+.btn-gold{background:var(--gold);color:#fff} .btn-gold:hover{filter:brightness(1.08);transform:translateY(-1px)}
+.btn-ghost{background:#fff;border:1px solid var(--border);color:var(--text2);font-size:10px;padding:6px 12px;box-shadow:var(--shadow-sm)} .btn-ghost:hover{border-color:var(--border2);color:var(--text)}
+.btn-amber{background:rgba(168,92,8,.12);border:1px solid rgba(168,92,8,.3);color:var(--gold);font-size:10px;padding:6px 14px;font-family:var(--ui);font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;border-radius:8px;cursor:pointer;transition:all .18s} .btn-amber:hover{background:rgba(168,92,8,.2)}
+.btn-danger{background:transparent;border:1px solid rgba(212,32,32,.35);color:var(--red);font-size:10px;padding:4px 10px} .btn-danger:hover{background:rgba(212,32,32,.07)}
+.btn-row{display:flex;gap:10px;align-items:center;margin-top:18px;flex-wrap:wrap}
+.table-wrap{overflow-x:auto}
+.var-table{width:100%;border-collapse:collapse;min-width:860px}
+.var-table thead tr{border-bottom:2px solid var(--border)}
+.var-table th{font-family:var(--ui);font-size:9px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--text3);text-align:left;padding:9px 10px;background:#fafcfe}
+.var-table td{font-size:12px;color:var(--text2);padding:12px 10px;border-bottom:1px solid #edf2f8;vertical-align:middle}
+.var-table tr:last-child td{border-bottom:none} .var-table tbody tr:hover td{background:#f6fafd}
+.vn{font-weight:600;color:var(--text);font-family:var(--mono);font-size:12px}
+.vp-sub{font-size:10px;color:var(--text3);margin-top:1px}
+.rwd-var{font-family:var(--mono);font-size:11px;color:var(--teal)}
+.score-badge{display:inline-flex;align-items:center;gap:5px;font-family:var(--mono);font-size:11px;font-weight:600}
+.score-dot{width:7px;height:7px;border-radius:50%;flex-shrink:0}
+.sd-hi{background:var(--green)} .sd-md{background:var(--yellow)} .sd-lo{background:var(--red)}
+.pills{display:flex;gap:4px}
+.pill{font-family:var(--mono);font-size:9px;font-weight:700;padding:2px 7px;border-radius:4px;border:1px solid}
+.pill-on{background:var(--teal-dim);border-color:rgba(8,130,166,.35);color:var(--teal)}
+.pill-on.pu{background:var(--purple-dim);border-color:rgba(116,48,216,.3);color:var(--purple)}
+.pill-off{background:#f0f4f8;border-color:var(--border);color:var(--text3)}
+.vbadge{display:inline-flex;align-items:center;font-family:var(--ui);font-size:10px;font-weight:700;letter-spacing:.06em;padding:3px 9px;border-radius:5px;border:1px solid;white-space:nowrap}
+.vb-hi{background:rgba(24,148,74,.09);border-color:rgba(24,148,74,.3);color:var(--green)}
+.vb-md{background:rgba(184,124,8,.09);border-color:rgba(184,124,8,.3);color:var(--yellow)}
+.vb-lo{background:rgba(212,32,32,.09);border-color:rgba(212,32,32,.3);color:var(--red)}
+.vb-pr{background:#f0f4f8;border-color:var(--border);color:var(--text3)}
+.crit-table{width:100%;border-collapse:collapse}
+.crit-table th{font-family:var(--ui);font-size:9px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--text3);text-align:left;padding:9px 12px;border-bottom:2px solid var(--border);background:#fafcfe}
+.crit-table td{padding:13px 12px;border-bottom:1px solid #edf2f8;vertical-align:top}
+.crit-table tr:last-child td{border-bottom:none} .crit-table tbody tr:hover td{background:#f8fbfd}
+.cnum{font-family:var(--mono);font-size:12px;font-weight:600;color:var(--teal);white-space:nowrap} .cnum.pu{color:var(--purple)}
+.clbl{font-family:var(--ui);font-size:11px;font-weight:700;color:var(--text);margin-bottom:3px}
+.ctxt{font-size:12px;color:var(--text2);line-height:1.55} .ctxt strong{color:var(--text);font-weight:600}
+.crating select{width:180px;font-size:12px;padding:6px 10px}
+.cnotes textarea{width:100%;min-height:50px;font-size:12px}
+.vp-panel{background:linear-gradient(135deg,#f0f9fd,#f8fbfe);border:1px solid var(--border);border-radius:var(--radius);padding:18px 22px;margin-bottom:18px;display:flex;align-items:center;gap:22px;flex-wrap:wrap;box-shadow:var(--shadow-sm)}
+.vp-ring{position:relative;width:70px;height:70px;flex-shrink:0}
+.vp-ring svg{width:70px;height:70px;transform:rotate(-90deg)}
+.ring-bg{fill:none;stroke:#dde7f0;stroke-width:5}
+.ring-fg{fill:none;stroke-width:5;stroke-linecap:round;transition:stroke-dasharray .6s ease}
+.ring-pct{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;font-family:var(--display);font-size:15px;font-weight:700;color:var(--text);line-height:1}
+.ring-pct span{font-family:var(--mono);font-size:9px;color:var(--text3);margin-top:1px}
+.vp-lbl{font-family:var(--ui);font-size:13px;font-weight:700;letter-spacing:.05em;margin-bottom:4px}
+.vp-note{font-size:12px;color:var(--text3)}
+.vp-bkd{display:flex;gap:12px;flex-wrap:wrap;margin-top:8px}
+.vp-comp{font-family:var(--mono);font-size:10px;color:var(--text3);display:flex;align-items:center;gap:4px}
+.vp-dot{width:6px;height:6px;border-radius:50%}
+.empty-state{text-align:center;padding:52px 32px;border:2px dashed var(--border);border-radius:var(--radius);margin-top:8px;background:#fafcfe}
+.empty-icon{font-size:30px;margin-bottom:12px;opacity:.6}
+.empty-title{font-family:var(--ui);font-size:13px;font-weight:700;color:var(--text2)}
+.empty-desc{font-size:12px;color:var(--text3);margin-top:4px}
+.ref-box{background:var(--teal-lt);border-left:3px solid var(--teal);border-radius:0 var(--radius) var(--radius) 0;padding:13px 16px;margin-bottom:14px}
+.ref-box.pu{background:rgba(116,48,216,.06);border-left-color:var(--purple)}
+.ref-box p{font-size:12px;color:var(--text2);line-height:1.6}
+.ref-box a{color:var(--teal);text-decoration:none} .ref-box a:hover{text-decoration:underline}
+.ref-box.pu a{color:var(--purple)}
+.stats-row{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:14px;margin-bottom:22px}
+.stat-card{background:#fff;border:1px solid var(--border);border-radius:var(--radius);padding:18px;text-align:center;box-shadow:var(--shadow-sm)}
+.stat-num{font-family:var(--display);font-size:2.1rem;font-weight:700;background:linear-gradient(135deg,#0c1e2e,var(--teal2));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.stat-lbl{font-family:var(--ui);font-size:9px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--text3);margin-top:3px}
+.vr-row{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;padding:13px 0;border-bottom:1px solid #edf2f8}
+.vr-row:last-child{border-bottom:none}
+.vr-name{font-family:var(--mono);font-size:12px;color:var(--text);font-weight:600}
+.vr-sub{font-size:10px;color:var(--text3)}
+.vr-bars{display:flex;gap:10px;align-items:flex-end}
+.mini-bar{display:flex;flex-direction:column;align-items:center;gap:3px}
+.mb-val{font-family:var(--mono);font-size:9px;color:var(--text3)}
+.mb-track{width:40px;height:4px;background:#dde7f0;border-radius:2px;overflow:hidden}
+.mb-fill{height:100%;border-radius:2px;transition:width .5s ease}
+.mb-lbl{font-family:var(--mono);font-size:8px;color:var(--text3)}
+.modal-backdrop{position:fixed;inset:0;background:rgba(12,30,46,.45);z-index:1000;display:flex;align-items:center;justify-content:center;padding:20px;opacity:0;pointer-events:none;transition:opacity .2s}
+.modal-backdrop.open{opacity:1;pointer-events:all}
+.modal{background:#fff;border:1px solid var(--border);border-radius:14px;padding:30px;width:100%;max-width:520px;position:relative;box-shadow:0 8px 40px rgba(12,30,46,.15);transform:translateY(12px);transition:transform .25s}
+.modal-backdrop.open .modal{transform:translateY(0)}
+.modal-title{font-family:var(--display);font-size:1.3rem;font-weight:700;color:var(--text);margin-bottom:8px}
+.modal-desc{font-size:13px;color:var(--text2);margin-bottom:18px;line-height:1.6}
+.url-box{background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:12px;font-family:var(--mono);font-size:11px;color:var(--teal);word-break:break-all;margin-bottom:14px;max-height:80px;overflow-y:auto}
+.modal-close{position:absolute;top:14px;right:14px;background:none;border:none;cursor:pointer;color:var(--text3);font-size:18px;padding:4px 8px;border-radius:4px;transition:color .15s} .modal-close:hover{color:var(--text)}
+.cs{text-align:center;padding:72px 32px}
+.cs-icon{font-size:44px;margin-bottom:18px}
+.cs-title{font-family:var(--display);font-size:1.9rem;font-weight:700;color:var(--text);margin-bottom:10px}
+.cs-desc{font-size:13px;color:var(--text2);max-width:480px;margin:0 auto;line-height:1.7}
+.cs-chip{display:inline-block;margin-top:18px;font-family:var(--mono);font-size:10px;letter-spacing:.15em;color:var(--gold);border:1px solid rgba(168,92,8,.4);padding:5px 14px;border-radius:20px;background:var(--gold-dim)}
+#toast{position:fixed;bottom:28px;left:50%;transform:translateX(-50%) translateY(80px);background:#fff;border:1px solid rgba(8,130,166,.3);border-radius:var(--radius);padding:10px 22px;font-family:var(--ui);font-size:11px;font-weight:700;letter-spacing:.08em;color:var(--teal);box-shadow:0 4px 24px rgba(12,30,46,.15);z-index:9999;transition:transform .3s cubic-bezier(.34,1.56,.64,1)}
+#toast.show{transform:translateX(-50%) translateY(0)}
+@media(max-width:768px){.demo-banner,header,main{padding-left:20px;padding-right:20px} .form-grid,.form-grid.cols-3{grid-template-columns:1fr}}
+code{background:var(--bg2);padding:2px 6px;border-radius:4px;font-family:var(--mono);font-size:11px;color:var(--teal)}
+</style>
+</head>
+<body>
+
+<!-- DEMO BANNER -->
+<div class="demo-banner">
+  <div class="demo-banner-text">
+    <span class="demo-pill">🧪 DEMO</span>
+    <span class="demo-msg"><strong>Synthetic data</strong> — Hypothetical ALS external comparator study using the PRO-ACT registry. All data is illustrative only.</span>
+  </div>
+  <div class="demo-actions">
+    <button class="btn-amber" onclick="resetDemo()">↺ Reset Demo Data</button>
+    <a href="index.html" style="font-family:var(--ui);font-size:10px;font-weight:700;letter-spacing:.1em;color:var(--teal);text-decoration:none;padding:6px 14px;border:1px solid rgba(8,130,166,.3);border-radius:8px;background:var(--teal-dim)">→ Use Real Tool</a>
+  </div>
+</div>
+
+<header>
+  <div class="header-inner">
+    <div>
+      <div class="logo-eyebrow">BoyceLab · Clinical Informatics · Demo</div>
+      <h1>RWDExchange</h1>
+      <p class="tagline">Explore a pre-loaded hypothetical ALS external comparator assessment — PRO-ACT registry vs. a Phase 3 ALS trial.</p>
+    </div>
+    <div class="header-right">
+      <div class="header-actions">
+        <button class="btn btn-ghost" onclick="exportJSON()">⬇ Export JSON</button>
+        <button class="btn btn-ghost" onclick="window.print()">⎙ Print</button>
+        <span class="version-badge">v3.0 · Demo</span>
+      </div>
+    </div>
+  </div>
+</header>
+
+<nav>
+  <div class="nav-inner">
+    <button class="tab-btn active" data-tab="variables">Variables <span class="tab-badge" id="varBadge">0</span></button>
+    <button class="tab-btn" data-tab="pocock">Pocock's Criteria</button>
+    <button class="tab-btn" data-tab="fda">FDA Guidance</button>
+    <button class="tab-btn" data-tab="gray">Gray et al. <span class="tab-badge">2020</span></button>
+    <button class="tab-btn" data-tab="report">Report <span class="tab-badge" id="reportBadge">0</span></button>
+    <button class="tab-btn" data-tab="howto">How To</button>
+    <button class="tab-btn" data-tab="omop">OMOP Scan <span class="tab-new">BETA</span></button>
+  </div>
+</nav>
+
+<main>
+
+<section class="tab-panel active" id="tab-variables">
+  <div class="section-header">
+    <p class="section-eyebrow">Step 1 of 4 · Demo</p>
+    <h2 class="section-title">Variable Assessment</h2>
+    <p class="section-desc">This demo shows five variables from a hypothetical PRO-ACT registry external comparator analysis. Two variables are fully assessed across all three frameworks; the others are at various stages to illustrate the workflow.</p>
+  </div>
+  <div class="card">
+    <div class="card-title">Add New Variable</div>
+    <div class="form-grid">
+      <div class="field"><label>Project / Study Name</label><input type="text" id="projName" placeholder="e.g., PRO-ACT External Comparator Analysis"></div>
+      <div class="field"><label>RWD Source Type</label>
+        <select id="rwdSource"><option value="">Select…</option><option>Electronic Health Record (EHR)</option><option>Patient Registry</option><option>Claims Database</option><option>Biobank</option><option>Natural History Study</option><option>Other</option></select></div>
+      <div class="field"><label>Clinical Trial Variable Name</label><input type="text" id="trialVar" placeholder="e.g., ALSFRS-R Total Score"></div>
+      <div class="field"><label>RWD Variable Name</label><input type="text" id="rwdVar" placeholder="e.g., alsfrs_r_total"></div>
+      <div class="field"><label>Variable Category</label>
+        <select id="varCategory"><option value="">Select…</option><option>Demographics</option><option>Diagnosis / Eligibility</option><option>Treatment / Medication</option><option>Outcome / Endpoint</option><option>Laboratory / Biomarker</option><option>Functional Assessment</option><option>Comorbidity</option><option>Survival / Time-to-Event</option><option>Other</option></select></div>
+      <div class="field"><label>Variable Role in Trial</label>
+        <select id="varRole"><option value="">Select…</option><option>Primary Outcome</option><option>Secondary Outcome</option><option>Eligibility Criterion</option><option>Prognostic Factor / Covariate</option><option>Safety Endpoint</option><option>Other</option></select></div>
+    </div>
+    <div style="margin:20px 0 8px"><div class="card-title" style="margin-bottom:10px">Exchangeability Questions</div></div>
+    <div class="form-grid">
+      <div class="field"><label>1. Routinely collected in RWD source?</label><div class="radio-group"><input type="radio" class="radio-option" name="q1" id="q1y" value="Yes"><label for="q1y" class="radio-label">Yes</label><input type="radio" class="radio-option" name="q1" id="q1n" value="No"><label for="q1n" class="radio-label">No</label><input type="radio" class="radio-option" name="q1" id="q1u" value="Unknown"><label for="q1u" class="radio-label">Unknown</label></div></div>
+      <div class="field"><label>2. Available at baseline / index date?</label><div class="radio-group"><input type="radio" class="radio-option" name="q2" id="q2y" value="Yes"><label for="q2y" class="radio-label">Yes</label><input type="radio" class="radio-option" name="q2" id="q2n" value="No"><label for="q2n" class="radio-label">No</label><input type="radio" class="radio-option" name="q2" id="q2u" value="Unknown"><label for="q2u" class="radio-label">Unknown</label></div></div>
+      <div class="field"><label>3. Definition comparable to trial specification?</label><div class="radio-group"><input type="radio" class="radio-option" name="q3" id="q3y" value="Yes"><label for="q3y" class="radio-label">Yes</label><input type="radio" class="radio-option" name="q3" id="q3p" value="Partially"><label for="q3p" class="radio-label">Partially</label><input type="radio" class="radio-option" name="q3" id="q3n" value="No"><label for="q3n" class="radio-label">No</label></div></div>
+      <div class="field"><label>4. Completeness acceptable (&lt;20% missing)?</label><div class="radio-group"><input type="radio" class="radio-option" name="q4" id="q4y" value="Yes"><label for="q4y" class="radio-label">Yes</label><input type="radio" class="radio-option" name="q4" id="q4n" value="No"><label for="q4n" class="radio-label">No</label><input type="radio" class="radio-option" name="q4" id="q4u" value="Unknown"><label for="q4u" class="radio-label">Unknown</label></div></div>
+      <div class="field"><label>5. Measurement method standardized / validated?</label><div class="radio-group"><input type="radio" class="radio-option" name="q5" id="q5y" value="Yes"><label for="q5y" class="radio-label">Yes</label><input type="radio" class="radio-option" name="q5" id="q5n" value="No"><label for="q5n" class="radio-label">No</label><input type="radio" class="radio-option" name="q5" id="q5u" value="Unknown"><label for="q5u" class="radio-label">Unknown</label></div></div>
+      <div class="field"><label>6. Collected over comparable follow-up period?</label><div class="radio-group"><input type="radio" class="radio-option" name="q6" id="q6y" value="Yes"><label for="q6y" class="radio-label">Yes</label><input type="radio" class="radio-option" name="q6" id="q6p" value="Partially"><label for="q6p" class="radio-label">Partially</label><input type="radio" class="radio-option" name="q6" id="q6n" value="No"><label for="q6n" class="radio-label">No</label></div></div>
+      <div class="field full-width"><label>Notes</label><textarea id="varNotes" placeholder="Observations, caveats, data dictionary references…"></textarea></div>
+    </div>
+    <div class="coll-hdr" onclick="toggleColl(this)"><span class="coll-label">📊 Data Quality Metrics</span><span class="coll-arrow">▼</span></div>
+    <div class="coll-body"><div class="form-grid cols-3"><div class="field"><label>Sample Size (N)</label><input type="number" id="sampleN" min="0"></div><div class="field"><label>% Missing</label><input type="number" id="pctMissing" min="0" max="100" step="0.1"></div><div class="field"><label>Data Version / Cut</label><input type="text" id="dataVersion"></div><div class="field"><label>Data Start</label><input type="date" id="dataStart"></div><div class="field"><label>Data End</label><input type="date" id="dataEnd"></div></div></div>
+    <div class="coll-hdr" onclick="toggleColl(this)"><span class="coll-label">🔗 Confounders &amp; Analytical Approach</span><span class="coll-arrow">▼</span></div>
+    <div class="coll-body"><div class="form-grid"><div class="field"><label>Planned Covariates</label><textarea id="covariates"></textarea></div><div class="field"><label>Analytical Approach</label><select id="analyticalMethod"><option value="">Select…</option><option>Propensity Score Matching (PSM)</option><option>IPTW</option><option>Augmented IPTW (AIPTW)</option><option>Coarsened Exact Matching (CEM)</option><option>Direct Regression Adjustment</option><option>Exact Matching</option><option>Synthetic Control</option><option>Other / TBD</option></select></div><div class="field full-width"><label>Analytical Notes</label><textarea id="analyticalNotes"></textarea></div></div></div>
+    <div class="btn-row"><button class="btn btn-primary" onclick="addVariable()">＋ Add Variable</button><button class="btn btn-secondary" onclick="clearVarForm()">Clear Form</button></div>
+  </div>
+  <div class="card">
+    <div class="card-title">Assessed Variables</div>
+    <div id="varEmpty" class="empty-state" style="display:none"><div class="empty-icon">📋</div><div class="empty-title">No variables yet</div></div>
+    <div class="table-wrap"><table class="var-table" id="varTable">
+      <thead><tr><th>#</th><th>Trial Variable</th><th>RWD Variable</th><th>Category</th><th>Score</th><th>Progress</th><th>Verdict</th><th></th></tr></thead>
+      <tbody id="varTBody"></tbody>
+    </table></div>
+  </div>
+</section>
+
+<section class="tab-panel" id="tab-pocock">
+  <div class="section-header"><p class="section-eyebrow">Step 2 of 4</p><h2 class="section-title">Pocock's Criteria</h2><p class="section-desc">The first two variables have pre-filled Pocock evaluations. Select each to explore the ratings and notes.</p></div>
+  <div class="ref-box"><p><strong>Reference:</strong> Pocock SJ. The combination of randomized and historical controls in clinical trials. <em>J Chronic Dis.</em> 1976;29(3):175-88.</p></div>
+  <div class="card"><div class="card-title">Select Variable</div><div class="field" style="max-width:420px"><label>Variable to Evaluate</label><select id="pocockSel" onchange="loadPanel('pocock')"></select></div></div>
+  <div id="pocockVP"></div><div id="pocockContent"></div>
+</section>
+
+<section class="tab-panel" id="tab-fda">
+  <div class="section-header"><p class="section-eyebrow">Step 3 of 4</p><h2 class="section-title">FDA Guidance Assessment</h2><p class="section-desc">Variables 1 and 3 have FDA evaluations loaded. Note how Variable 3 (VC% Predicted) shows several "Not Aligned" ratings due to measurement and completeness issues.</p></div>
+  <div class="ref-box"><p><strong>Reference:</strong> US FDA. "Considerations for the Design and Conduct of Externally Controlled Trials." February 2023. <a href="https://www.fda.gov/regulatory-information/search-fda-guidance-documents/considerations-design-and-conduct-externally-controlled-trials-drug-and-biological-products" target="_blank">View guidance ↗</a></p></div>
+  <div class="card"><div class="card-title">Select Variable</div><div class="field" style="max-width:420px"><label>Variable to Evaluate</label><select id="fdaSel" onchange="loadPanel('fda')"></select></div></div>
+  <div id="fdaVP"></div><div id="fdaContent"></div>
+</section>
+
+<section class="tab-panel" id="tab-gray">
+  <div class="section-header"><p class="section-eyebrow">Step 4 of 4</p><h2 class="section-title">Gray et al. Framework</h2><p class="section-desc">Variables 1 and 2 have full Gray et al. evaluations. Variable 1 shows an "Adequate with Limitations" on confounders due to missing FVC% data.</p></div>
+  <div class="ref-box pu"><p><strong>Reference:</strong> Gray CM et al. A Framework for Methodological Choice and Evidence Assessment. <em>Drug Saf.</em> 2020;43(7):623-633.</p></div>
+  <div class="card"><div class="card-title purple">Select Variable</div><div class="field" style="max-width:420px"><label>Variable to Evaluate</label><select id="graySel" onchange="loadPanel('gray')"></select></div></div>
+  <div id="grayVP"></div><div id="grayContent"></div>
+</section>
+
+<section class="tab-panel" id="tab-report">
+  <div class="section-header"><p class="section-eyebrow">Export &amp; Summary · Demo</p><h2 class="section-title">Assessment Report</h2></div>
+  <div class="stats-row">
+    <div class="stat-card"><div class="stat-num" id="sVars">0</div><div class="stat-lbl">Variables</div></div>
+    <div class="stat-card"><div class="stat-num" id="sStrong">0</div><div class="stat-lbl">Strong Potential</div></div>
+    <div class="stat-card"><div class="stat-num" id="sCond">0</div><div class="stat-lbl">Conditional</div></div>
+    <div class="stat-card"><div class="stat-num" id="sLimited">0</div><div class="stat-lbl">Limited Potential</div></div>
+    <div class="stat-card"><div class="stat-num" id="sComplete">0</div><div class="stat-lbl">Fully Assessed</div></div>
+  </div>
+  <div class="card"><div class="card-title gold">Composite Verdicts</div><div id="verdictList"></div></div>
+  <div class="card"><div class="card-title">Export Demo Data</div>
+    <p style="font-size:13px;color:var(--text2);margin-bottom:16px">Download the synthetic demo data as CSV or JSON to explore the export format.</p>
+    <div class="btn-row"><button class="btn btn-gold" onclick="downloadReport('all')">⬇ Full Report (CSV)</button><button class="btn btn-secondary" onclick="downloadReport('variables')">Variables CSV</button><button class="btn btn-secondary" onclick="downloadReport('pocock')">Pocock CSV</button><button class="btn btn-secondary" onclick="downloadReport('fda')">FDA CSV</button><button class="btn btn-secondary" onclick="downloadReport('gray')">Gray CSV</button></div>
+  </div>
+</section>
+
+<section class="tab-panel" id="tab-howto">
+  <div class="section-header"><p class="section-eyebrow">About This Demo</p><h2 class="section-title">Demo Walkthrough</h2></div>
+  <div class="card" style="background:linear-gradient(135deg,#fff8e6,#fffbf2);border-color:rgba(168,92,8,.2)">
+    <div class="card-title gold">Scenario</div>
+    <p style="font-size:13px;color:var(--text2);line-height:1.7;margin-bottom:12px">This demo illustrates a hypothetical assessment of the <strong style="color:var(--text)">PRO-ACT Registry</strong> as an external comparator for a Phase 3 ALS trial. Five candidate variables are evaluated across Pocock, FDA, and Gray et al. frameworks.</p>
+    <p style="font-size:13px;color:var(--text2);line-height:1.7">The data is entirely <strong style="color:var(--text)">synthetic and illustrative</strong>. It is designed to demonstrate the range of outcomes the tool can surface — from Strong Potential (ALSFRS-R Total Score) to Limited Potential (Vital Capacity % Predicted).</p>
+  </div>
+  <div class="card">
+    <div class="card-title">Demo Variables Summary</div>
+    <div style="display:flex;flex-direction:column;gap:0">
+      <div style="padding:14px 0;border-bottom:1px solid var(--border);display:flex;gap:16px;align-items:flex-start">
+        <div style="font-family:var(--mono);font-size:11px;color:var(--teal);min-width:120px;font-weight:600">ALSFRS-R Total</div>
+        <div><div style="font-size:12px;color:var(--text);font-weight:600;margin-bottom:2px">Score 5/6 · Full Assessment → Strong Potential</div><div style="font-size:12px;color:var(--text2)">Well-captured in PRO-ACT. Minor timing differences at assessment windows. Edaravone use post-2017 addressed via sensitivity analysis.</div></div>
+      </div>
+      <div style="padding:14px 0;border-bottom:1px solid var(--border);display:flex;gap:16px;align-items:flex-start">
+        <div style="font-family:var(--mono);font-size:11px;color:var(--teal);min-width:120px;font-weight:600">Age at Onset</div>
+        <div><div style="font-size:12px;color:var(--text);font-weight:600;margin-bottom:2px">Score 6/6 · Full Assessment → Strong Potential</div><div style="font-size:12px;color:var(--text2)">Consistently captured. All criteria met. Only gap is investigator non-involvement in PRO-ACT data collection.</div></div>
+      </div>
+      <div style="padding:14px 0;border-bottom:1px solid var(--border);display:flex;gap:16px;align-items:flex-start">
+        <div style="font-family:var(--mono);font-size:11px;color:var(--red);min-width:120px;font-weight:600">VC% Predicted</div>
+        <div><div style="font-size:12px;color:var(--text);font-weight:600;margin-bottom:2px">Score 2/6 · Pocock + FDA → Limited Potential</div><div style="font-size:12px;color:var(--text2)">High missingness (28.4%), SVC vs FVC measurement differences, and inconsistent timing drive multiple "Not Aligned" FDA ratings.</div></div>
+      </div>
+      <div style="padding:14px 0;border-bottom:1px solid var(--border);display:flex;gap:16px;align-items:flex-start">
+        <div style="font-family:var(--mono);font-size:11px;color:var(--yellow);min-width:120px;font-weight:600">Disease Duration</div>
+        <div><div style="font-size:12px;color:var(--text);font-weight:600;margin-bottom:2px">Score 4/6 · No framework assessment → Preliminary</div><div style="font-size:12px;color:var(--text2)">Good baseline score but Pocock, FDA, and Gray not yet completed. Try rating it yourself to see the verdict update.</div></div>
+      </div>
+      <div style="padding:14px 0;display:flex;gap:16px;align-items:flex-start">
+        <div style="font-family:var(--mono);font-size:11px;color:var(--teal);min-width:120px;font-weight:600">Riluzole Use</div>
+        <div><div style="font-size:12px;color:var(--text);font-weight:600;margin-bottom:2px">Score 5/6 · No framework assessment → Preliminary</div><div style="font-size:12px;color:var(--text2)">Strong initial score. Use this as a practice variable to complete the Pocock, FDA, and Gray assessments.</div></div>
+      </div>
+    </div>
+  </div>
+  <div class="card">
+    <div class="card-title">Try It Yourself</div>
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:14px">
+      <div style="background:#f4f9fd;border:1px solid var(--border);border-radius:var(--radius);padding:14px"><div style="font-family:var(--ui);font-size:11px;font-weight:700;color:var(--teal);margin-bottom:6px">1 · Explore Verdicts</div><p style="font-size:12px;color:var(--text2)">Go to the <strong>Report</strong> tab to see the composite verdict bars for all five variables side-by-side.</p></div>
+      <div style="background:#f4f9fd;border:1px solid var(--border);border-radius:var(--radius);padding:14px"><div style="font-family:var(--ui);font-size:11px;font-weight:700;color:var(--teal);margin-bottom:6px">2 · Rate a Variable</div><p style="font-size:12px;color:var(--text2)">Go to <strong>Pocock's Criteria</strong>, select "Riluzole Use at Baseline", and rate the seven criteria to see the verdict ring animate.</p></div>
+      <div style="background:#f4f9fd;border:1px solid var(--border);border-radius:var(--radius);padding:14px"><div style="font-family:var(--ui);font-size:11px;font-weight:700;color:var(--teal);margin-bottom:6px">3 · Export a Report</div><p style="font-size:12px;color:var(--text2)">Go to <strong>Report</strong> and click <em>Full Report (CSV)</em> to download the synthetic data in the export format.</p></div>
+      <div style="background:#f4f9fd;border:1px solid var(--border);border-radius:var(--radius);padding:14px"><div style="font-family:var(--ui);font-size:11px;font-weight:700;color:var(--teal);margin-bottom:6px">4 · Use the Real Tool</div><p style="font-size:12px;color:var(--text2)">Click <em>Use Real Tool</em> in the banner above to open <code>index.html</code> with a clean, empty workspace for your own study.</p></div>
+    </div>
+  </div>
+</section>
+
+<section class="tab-panel" id="tab-omop">
+  <div class="section-header"><p class="section-eyebrow">In Development</p><h2 class="section-title">OMOP Data Scan</h2></div>
+  <div class="cs"><div class="cs-icon">🔭</div><h3 class="cs-title">Coming Soon</h3><p class="cs-desc">The OMOP Data Scan will scan OMOP CDM–formatted data using pre-specified concept codes, enabling automated data characterization.</p><span class="cs-chip">BETA · IN DEVELOPMENT</span></div>
+</section>
+</main>
+
+<footer style="position:relative;z-index:1;border-top:1px solid var(--border);padding:22px 48px;text-align:center;background:#fff">
+  <p style="font-size:11px;color:var(--text3)">RWDExchange v3.0 · Demo · <a href="mailto:danielle@boycedatascience.com" style="color:var(--teal);text-decoration:none">Danielle Boyce, MPH, DPA</a> · <a href="https://github.com/BoyceLab/RWDExchange" target="_blank" style="color:var(--teal);text-decoration:none">GitHub ↗</a> · Synthetic data — illustrative only</p>
+</footer>
+<div id="toast"></div>
+
+<script>
+/* ─── DEMO STORAGE NAMESPACE ─── */
+const STORE_PREFIX = 'rwdx_demo_';
+
+/* ─── SYNTHETIC DEMO DATA ─── */
+const DEMO_DATA = {
+  variables: [
+    {id:'1710000001',created:'5/1/2025',project:'PRO-ACT External Comparator Analysis',source:'Patient Registry',trialVar:'ALSFRS-R Total Score',rwdVar:'alsfrs_r_total',category:'Functional Assessment',role:'Primary Outcome',answers:['Yes','Yes','Yes','Yes','Yes','Partially'],score:5,notes:'Well-captured across all PRO-ACT sites. Minor differences in assessment window (±4 weeks vs ±2 weeks in trial). Telephone administration validated.',sampleN:'1847',pctMissing:'4.2',dataVersion:'PRO-ACT v2.1 / 2023-Q4',dataStart:'2015-01-01',dataEnd:'2021-12-31',covariates:'Age at symptom onset, sex, site of onset, disease duration, riluzole use, diagnostic delay, baseline ALSFRS-R',analyticalMethod:'IPTW',analyticalNotes:'IPTW with overlap weights. Propensity model pre-specified in SAP. Balance assessed via SMD <0.10 threshold.'},
+    {id:'1710000002',created:'5/1/2025',project:'PRO-ACT External Comparator Analysis',source:'Patient Registry',trialVar:'Age at Symptom Onset',rwdVar:'age_onset_years',category:'Demographics',role:'Prognostic Factor / Covariate',answers:['Yes','Yes','Yes','Yes','Yes','Yes'],score:6,notes:'Consistently captured across all PRO-ACT sites. Near-complete (0.8% missing). No measurement variability.',sampleN:'2103',pctMissing:'0.8',dataVersion:'PRO-ACT v2.1 / 2023-Q4',dataStart:'2015-01-01',dataEnd:'2021-12-31',covariates:'',analyticalMethod:'',analyticalNotes:''},
+    {id:'1710000003',created:'5/2/2025',project:'PRO-ACT External Comparator Analysis',source:'Patient Registry',trialVar:'Vital Capacity % Predicted',rwdVar:'vc_pct_predicted',category:'Laboratory / Biomarker',role:'Eligibility Criterion',answers:['Partially','Yes','Partially','No','Yes','Unknown'],score:2,notes:'High missingness (28.4%) is a major concern. Some PRO-ACT sites used SVC rather than FVC, creating measurement heterogeneity relative to trial protocol.',sampleN:'1847',pctMissing:'28.4',dataVersion:'PRO-ACT v2.1 / 2023-Q4',dataStart:'2015-01-01',dataEnd:'2021-12-31',covariates:'',analyticalMethod:'Other / TBD',analyticalNotes:'Multiple imputation planned for missing VC%. SVC/FVC conversion factor sensitivity analysis required.'},
+    {id:'1710000004',created:'5/2/2025',project:'PRO-ACT External Comparator Analysis',source:'Patient Registry',trialVar:'Disease Duration at Baseline',rwdVar:'disease_duration_months',category:'Diagnosis / Eligibility',role:'Eligibility Criterion',answers:['Yes','Yes','Partially','Yes','Yes','Yes'],score:5,notes:'Calculated from symptom onset to enrollment date. Some variability in onset definition (first symptom vs. first functional limitation). Review underway.',sampleN:'1954',pctMissing:'6.1',dataVersion:'PRO-ACT v2.1 / 2023-Q4',dataStart:'2015-01-01',dataEnd:'2021-12-31',covariates:'',analyticalMethod:'',analyticalNotes:''},
+    {id:'1710000005',created:'5/3/2025',project:'PRO-ACT External Comparator Analysis',source:'Patient Registry',trialVar:'Riluzole Use at Baseline',rwdVar:'riluzole_baseline_yn',category:'Treatment / Medication',role:'Prognostic Factor / Covariate',answers:['Yes','Yes','Yes','Yes','Partially','Yes'],score:5,notes:'Riluzole use consistently captured. Dose information not always available (recorded in ~72% of records). Binary use/no-use variable is reliable.',sampleN:'2103',pctMissing:'2.1',dataVersion:'PRO-ACT v2.1 / 2023-Q4',dataStart:'2015-01-01',dataEnd:'2021-12-31',covariates:'',analyticalMethod:'',analyticalNotes:''}
+  ],
+  pocock: {
+    '1710000001': {
+      p1:{rating:'Met',notes:'All PRO-ACT patients on stable riluzole, consistent with trial background therapy requirement. No other disease-modifying treatment in comparator group.'},
+      p2:{rating:'Met',notes:'El Escorial diagnostic criteria applied consistently. Clinical team reviewed eligibility mapping; all key criteria directly mappable.'},
+      p3:{rating:'Partially Met',notes:'ALSFRS-R administered in-person in trial; mixed modality (in-person and telephone) in PRO-ACT. Published validation supports telephone equivalence with ICC >0.95.'},
+      p4:{rating:'Met',notes:'After IPTW with overlap weights, all standardized mean differences <0.10 across 12 pre-specified baseline characteristics.'},
+      p5:{rating:'Partially Met',notes:'NIV uptake and PEG placement timing trends observed 2010–2021. Analysis restricted to 2015–2021 cohort to mitigate secular trends. Residual temporal confounding acknowledged.'},
+      p6:{rating:'Met',notes:'Data restricted to 2015–2021 PRO-ACT cohort for contemporaneity with trial design window (2017–2022).'},
+      p7:{rating:'Not Met',notes:'Trial team did not previously participate in PRO-ACT data collection. Raw data accessed via PRO-ACT data portal under a formal data use agreement.'}
+    },
+    '1710000002': {
+      p1:{rating:'Met',notes:'Standard of care consistent. Age at onset is a patient characteristic, not a treatment variable.'},
+      p2:{rating:'Met',notes:'Age eligibility criteria (≥18 years) directly mappable. No upper age limit in either source.'},
+      p3:{rating:'Met',notes:'Age at symptom onset recorded consistently across all sites using date of first symptom report.'},
+      p4:{rating:'Met',notes:'Age distributions comparable after IPTW; SMD 0.04.'},
+      p5:{rating:'Met',notes:'No known reason for differential age effects between groups.'},
+      p6:{rating:'Met',notes:'PRO-ACT data contemporary with trial period.'},
+      p7:{rating:'Not Met',notes:'Same DUA-based access as all other PRO-ACT variables. Investigator not previously involved in PRO-ACT.'}
+    },
+    '1710000003': {
+      p1:{rating:'Met',notes:'Standard of care applies equally.'},
+      p2:{rating:'Partially Met',notes:'Trial required VC ≥60% predicted. Selection of available VC% in PRO-ACT (71.6% completeness) creates potential survivor/selection bias — sicker patients less likely to have VC measured.'},
+      p3:{rating:'Not Met',notes:'Trial protocol specified FVC (forced vital capacity). PRO-ACT sites used a mixture of FVC and SVC (slow vital capacity). SVC systematically higher than FVC; not interchangeable for eligibility assessment.'},
+      p4:{rating:'Not Met',notes:'Patients with VC% missing in PRO-ACT are systematically different (lower ALSFRS-R, bulbar onset more common) from those with VC% available, introducing selection bias in the observed subset.'},
+      p5:{rating:'Unknown',notes:'Unclear whether secular trends in VC measurement practices affect comparability.'},
+      p6:{rating:'Met',notes:'Data restricted to 2015–2021.'},
+      p7:{rating:'Not Met',notes:'Standard DUA access only.'}
+    }
+  },
+  fda: {
+    '1710000001': {
+      f1:{rating:'Aligned',notes:'ALS diagnosis per revised El Escorial criteria in both sources. Age ≥18, disease duration ≤24 months — both eligibility thresholds directly mappable from PRO-ACT fields.'},
+      f2:{rating:'Partially Aligned',notes:'Riluzole background comparable (94% PRO-ACT vs 91% trial). Edaravone (approved May 2017) used in ~8% of post-2017 PRO-ACT cohort. Pre-specified sensitivity analysis excluding edaravone users planned.'},
+      f3:{rating:'Aligned',notes:'ALSFRS-R 48-item instrument identical in both sources. Total score as primary endpoint consistent. Scoring algorithm validated and consistent.'},
+      f4:{rating:'Partially Aligned',notes:'Quarterly assessments comparable in frequency. Assessment window ±2 weeks in trial vs ±4 weeks in PRO-ACT. Landmark analysis at months 3, 6, and 12 applied to harmonize timing.'},
+      f5:{rating:'Aligned',notes:'PRO-ACT data quality extensively characterized in peer-reviewed literature. ALSFRS-R completeness 95.8% in selected 2015–2021 cohort. Data use agreement ensures data integrity standards.'},
+      f6:{rating:'Partially Aligned',notes:'IPTW with overlap trimming applied to address measured confounding. Residual confounding from unmeasured factors (caregiver support, center quality, access to NIV) acknowledged and discussed in limitations section.'},
+      f7:{rating:'Partially Aligned',notes:'Temporal trend analysis confirms stable ALSFRS-R decline rates 2015–2021 (slope: −1.1 points/month, SD 0.3). Edaravone introduction post-2017 is primary temporal confounder; addressed via pre-specified sensitivity analysis.'},
+      f8:{rating:'Aligned',notes:'External comparator approach fully documented in SAP v1.2, dated and filed with regulatory authority prior to database lock.'}
+    },
+    '1710000003': {
+      f1:{rating:'Partially Aligned',notes:'ALS diagnosis criteria consistent. However, VC% threshold used for eligibility (≥60% predicted) cannot be reliably assessed due to high missingness and SVC/FVC heterogeneity.'},
+      f2:{rating:'Aligned',notes:'Standard of care not directly relevant to VC% measurement.'},
+      f3:{rating:'Not Aligned',notes:'Trial specified FVC (forced vital capacity). PRO-ACT used mixed FVC and SVC. SVC is systematically 5–8% higher than FVC; using SVC as a proxy for FVC eligibility threshold would misclassify a non-trivial proportion of patients.'},
+      f4:{rating:'Not Aligned',notes:'VC% timing relative to enrollment varies substantially in PRO-ACT (recorded at any clinic visit, not standardized to baseline). Trial required measurement within 4 weeks of randomization.'},
+      f5:{rating:'Not Aligned',notes:'28.4% missingness substantially exceeds the 20% threshold specified in the pre-specified data quality plan. Missing data is not missing at random — patients with bulbar onset and lower ALSFRS-R are less likely to have VC% recorded.'},
+      f6:{rating:'Not Aligned',notes:'Selection bias from informative missingness cannot be adequately addressed by standard IPTW. Sensitivity analyses using multiple imputation and worst-case/best-case scenarios are planned but may not be sufficient.'},
+      f7:{rating:'Unknown',notes:'Insufficient data to assess temporal trends in VC% measurement practices across PRO-ACT sites.'},
+      f8:{rating:'Partially Aligned',notes:'VC% is listed as a secondary variable in the SAP, but the handling of SVC/FVC heterogeneity and the imputation strategy are not yet pre-specified.'}
+    }
+  },
+  gray: {
+    '1710000001': {
+      g1:{rating:'Adequate',notes:'PRO-ACT selected per pre-specified data source criteria documented in the feasibility assessment: ALS-specific registry, longitudinal ALSFRS-R, n>500, North American/European population, publicly accessible under DUA.'},
+      g2:{rating:'Adequate',notes:'PRO-ACT patient population represents the North American and European ALS clinic population. Comparison of PRO-ACT baseline characteristics to trial screening log shows good demographic and clinical overlap.'},
+      g3:{rating:'Adequate',notes:'Comparator defined as best supportive care plus riluzole, directly matching the trial control arm. No experimental treatment in the PRO-ACT comparator group. Background therapy exposure verified.'},
+      g4:{rating:'Adequate',notes:'ALSFRS-R instrument identical (48-item version). Total score calculated identically. No adjudication differences. Scoring algorithm consistent and validated across both sources.'},
+      g5:{rating:'Adequate with Limitations',notes:'Core confounders available: age, sex, site of onset, disease duration, riluzole use, diagnostic delay. FVC% Predicted missing in 18.4% of patients — addressed via multiple imputation with 50 imputed datasets. Sensitivity analysis without imputation planned.'},
+      g6:{rating:'Adequate',notes:'IPTW pre-specified in SAP. Overlap assessed using overlap weights as primary and PS matching as sensitivity. Effective sample sizes checked post-weighting. Covariate balance confirmed via SMD <0.10.'},
+      g7:{rating:'Adequate with Limitations',notes:'Temporal restriction (2015–2021), edaravone exclusion, and missing data sensitivity analyses planned and pre-specified. E-value and tipping point analysis not yet added to SAP — recommended before regulatory submission.'},
+      g8:{rating:'Adequate',notes:'Analysis protocol and R code (version-controlled) to be deposited on GitHub under BoyceLab organization prior to database lock. SAP filed. STROBE-RWE reporting checklist completed.'}
+    },
+    '1710000002': {
+      g1:{rating:'Adequate',notes:'Same data source as Variable 1. PRO-ACT selected per pre-specified criteria.'},
+      g2:{rating:'Adequate',notes:'Age distribution in PRO-ACT comparable to trial screening population. SMD 0.04 after IPTW.'},
+      g3:{rating:'Adequate',notes:'Age at onset is a patient characteristic; comparator equivalence applies at the study level, not variable level.'},
+      g4:{rating:'Adequate',notes:'Age at symptom onset recorded identically in both sources using date of first symptom report.'},
+      g5:{rating:'N/A',notes:'Age at onset is itself a potential confounder. No additional confounders required for this variable.'},
+      g6:{rating:'Adequate',notes:'Same IPTW approach applies across all variables in the study.'},
+      g7:{rating:'Adequate',notes:'Sensitivity analyses apply at the study level and cover this variable.'},
+      g8:{rating:'Adequate',notes:'Same documentation standards apply across all variables.'}
+    }
+  }
+};
+
+/* ─── STORE ─── */
+const DB = {
+  get variables(){ return JSON.parse(localStorage.getItem(STORE_PREFIX+'vars')||'[]') },
+  set variables(v){ localStorage.setItem(STORE_PREFIX+'vars',JSON.stringify(v)) },
+  get pocock(){ return JSON.parse(localStorage.getItem(STORE_PREFIX+'poc')||'{}') },
+  set pocock(v){ localStorage.setItem(STORE_PREFIX+'poc',JSON.stringify(v)) },
+  get fda(){ return JSON.parse(localStorage.getItem(STORE_PREFIX+'fda')||'{}') },
+  set fda(v){ localStorage.setItem(STORE_PREFIX+'fda',JSON.stringify(v)) },
+  get gray(){ return JSON.parse(localStorage.getItem(STORE_PREFIX+'gray')||'{}') },
+  set gray(v){ localStorage.setItem(STORE_PREFIX+'gray',JSON.stringify(v)) }
+};
+
+function seedDemo(){
+  localStorage.setItem(STORE_PREFIX+'vars', JSON.stringify(DEMO_DATA.variables));
+  localStorage.setItem(STORE_PREFIX+'poc',  JSON.stringify(DEMO_DATA.pocock));
+  localStorage.setItem(STORE_PREFIX+'fda',  JSON.stringify(DEMO_DATA.fda));
+  localStorage.setItem(STORE_PREFIX+'gray', JSON.stringify(DEMO_DATA.gray));
+}
+function resetDemo(){
+  if(!confirm('Reset demo data to its original state? Any changes you made will be lost.')) return;
+  seedDemo(); renderVarTable(); updateBadges(); toast('Demo data reset ✓');
+}
+// Seed on first visit only
+if(!localStorage.getItem(STORE_PREFIX+'vars')) seedDemo();
+
+/* ─── CRITERIA DEFS (same as index.html) ─── */
+const POCOCK=[{id:'p1',lbl:'Standardized Treatment',txt:'The historical controls received a <strong>precisely defined standard treatment</strong> comparable to the active arm standard of care.'},{id:'p2',lbl:'Eligibility Criteria',txt:'Patients in both groups fulfill <strong>identical eligibility criteria</strong>.'},{id:'p3',lbl:'Evaluation Methods',txt:'<strong>Methods for patient evaluation</strong> are the same or highly comparable.'},{id:'p4',lbl:'Patient Characteristics',txt:'The <strong>distribution of important prognostic characteristics</strong> is comparable.'},{id:'p5',lbl:'No Differential Effects',txt:'There is <strong>no known reason to expect systematically different outcomes</strong>.'},{id:'p6',lbl:'Recency & Relevance',txt:'Historical controls are <strong>recent and relevant</strong> to the current treatment landscape.'},{id:'p7',lbl:'Investigator Involvement',txt:'The principal investigator has <strong>previously been involved</strong> with the historical control study or has access to raw individual patient data.'}];
+const FDA_C=[{id:'f1',lbl:'Disease & Population Comparability',txt:'Disease definition, diagnostic criteria, and <strong>patient population</strong> are comparable.'},{id:'f2',lbl:'Standard of Care Consistency',txt:'The <strong>standard of care</strong> has remained consistent between the historical period and current trial.'},{id:'f3',lbl:'Endpoint Definition & Ascertainment',txt:'<strong>Primary and secondary endpoint definitions</strong> and ascertainment methods are comparable.'},{id:'f4',lbl:'Data Collection Comparability',txt:'Data collected in a <strong>comparable manner</strong> with consistent timing.'},{id:'f5',lbl:'External Data Source Quality',txt:'The data source meets <strong>acceptable quality standards</strong>.'},{id:'f6',lbl:'Risk of Bias Assessment',txt:'Potential <strong>selection, information bias, and confounding</strong> identified; plans to address in place.'},{id:'f7',lbl:'Temporal & Geographic Trends',txt:'<strong>Temporal trends</strong> and geographic factors evaluated.'},{id:'f8',lbl:'Pre-specified Analysis Plan',txt:'Use of external comparator <strong>pre-specified in the protocol and SAP</strong>.'}];
+const GRAY_C=[{id:'g1',lbl:'Research Question & Data Source Fit',txt:'RWD source selected on <strong>predefined, documented criteria</strong> directly matching the research question.'},{id:'g2',lbl:'Study Population Representativeness',txt:'The RWD population is <strong>representative of the target clinical population</strong>.'},{id:'g3',lbl:'Exposure / Comparator Equivalence',txt:'The comparator in the RWD is <strong>sufficiently equivalent</strong> to the trial control arm.'},{id:'g4',lbl:'Outcome Definition & Measurement',txt:'The primary outcome is <strong>defined and measured comparably</strong>.'},{id:'g5',lbl:'Confounder Identification & Availability',txt:'Key confounders have been <strong>identified a priori</strong> and are available.'},{id:'g6',lbl:'Analytical Approach Appropriateness',txt:'The analytical method <strong>adequately addresses confounding and selection bias</strong>.'},{id:'g7',lbl:'Bias Assessment & Sensitivity Analyses',txt:'Sources of bias <strong>systematically identified</strong>; sensitivity analyses planned.'},{id:'g8',lbl:'Transparency, Reproducibility & Reporting',txt:'Study design and code are <strong>sufficiently documented for independent reproduction</strong>.'}];
+const FW={pocock:{criteria:POCOCK,ratings:['Met','Partially Met','Not Met','Unknown','N/A'],key:'pocock',saveLabel:'Save Pocock Evaluation',pu:false,score:r=>r==='Met'?1:r==='Partially Met'?.5:r==='N/A'?null:r==='Unknown'?.2:0},fda:{criteria:FDA_C,ratings:['Aligned','Partially Aligned','Not Aligned','Unknown','N/A'],key:'fda',saveLabel:'Save FDA Evaluation',pu:false,score:r=>r==='Aligned'?1:r==='Partially Aligned'?.5:r==='N/A'?null:r==='Unknown'?.2:0},gray:{criteria:GRAY_C,ratings:['Adequate','Adequate with Limitations','Inadequate','Unclear','N/A'],key:'gray',saveLabel:'Save Gray Evaluation',pu:true,score:r=>r==='Adequate'?1:r==='Adequate with Limitations'?.5:r==='N/A'?null:r==='Unclear'?.2:0}};
+
+function fwScore(fw,vid){const cfg=FW[fw],saved=DB[cfg.key][vid]||{},rated=cfg.criteria.filter(c=>saved[c.id]?.rating);if(rated.length<Math.ceil(cfg.criteria.length*.55))return null;const vals=rated.map(c=>cfg.score(saved[c.id].rating)).filter(v=>v!==null);return vals.length?vals.reduce((a,b)=>a+b,0)/cfg.criteria.length:null}
+function computeVerdict(vid){const v=DB.variables.find(x=>x.id===vid);if(!v)return null;const vS=v.score/6,pS=fwScore('pocock',vid),fS=fwScore('fda',vid),gS=fwScore('gray',vid),done=[pS,fS,gS].filter(x=>x!==null).length;const bd={var:Math.round(vS*100),poc:pS!==null?Math.round(pS*100):null,fda:fS!==null?Math.round(fS*100):null,gray:gS!==null?Math.round(gS*100):null};if(done===0){const pct=Math.round(vS*100),lvl=pct>=67?'hi':pct>=33?'md':'lo';return{pct,label:pct>=67?'Promising':pct>=33?'Unclear':'Concerning',level:lvl,preliminary:true,done:0,bd}}const wts=[{s:vS,w:.20}];if(pS!==null)wts.push({s:pS,w:.27});if(fS!==null)wts.push({s:fS,w:.27});if(gS!==null)wts.push({s:gS,w:.26});const tw=wts.reduce((a,b)=>a+b.w,0),weighted=wts.reduce((a,b)=>a+b.s*b.w,0)/tw,pct=Math.round(weighted*100),lvl=pct>=70?'hi':pct>=45?'md':'lo';return{pct,label:pct>=70?'Strong Potential':pct>=45?'Conditional':'Limited Potential',level:lvl,preliminary:false,done,bd}}
+function vbadge(vrd){if(!vrd)return'<span class="vbadge vb-pr">—</span>';const c=vrd.level==='hi'?'vb-hi':vrd.level==='md'?'vb-md':'vb-lo';return`<span class="vbadge ${c}">${vrd.pct}% ${vrd.label}${vrd.preliminary?' *':''}</span>`}
+function ringHTML(vrd){if(!vrd)return'';const r=30,ci=2*Math.PI*r,dash=(vrd.pct/100)*ci,gap=ci-dash,col=vrd.level==='hi'?'#18944a':vrd.level==='md'?'#b87c08':'#d42020',lc=vrd.level==='hi'?'vb-hi':vrd.level==='md'?'vb-md':'vb-lo';return`<div class="vp-panel"><div class="vp-ring"><svg viewBox="0 0 72 72"><circle class="ring-bg" cx="36" cy="36" r="${r}"/><circle class="ring-fg" cx="36" cy="36" r="${r}" stroke="${col}" stroke-dasharray="${dash.toFixed(1)} ${gap.toFixed(1)}"/></svg><div class="ring-pct">${vrd.pct}<span>%</span></div></div><div><div class="vp-lbl ${lc}">${vrd.label}${vrd.preliminary?' (Preliminary)':''}</div><div class="vp-note">${vrd.done}/3 frameworks assessed</div><div class="vp-bkd">${[['VAR',vrd.bd.var,'var(--teal)'],['POC',vrd.bd.poc,'var(--teal)'],['FDA',vrd.bd.fda,'var(--teal)'],['GRY',vrd.bd.gray,'var(--purple)']].map(([l,s,c])=>`<span class="vp-comp"><span class="vp-dot" style="background:${s!==null?c:'var(--border)'}"></span>${l}: ${s!==null?s+'%':'—'}</span>`).join('')}</div></div></div>`}
+function toggleColl(h){h.classList.toggle('open');h.nextElementSibling.classList.toggle('open')}
+document.querySelectorAll('.tab-btn').forEach(btn=>{btn.addEventListener('click',()=>{document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));document.querySelectorAll('.tab-panel').forEach(p=>p.classList.remove('active'));btn.classList.add('active');document.getElementById('tab-'+btn.dataset.tab).classList.add('active');const t=btn.dataset.tab;if(t==='pocock')refreshFW('pocock');if(t==='fda')refreshFW('fda');if(t==='gray')refreshFW('gray');if(t==='report')refreshReport()})});
+function gR(n){const e=document.querySelector(`input[name="${n}"]:checked`);return e?e.value:''}
+function addVariable(){const tv=document.getElementById('trialVar').value.trim(),rv=document.getElementById('rwdVar').value.trim();if(!tv||!rv){toast('Enter both variable names.');return}const answers=['q1','q2','q3','q4','q5','q6'].map(gR);const v={id:Date.now().toString(),created:new Date().toLocaleDateString(),project:document.getElementById('projName').value.trim(),source:document.getElementById('rwdSource').value,trialVar:tv,rwdVar:rv,category:document.getElementById('varCategory').value,role:document.getElementById('varRole').value,answers,score:Math.round(answers.reduce((s,a)=>s+(a==='Yes'?1:a==='Partially'?.5:0),0)),notes:document.getElementById('varNotes').value.trim(),sampleN:document.getElementById('sampleN').value,pctMissing:document.getElementById('pctMissing').value,dataVersion:document.getElementById('dataVersion').value.trim(),dataStart:document.getElementById('dataStart').value,dataEnd:document.getElementById('dataEnd').value,covariates:document.getElementById('covariates').value.trim(),analyticalMethod:document.getElementById('analyticalMethod').value,analyticalNotes:document.getElementById('analyticalNotes').value.trim()};DB.variables=[...DB.variables,v];renderVarTable();clearVarForm();updateBadges();toast('Variable added ✓')}
+function clearVarForm(){['projName','trialVar','rwdVar','varNotes','sampleN','pctMissing','dataVersion','dataStart','dataEnd','covariates','analyticalNotes'].forEach(id=>document.getElementById(id).value='');['rwdSource','varCategory','varRole','analyticalMethod'].forEach(id=>document.getElementById(id).selectedIndex=0);document.querySelectorAll('input[type=radio]').forEach(r=>r.checked=false)}
+function deleteVar(id){if(!confirm('Remove this variable?'))return;DB.variables=DB.variables.filter(v=>v.id!==id);['pocock','fda','gray'].forEach(k=>{const d=DB[k];delete d[id];DB[k]=d});renderVarTable();updateBadges();toast('Removed.')}
+function renderVarTable(){const vars=DB.variables;document.getElementById('varEmpty').style.display=vars.length?'none':'';const t=document.getElementById('varTable');t.style.display=vars.length?'':'none';if(!vars.length)return;document.getElementById('varTBody').innerHTML=vars.map((v,i)=>{const sc=v.score,dc=sc>=4?'sd-hi':sc>=2?'sd-md':'sd-lo',dl=sc>=4?'High':sc>=2?'Med':'Low',pD=fwScore('pocock',v.id)!==null,fD=fwScore('fda',v.id)!==null,gD=fwScore('gray',v.id)!==null;return`<tr><td style="color:var(--text3);font-family:var(--mono);font-size:10px">${i+1}</td><td><div class="vn">${esc(v.trialVar)}</div><div class="vp-sub">${esc(v.project)}</div></td><td class="rwd-var">${esc(v.rwdVar)}</td><td style="font-size:11px;color:var(--text2)">${esc(v.category)}</td><td><span class="score-badge"><span class="score-dot ${dc}"></span>${sc}/6 ${dl}</span></td><td><div class="pills"><span class="pill ${pD?'pill-on':'pill-off'}">POC</span><span class="pill ${fD?'pill-on':'pill-off'}">FDA</span><span class="pill ${gD?'pill-on pu':'pill-off'}">GRY</span></div></td><td>${vbadge(computeVerdict(v.id))}</td><td><button class="btn btn-danger" onclick="deleteVar('${v.id}')">✕</button></td></tr>`}).join('')}
+function updateBadges(){const n=DB.variables.length;document.getElementById('varBadge').textContent=n;document.getElementById('reportBadge').textContent=n}
+function refreshFW(fw){const vars=DB.variables,sel=document.getElementById(fw+'Sel'),cur=sel.value;sel.innerHTML=vars.length?vars.map(v=>`<option value="${v.id}">${esc(v.trialVar)} — ${esc(v.rwdVar)}</option>`).join(''):'<option value="">No variables</option>';if(cur&&vars.find(v=>v.id===cur))sel.value=cur;loadPanel(fw)}
+function loadPanel(fw){const cfg=FW[fw],vars=DB.variables,sel=document.getElementById(fw+'Sel'),vp=document.getElementById(fw+'VP'),content=document.getElementById(fw+'Content');if(!vars.length||!sel.value){vp.innerHTML='';content.innerHTML='<div class="empty-state"><div class="empty-icon">📋</div><div class="empty-title">No variables</div></div>';return}const vid=sel.value;vp.innerHTML=ringHTML(computeVerdict(vid));const saved=DB[cfg.key][vid]||{},pu=cfg.pu;content.innerHTML=`<div class="card"><div class="card-title ${pu?'purple':''}">${{pocock:"Pocock's Seven Criteria",fda:'FDA Guidance Considerations',gray:'Gray et al. Methodological Domains'}[fw]}</div><div style="overflow-x:auto"><table class="crit-table" style="min-width:680px"><thead><tr><th style="width:36px">#</th><th>Criterion</th><th style="width:185px">Rating</th><th>Notes</th></tr></thead><tbody>${cfg.criteria.map(c=>{const sv=saved[c.id]||{};return`<tr><td class="cnum ${pu?'pu':''}">${c.id.toUpperCase()}</td><td><div class="clbl">${c.lbl}</div><div class="ctxt">${c.txt}</div></td><td class="crating"><select id="${fw}_${c.id}"><option value="">— Select —</option>${cfg.ratings.map(r=>`<option ${sv.rating===r?'selected':''}>${esc(r)}</option>`).join('')}</select></td><td class="cnotes"><textarea id="${fw}n_${c.id}" placeholder="Notes…">${esc(sv.notes||'')}</textarea></td></tr>`}).join('')}</tbody></table></div><div class="btn-row"><button class="btn ${pu?'btn-purple':'btn-primary'}" onclick="saveFW('${fw}','${vid}')">${cfg.saveLabel}</button></div></div>`}
+function saveFW(fw,vid){const cfg=FW[fw],data={};cfg.criteria.forEach(c=>{data[c.id]={rating:document.getElementById(`${fw}_${c.id}`).value,notes:document.getElementById(`${fw}n_${c.id}`).value}});const all=DB[cfg.key];all[vid]=data;DB[cfg.key]=all;loadPanel(fw);renderVarTable();toast(`${{pocock:'Pocock',fda:'FDA',gray:'Gray'}[fw]} evaluation saved ✓`)}
+function refreshReport(){const vars=DB.variables,vds=vars.map(v=>({v,vrd:computeVerdict(v.id)}));document.getElementById('sVars').textContent=vars.length;document.getElementById('sStrong').textContent=vds.filter(x=>x.vrd?.level==='hi').length;document.getElementById('sCond').textContent=vds.filter(x=>x.vrd?.level==='md').length;document.getElementById('sLimited').textContent=vds.filter(x=>x.vrd?.level==='lo').length;document.getElementById('sComplete').textContent=vds.filter(x=>x.vrd&&!x.vrd.preliminary&&x.vrd.done===3).length;const list=document.getElementById('verdictList');if(!vars.length){list.innerHTML='<div class="empty-state"><div class="empty-icon">📊</div><div class="empty-title">No variables</div></div>';return}list.innerHTML=vds.map(({v,vrd})=>{const bd=vrd?.bd||{};const bar=(val,col,lbl)=>`<div class="mini-bar"><div class="mb-val">${val!==null?val+'%':'—'}</div><div class="mb-track"><div class="mb-fill" style="width:${val||0}%;background:${col}"></div></div><div class="mb-lbl">${lbl}</div></div>`;return`<div class="vr-row"><div><div class="vr-name">${esc(v.trialVar)}</div><div class="vr-sub">${esc(v.rwdVar)} · ${esc(v.project)}</div></div><div class="vr-bars">${bar(bd.var,'var(--teal)','VAR')}${bar(bd.poc,'var(--teal)','POC')}${bar(bd.fda,'var(--teal)','FDA')}${bar(bd.gray,'var(--purple)','GRY')}</div>${vbadge(vrd)}</div>`}).join('')}
+function downloadReport(type){const vars=DB.variables;if(!vars.length){toast('No data.');return}const Q=['Routinely Collected','Baseline Available','Definition Comparable','Completeness OK','Measurement Validated','Comparable Follow-up'];if(type==='all'||type==='variables'){const h=['ID','Date','Project','RWD Source','Trial Variable','RWD Variable','Category','Role',...Q,'Score (0-6)','Score Level','Verdict %','Verdict Label','Sample N','% Missing','Data Version','Data Start','Data End','Covariates','Analytical Method','Analytical Notes','Notes'];const r=vars.map(v=>{const vrd=computeVerdict(v.id);return[v.id,v.created,v.project,v.source,v.trialVar,v.rwdVar,v.category,v.role,...v.answers,v.score,v.score>=4?'High':v.score>=2?'Medium':'Low',vrd?.pct??'',vrd?.label??'',v.sampleN||'',v.pctMissing||'',v.dataVersion||'',v.dataStart||'',v.dataEnd||'',v.covariates||'',v.analyticalMethod||'',v.analyticalNotes||'',v.notes||'']});dlCSV('RWDExchange_Demo_Variables.csv',h,r)}['pocock','fda','gray'].forEach(fw=>{if(type!=='all'&&type!==fw)return;const cfg=FW[fw];const h=['Variable ID','Trial Variable','RWD Variable',...cfg.criteria.flatMap(c=>[c.lbl+' Rating',c.lbl+' Notes'])];const r=vars.map(v=>{const s=DB[cfg.key][v.id]||{};return[v.id,v.trialVar,v.rwdVar,...cfg.criteria.flatMap(c=>[(s[c.id]||{}).rating||'',(s[c.id]||{}).notes||''])]});dlCSV(`RWDExchange_Demo_${fw.charAt(0).toUpperCase()+fw.slice(1)}.csv`,h,r)})}
+function dlCSV(name,hdrs,rows){const csv=[hdrs,...rows].map(r=>r.map(c=>`"${String(c||'').replace(/"/g,'""')}"`).join(',')).join('\n');const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([csv],{type:'text/csv'}));a.download=name;a.click()}
+function exportJSON(){const data={version:3,exported:new Date().toISOString(),note:'SYNTHETIC DEMO DATA — illustrative only',variables:DB.variables,pocock:DB.pocock,fda:DB.fda,gray:DB.gray};const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([JSON.stringify(data,null,2)],{type:'application/json'}));a.download='RWDExchange_Demo_Session.json';a.click();toast('Demo JSON exported ✓')}
+function esc(s){if(!s)return'';return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;')}
+let _tt;function toast(msg){const el=document.getElementById('toast');el.textContent=msg;el.classList.add('show');clearTimeout(_tt);_tt=setTimeout(()=>el.classList.remove('show'),2600)}
+
+renderVarTable(); updateBadges();
+</script>
+</body>
+</html>
